@@ -1,8 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('stack');
-  const [theme, setTheme] = useState('glass'); // Options: 'midnight', 'forest', 'glass', 'crimson', 'nord'
+  const [theme, setTheme] = useState('glass');
+  const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
+
+  // Handle window resizing for responsive adjustments
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const profile = {
     name: "Ahmed Numan",
@@ -77,15 +85,18 @@ export default function App() {
   };
 
   const currentTheme = colors[theme];
+  const isMobile = windowWidth < 640;
 
   const baseCardStyle = {
     backgroundColor: currentTheme.card, 
-    padding: '1.75rem', 
+    padding: isMobile ? '1.25rem' : '1.75rem', 
     borderRadius: '16px',
     border: currentTheme.glass ? '1px solid rgba(255, 255, 255, 0.2)' : '1px solid #334155',
     backdropFilter: currentTheme.glass ? 'blur(12px)' : 'none',
     boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.37)',
-    transition: 'all 0.3s ease'
+    transition: 'all 0.3s ease',
+    width: '100%',
+    boxSizing: 'border-box'
   };
 
   return (
@@ -95,15 +106,16 @@ export default function App() {
       minHeight: '100vh', 
       fontFamily: 'Inter, system-ui, sans-serif',
       transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
-      paddingBottom: '4rem'
+      paddingBottom: '4rem',
+      overflowX: 'hidden'
     }}>
       
       {/* Theme Selection Bar */}
       <div style={{ 
         display: 'flex', 
         justifyContent: 'center', 
-        padding: '1.5rem', 
-        gap: '0.75rem',
+        padding: isMobile ? '1rem' : '1.5rem', 
+        gap: '0.5rem',
         flexWrap: 'wrap' 
       }}>
         {Object.keys(colors).map((t) => (
@@ -114,10 +126,10 @@ export default function App() {
               backgroundColor: theme === t ? currentTheme.accent : currentTheme.card,
               color: theme === t ? (t === 'glass' ? '#000' : currentTheme.bg) : currentTheme.text,
               border: '1px solid rgba(255,255,255,0.1)',
-              padding: '6px 12px',
+              padding: isMobile ? '4px 10px' : '6px 12px',
               borderRadius: '20px',
               cursor: 'pointer',
-              fontSize: '0.75rem',
+              fontSize: '0.7rem',
               fontWeight: '700',
               textTransform: 'capitalize',
               transition: 'all 0.2s'
@@ -129,64 +141,95 @@ export default function App() {
       </div>
 
       {/* Header */}
-      <header style={{ textAlign: 'center', padding: '2rem 1rem 3rem' }}>
+      <header style={{ textAlign: 'center', padding: isMobile ? '1.5rem 1rem' : '2rem 1rem 3rem' }}>
         <h1 style={{ 
-          fontSize: 'clamp(2.5rem, 8vw, 4rem)', 
+          fontSize: 'clamp(2rem, 10vw, 4rem)', 
           fontWeight: '900', 
           margin: 0, 
           color: currentTheme.accent,
-          textShadow: currentTheme.glass ? '0 4px 10px rgba(0,0,0,0.2)' : 'none'
+          textShadow: currentTheme.glass ? '0 4px 10px rgba(0,0,0,0.2)' : 'none',
+          lineHeight: 1.1
         }}>
           {profile.name}
         </h1>
-        <p style={{ color: currentTheme.subtext, fontSize: '1.2rem', marginTop: '10px', fontWeight: '500' }}>
+        <p style={{ 
+          color: currentTheme.subtext, 
+          fontSize: isMobile ? '1rem' : '1.2rem', 
+          marginTop: '10px', 
+          fontWeight: '500' 
+        }}>
           @{profile.handle} | {profile.location}
         </p>
       </header>
 
       {/* Navigation */}
-      <main style={{ maxWidth: '850px', margin: '0 auto', padding: '0 1.5rem' }}>
+      <main style={{ 
+        maxWidth: '850px', 
+        margin: '0 auto', 
+        padding: isMobile ? '0 1rem' : '0 1.5rem',
+        boxSizing: 'border-box'
+      }}>
         <div style={{ 
           display: 'flex', 
-          gap: '2.5rem', 
+          gap: isMobile ? '1.5rem' : '2.5rem', 
           borderBottom: `2px solid ${currentTheme.card}`, 
-          marginBottom: '2.5rem', 
+          marginBottom: '2rem', 
           justifyContent: 'center' 
         }}>
           <button 
             onClick={() => setActiveTab('stack')} 
-            style={tabStyle(activeTab === 'stack', currentTheme)}
+            style={tabStyle(activeTab === 'stack', currentTheme, isMobile)}
           >
-            Tech Stack
+            Stack
           </button>
           <button 
             onClick={() => setActiveTab('focus')} 
-            style={tabStyle(activeTab === 'focus', currentTheme)}
+            style={tabStyle(activeTab === 'focus', currentTheme, isMobile)}
           >
-            Focus Areas
+            Focus
           </button>
         </div>
 
         {/* Content */}
         <div style={{ minHeight: '350px' }}>
           {activeTab === 'stack' ? (
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', justifyContent: 'center' }}>
+            <div style={{ 
+              display: 'flex', 
+              flexWrap: 'wrap', 
+              gap: isMobile ? '8px' : '12px', 
+              justifyContent: 'center' 
+            }}>
               {stack.map(s => (
                 <div key={s} style={{
                   ...baseCardStyle,
-                  padding: '10px 20px', 
+                  width: 'auto',
+                  padding: isMobile ? '8px 14px' : '10px 20px', 
                   borderRadius: '12px',
-                  fontSize: '0.9rem',
-                  fontWeight: '600'
+                  fontSize: isMobile ? '0.8rem' : '0.9rem',
+                  fontWeight: '600',
+                  flexGrow: 0
                 }}>{s}</div>
               ))}
             </div>
           ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
+            <div style={{ 
+              display: 'grid', 
+              gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(280px, 1fr))', 
+              gap: '1.25rem' 
+            }}>
               {focusAreas.map((c, i) => (
                 <div key={i} style={baseCardStyle}>
-                  <h3 style={{ color: currentTheme.accent, marginTop: 0, fontSize: '1.4rem' }}>{c.title}</h3>
-                  <p style={{ color: currentTheme.subtext, margin: 0, lineHeight: '1.7', fontSize: '1rem' }}>{c.skills}</p>
+                  <h3 style={{ 
+                    color: currentTheme.accent, 
+                    marginTop: 0, 
+                    fontSize: isMobile ? '1.2rem' : '1.4rem' 
+                  }}>{c.title}</h3>
+                  <p style={{ 
+                    color: currentTheme.subtext, 
+                    margin: 0, 
+                    lineHeight: '1.6', 
+                    fontSize: isMobile ? '0.9rem' : '1rem' 
+                  }}>{c.skills}</p>
                 </div>
               ))}
             </div>
@@ -194,7 +237,7 @@ export default function App() {
         </div>
 
         {/* Footer */}
-        <footer style={{ textAlign: 'center', marginTop: '5rem' }}>
+        <footer style={{ textAlign: 'center', marginTop: isMobile ? '3rem' : '5rem' }}>
           <a 
             href={`https://github.com/${profile.github}`} 
             target="_blank" 
@@ -204,10 +247,11 @@ export default function App() {
               color: theme === 'glass' || theme === 'nord' ? '#1a202c' : currentTheme.bg,
               textDecoration: 'none', 
               fontWeight: '800',
-              padding: '14px 32px',
+              padding: isMobile ? '12px 24px' : '14px 32px',
               borderRadius: '12px',
               display: 'inline-block',
-              boxShadow: '0 4px 14px 0 rgba(0,118,255,0.39)'
+              boxShadow: '0 4px 14px 0 rgba(0,118,255,0.39)',
+              fontSize: isMobile ? '0.9rem' : '1rem'
             }}
           >
             GitHub Profile
@@ -218,14 +262,14 @@ export default function App() {
   );
 }
 
-const tabStyle = (isActive, theme) => ({
+const tabStyle = (isActive, theme, isMobile) => ({
   background: 'none',
   border: 'none',
   borderBottom: isActive ? `4px solid ${theme.accent}` : '4px solid transparent',
   color: isActive ? theme.accent : theme.subtext,
-  padding: '12px 0',
+  padding: '8px 0',
   cursor: 'pointer',
-  fontSize: '1.1rem',
+  fontSize: isMobile ? '1rem' : '1.1rem',
   fontWeight: '800',
   transition: '0.3s',
   opacity: isActive ? 1 : 0.6
