@@ -49,6 +49,7 @@ export default function App() {
 
   const themes = {
     obsidian: {
+      icon: '🪨',
       bg: 'radial-gradient(circle at top, #020617 0%, #000000 85%)',
       card: 'rgba(8,12,20,0.85)',
       accent: '#22d3ee',
@@ -60,6 +61,7 @@ export default function App() {
     },
 
     neonvoid: {
+      icon: '🪩',
       bg: '#000000',
       card: 'rgba(10,10,10,0.92)',
       accent: '#7c3aed',
@@ -71,6 +73,7 @@ export default function App() {
     },
 
     paper: {
+      icon: '📄',
       bg: '#fafafa',
       card: '#ffffff',
       accent: '#020617',
@@ -82,6 +85,7 @@ export default function App() {
     },
 
     royal: {
+      icon: '👑',
       bg: 'linear-gradient(135deg, #020617, #1e1b4b)',
       card: 'rgba(30,27,75,0.75)',
       accent: '#facc15',
@@ -93,6 +97,7 @@ export default function App() {
     },
 
     hologram: {
+      icon: '🌌',
       bg: 'linear-gradient(120deg, #020617, #0f172a, #020617)',
       card: 'rgba(255,255,255,0.08)',
       accent: '#5eead4',
@@ -138,25 +143,35 @@ export default function App() {
     >
       {/* THEME PICKER */}
       <div style={{ textAlign: 'center', padding: '2rem' }}>
-        {Object.keys(themes).map(k => (
-          <button
-            key={k}
-            onClick={() => setTheme(k)}
-            style={{
-              margin: '6px',
-              padding: '8px 18px',
-              borderRadius: '999px',
-              background: theme === k ? t.accent : 'transparent',
-              border: `1px solid ${t.accent}`,
-              color: theme === k ? '#000' : t.text,
-              fontWeight: 800,
-              letterSpacing: '1px',
-              cursor: 'pointer'
-            }}
-          >
-            {k.toUpperCase()}
-          </button>
-        ))}
+        {Object.keys(themes).map(k => {
+          const tk = themes[k];
+          return (
+            <button
+              key={k}
+              onClick={() => setTheme(k)}
+              title={`${k.charAt(0).toUpperCase() + k.slice(1)} theme`}
+              aria-pressed={theme === k}
+              style={{
+                margin: '6px',
+                padding: '8px 18px',
+                borderRadius: '999px',
+                background: theme === k ? tk.accent : 'transparent',
+                border: `1px solid ${tk.accent}`,
+                color: theme === k ? '#000' : t.text,
+                fontWeight: 800,
+                letterSpacing: '1px',
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center'
+              }}
+            >
+              <span style={{ fontSize: '1.15rem', marginRight: '10px' }}>
+                {tk.icon}
+              </span>
+              {k.toUpperCase()}
+            </button>
+          );
+        })}
       </div>
 
       {/* HEADER */}
