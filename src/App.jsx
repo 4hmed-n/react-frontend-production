@@ -13,80 +13,83 @@ export default function App() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  const isMobile = windowWidth < 640;
+  const isLaptop = windowWidth >= 1024;
+
   const profile = {
-    name: "Ahmed Numan",
-    handle: "4hmed",
-    location: "Punjab, Pakistan",
-    github: "4hmed-n"
+    name: 'Ahmed Numan',
+    handle: '4hmed',
+    location: 'Punjab, Pakistan',
+    github: '4hmed-n'
   };
 
   const stack = [
-    "Python", "SQL", "JavaScript", "React", "React-Native",
-    "MongoDB", "Express.js", "Node.js", "C++", "C#",
-    "SQLite", "HTML5", "CSS3", "FastAPI", "REST API",
-    "Tailwind", "Expo", "Docker", "n8n", "Postman", "Firebase"
+    'Python','SQL','JavaScript','React','React-Native',
+    'MongoDB','Node.js','Express.js','FastAPI',
+    'Docker','Firebase','n8n','Postman',
+    'HTML5','CSS3','C++','C#'
   ];
 
   const focusAreas = [
     {
-      title: "Backend & DevOps",
-      skills: "FastAPI, Docker, Node.js, MongoDB, SQL, Firebase, REST APIs"
+      title: 'Backend & DevOps',
+      skills: 'FastAPI, Node.js, Docker, SQL, MongoDB, Firebase, REST APIs'
     },
     {
-      title: "Automation & Tools",
-      skills: "n8n, Python Automation, API Testing, Workflow Design"
+      title: 'Automation & Systems',
+      skills: 'Python Automation, n8n Workflows, API Integrations'
     },
     {
-      title: "Full-Stack Development",
-      skills: "React, React-Native (Expo), Tailwind CSS, Express.js"
+      title: 'Full-Stack Engineering',
+      skills: 'React, React-Native (Expo), Express.js'
     }
   ];
 
-  /* ================= PREMIUM THEMES ================= */
+  /* ===================== THEMES ===================== */
 
-  const colors = {
+  const themes = {
     obsidian: {
-      bg: 'radial-gradient(circle at top, #111827 0%, #020617 70%)',
-      card: 'rgba(17, 24, 39, 0.75)',
+      bg: 'radial-gradient(circle at top, #020617 0%, #000000 85%)',
+      card: 'rgba(8,12,20,0.85)',
       accent: '#22d3ee',
-      text: '#f9fafb',
-      subtext: '#9ca3af',
-      border: '1px solid rgba(255,255,255,0.08)',
-      glass: true,
-      glow: '0 20px 40px rgba(34, 211, 238, 0.12)'
+      text: '#f8fafc',
+      subtext: '#94a3b8',
+      border: '1px solid rgba(34,211,238,0.25)',
+      glow: '0 0 30px rgba(34,211,238,0.15)',
+      glass: true
     },
 
     neonvoid: {
-      bg: 'linear-gradient(160deg, #050505, #0a0a0f)',
-      card: 'rgba(10,10,15,0.85)',
+      bg: '#000000',
+      card: 'rgba(10,10,10,0.92)',
       accent: '#7c3aed',
       text: '#f4f4f5',
       subtext: '#a1a1aa',
-      border: '1px solid rgba(124,58,237,0.35)',
-      glass: true,
-      glow: '0 0 40px rgba(124,58,237,0.35)'
+      border: '1px solid rgba(124,58,237,0.45)',
+      glow: '0 0 40px rgba(124,58,237,0.4)',
+      glass: true
     },
 
     paper: {
-      bg: '#f8fafc',
+      bg: '#fafafa',
       card: '#ffffff',
-      accent: '#0f172a',
+      accent: '#020617',
       text: '#020617',
       subtext: '#475569',
       border: '1px solid #e5e7eb',
-      glass: false,
-      glow: '0 10px 20px rgba(0,0,0,0.06)'
+      glow: 'none',
+      glass: false
     },
 
     royal: {
       bg: 'linear-gradient(135deg, #020617, #1e1b4b)',
-      card: 'rgba(30,27,75,0.65)',
+      card: 'rgba(30,27,75,0.75)',
       accent: '#facc15',
       text: '#f8fafc',
       subtext: '#c7d2fe',
-      border: '1px solid rgba(250,204,21,0.35)',
-      glass: true,
-      glow: '0 0 35px rgba(250,204,21,0.25)'
+      border: '1px solid rgba(250,204,21,0.4)',
+      glow: '0 0 35px rgba(250,204,21,0.25)',
+      glass: true
     },
 
     hologram: {
@@ -95,31 +98,29 @@ export default function App() {
       accent: '#5eead4',
       text: '#ecfeff',
       subtext: '#99f6e4',
-      border: '1px solid rgba(94,234,212,0.4)',
-      glass: true,
-      glow: '0 0 45px rgba(94,234,212,0.35)'
+      border: '1px solid rgba(94,234,212,0.45)',
+      glow: '0 0 45px rgba(94,234,212,0.4)',
+      glass: true
     }
   };
 
-  const currentTheme = colors[theme];
-  const isMobile = windowWidth < 640;
-  const isLaptop = windowWidth >= 1024;
+  const t = themes[theme];
 
-  const baseCardStyle = {
-    backgroundColor: currentTheme.card,
-    padding: isMobile ? '1.25rem' : '1.75rem',
-    borderRadius: '24px',
-    border: currentTheme.border,
-    backdropFilter: currentTheme.glass ? 'blur(18px)' : 'none',
-    boxShadow: currentTheme.glow,
-    transition: 'all 0.35s ease',
-    display: 'flex',
-    flexDirection: 'column'
+  /* ===================== STYLES ===================== */
+
+  const baseCard = {
+    background: t.card,
+    border: t.border,
+    borderRadius: '22px',
+    padding: '1.6rem',
+    backdropFilter: t.glass ? 'blur(18px)' : 'none',
+    boxShadow: t.glow,
+    transition: 'all 0.35s ease'
   };
 
-  const hoverLift = {
+  const lift = {
     onMouseEnter: e =>
-      (e.currentTarget.style.transform = 'translateY(-6px) scale(1.02)'),
+      (e.currentTarget.style.transform = 'translateY(-6px)'),
     onMouseLeave: e =>
       (e.currentTarget.style.transform = 'none')
   };
@@ -127,32 +128,33 @@ export default function App() {
   return (
     <div
       style={{
-        background: currentTheme.bg,
-        color: currentTheme.text,
         minHeight: '100vh',
-        fontFamily: 'Inter, system-ui, sans-serif',
-        transition: 'all 0.6s ease',
-        overflowX: 'hidden'
+        background: t.bg,
+        color: t.text,
+        fontFamily:
+          "'Inter', system-ui, -apple-system, BlinkMacSystemFont",
+        transition: 'background 0.6s ease'
       }}
     >
       {/* THEME PICKER */}
-      <div style={{ padding: '2rem', textAlign: 'center' }}>
-        {Object.keys(colors).map(t => (
+      <div style={{ textAlign: 'center', padding: '2rem' }}>
+        {Object.keys(themes).map(k => (
           <button
-            key={t}
-            onClick={() => setTheme(t)}
+            key={k}
+            onClick={() => setTheme(k)}
             style={{
               margin: '6px',
               padding: '8px 18px',
               borderRadius: '999px',
-              border: `1px solid ${currentTheme.accent}`,
-              background: theme === t ? currentTheme.accent : 'transparent',
-              color: theme === t ? '#000' : currentTheme.text,
+              background: theme === k ? t.accent : 'transparent',
+              border: `1px solid ${t.accent}`,
+              color: theme === k ? '#000' : t.text,
               fontWeight: 800,
+              letterSpacing: '1px',
               cursor: 'pointer'
             }}
           >
-            {t.toUpperCase()}
+            {k.toUpperCase()}
           </button>
         ))}
       </div>
@@ -161,15 +163,24 @@ export default function App() {
       <header style={{ textAlign: 'center', paddingBottom: '3rem' }}>
         <h1
           style={{
-            fontSize: 'clamp(3rem, 10vw, 6rem)',
+            fontSize: 'clamp(3rem, 10vw, 5.5rem)',
             fontWeight: 900,
-            color: currentTheme.accent,
-            margin: 0
+            letterSpacing: '-2px',
+            color: t.accent,
+            marginBottom: '0.5rem'
           }}
         >
           {profile.name}
         </h1>
-        <p style={{ color: currentTheme.subtext, fontSize: '1.2rem' }}>
+
+        <p
+          style={{
+            fontSize: '1.15rem',
+            color: t.subtext,
+            letterSpacing: '0.12em',
+            textTransform: 'uppercase'
+          }}
+        >
           {profile.location}
         </p>
       </header>
@@ -180,9 +191,24 @@ export default function App() {
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            style={tabStyle(activeTab === tab, currentTheme, isMobile)}
+            style={{
+              background: 'none',
+              border: 'none',
+              margin: '0 1.5rem',
+              paddingBottom: '10px',
+              fontSize: '1.1rem',
+              fontWeight: 800,
+              letterSpacing: '0.25em',
+              textTransform: 'uppercase',
+              color: activeTab === tab ? t.accent : t.subtext,
+              borderBottom:
+                activeTab === tab
+                  ? `3px solid ${t.accent}`
+                  : '3px solid transparent',
+              cursor: 'pointer'
+            }}
           >
-            {tab.toUpperCase()}
+            {tab}
           </button>
         ))}
       </div>
@@ -193,7 +219,7 @@ export default function App() {
           <div
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(140px,1fr))',
               gap: '14px'
             }}
           >
@@ -201,11 +227,12 @@ export default function App() {
               <div
                 key={s}
                 style={{
-                  ...baseCardStyle,
+                  ...baseCard,
                   textAlign: 'center',
-                  fontWeight: 700
+                  fontWeight: 700,
+                  letterSpacing: '0.04em'
                 }}
-                {...hoverLift}
+                {...lift}
               >
                 {s}
               </div>
@@ -220,13 +247,30 @@ export default function App() {
                 : isLaptop
                 ? '1fr 1fr 1fr'
                 : '1fr 1fr',
-              gap: '1.5rem'
+              gap: '1.8rem'
             }}
           >
             {focusAreas.map((f, i) => (
-              <div key={i} style={baseCardStyle} {...hoverLift}>
-                <h3 style={{ color: currentTheme.accent }}>{f.title}</h3>
-                <p style={{ color: currentTheme.subtext }}>{f.skills}</p>
+              <div key={i} style={baseCard} {...lift}>
+                <h3
+                  style={{
+                    color: t.accent,
+                    fontSize: '1.4rem',
+                    fontWeight: 800,
+                    marginBottom: '0.8rem'
+                  }}
+                >
+                  {f.title}
+                </h3>
+                <p
+                  style={{
+                    color: t.subtext,
+                    lineHeight: 1.7,
+                    fontSize: '1.05rem'
+                  }}
+                >
+                  {f.skills}
+                </p>
               </div>
             ))}
           </div>
@@ -240,31 +284,19 @@ export default function App() {
           target="_blank"
           rel="noreferrer"
           style={{
-            background: currentTheme.accent,
-            color: '#000',
-            padding: '16px 48px',
+            padding: '16px 44px',
             borderRadius: '999px',
+            background: t.accent,
+            color: '#000',
             fontWeight: 900,
+            letterSpacing: '0.15em',
             textDecoration: 'none',
-            boxShadow: currentTheme.glow
+            boxShadow: t.glow
           }}
         >
-          GITHUB CODEBASE
+          GITHUB
         </a>
       </footer>
     </div>
   );
 }
-
-const tabStyle = (active, theme, isMobile) => ({
-  background: 'none',
-  border: 'none',
-  borderBottom: active ? `4px solid ${theme.accent}` : '4px solid transparent',
-  color: active ? theme.accent : theme.subtext,
-  margin: '0 1rem',
-  padding: '10px 0',
-  fontSize: isMobile ? '1rem' : '1.2rem',
-  fontWeight: 900,
-  cursor: 'pointer',
-  opacity: active ? 1 : 0.4
-});
