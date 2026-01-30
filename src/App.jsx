@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('stack');
-  const [theme, setTheme] = useState('glass');
+  const [theme, setTheme] = useState('crystal');
   const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
 
   useEffect(() => {
@@ -40,8 +40,28 @@ export default function App() {
     }
   ];
 
-  // --- REIMAGINED THEMES ---
+  // --- PREMIUM THEME DEFINITIONS ---
   const colors = {
+    crystal: { 
+      bg: 'linear-gradient(135deg, #e0e7ff 0%, #f1f5f9 100%)', 
+      card: 'rgba(255, 255, 255, 0.4)', 
+      accent: '#6366f1', 
+      text: '#1e293b',
+      subtext: '#475569',
+      border: '1px solid rgba(255, 255, 255, 0.6)',
+      glass: true,
+      glow: '0 8px 32px 0 rgba(31, 38, 135, 0.07)'
+    },
+    aurora: { 
+      bg: 'linear-gradient(215deg, #0f172a 0%, #1e1b4b 50%, #2d0630 100%)', 
+      card: 'rgba(255, 255, 255, 0.03)', 
+      accent: '#a5f3fc', 
+      text: '#f8fafc',
+      subtext: '#94a3b8',
+      border: '1px solid rgba(165, 243, 252, 0.2)',
+      glass: true,
+      glow: '0 0 30px rgba(165, 243, 252, 0.1)'
+    },
     midnight: { 
       bg: 'radial-gradient(circle at top, #1e293b 0%, #020617 100%)', 
       card: '#0f172a', 
@@ -51,33 +71,15 @@ export default function App() {
       border: '1px solid #334155',
       glow: '0 0 20px rgba(56, 189, 248, 0.15)'
     },
-    forest: { 
-      bg: 'linear-gradient(180deg, #064e3b 0%, #022c22 100%)', 
-      card: '#065f46', 
-      accent: '#34d399', 
-      text: '#ecfdf5',
-      subtext: '#a7f3d0',
-      border: '1px solid #064e3b',
-      glow: '0 0 20px rgba(52, 211, 153, 0.1)'
-    },
-    glass: { 
-      bg: 'linear-gradient(135deg, #0c0c0c 0%, #252525 100%)', 
-      card: 'rgba(255, 255, 255, 0.05)', 
-      accent: '#ffffff', 
-      text: '#ffffff',
-      subtext: '#cbd5e1',
-      border: '1px solid rgba(255, 255, 255, 0.1)',
-      glass: true,
-      glow: '0 8px 32px 0 rgba(0, 0, 0, 0.8)'
-    },
-    crimson: { 
-      bg: 'linear-gradient(45deg, #450a0a 0%, #180303 100%)', 
-      card: '#7f1d1d', 
-      accent: '#ef4444', 
-      text: '#fef2f2',
+    sunset: { 
+      bg: 'linear-gradient(to bottom right, #4c0519, #1e1b4b)', 
+      card: 'rgba(76, 5, 25, 0.3)', 
+      accent: '#fb7185', 
+      text: '#fff1f2',
       subtext: '#fca5a5',
-      border: '1px solid #991b1b',
-      glow: '0 0 30px rgba(239, 68, 68, 0.2)'
+      border: '1px solid rgba(251, 113, 133, 0.3)',
+      glass: true,
+      glow: '0 0 25px rgba(251, 113, 133, 0.15)'
     },
     cyber: { 
       bg: '#000000', 
@@ -97,7 +99,7 @@ export default function App() {
   const baseCardStyle = {
     backgroundColor: currentTheme.card, 
     padding: isMobile ? '1.25rem' : '1.75rem', 
-    borderRadius: '20px',
+    borderRadius: '24px',
     border: currentTheme.border,
     backdropFilter: currentTheme.glass ? 'blur(16px)' : 'none',
     boxShadow: currentTheme.glow,
@@ -139,16 +141,17 @@ export default function App() {
             onClick={() => setTheme(t)}
             style={{
               backgroundColor: theme === t ? currentTheme.accent : 'transparent',
-              color: theme === t ? '#000' : currentTheme.text,
+              color: theme === t ? (theme === 'crystal' ? '#fff' : '#000') : currentTheme.text,
               border: `1px solid ${currentTheme.accent}`,
-              padding: '8px 16px',
+              padding: '8px 18px',
               borderRadius: '30px',
               cursor: 'pointer',
               fontSize: '0.75rem',
               fontWeight: '900',
               textTransform: 'uppercase',
               letterSpacing: '1px',
-              transition: 'all 0.3s ease'
+              transition: 'all 0.3s ease',
+              boxShadow: theme === t ? currentTheme.glow : 'none'
             }}
           >
             {t}
@@ -223,7 +226,7 @@ export default function App() {
                 <div key={s} style={{
                   ...baseCardStyle,
                   padding: '12px 10px', 
-                  borderRadius: '12px',
+                  borderRadius: '16px',
                   fontSize: isMobile ? '0.85rem' : '1rem',
                   fontWeight: '700',
                   textAlign: 'center',
@@ -245,8 +248,8 @@ export default function App() {
                     marginTop: 0, 
                     fontSize: '1.5rem',
                     marginBottom: '1rem',
-                    borderLeft: `4px solid ${currentTheme.accent}`,
-                    paddingLeft: '12px'
+                    borderLeft: `6px solid ${currentTheme.accent}`,
+                    paddingLeft: '14px'
                   }}>{c.title}</h3>
                   <p style={{ 
                     color: currentTheme.subtext, 
@@ -269,7 +272,7 @@ export default function App() {
             rel="noreferrer"
             style={{ 
               backgroundColor: currentTheme.accent,
-              color: '#000',
+              color: theme === 'crystal' ? '#fff' : '#000',
               textDecoration: 'none', 
               fontWeight: '900',
               padding: '18px 48px',
@@ -277,8 +280,11 @@ export default function App() {
               display: 'inline-block',
               boxShadow: currentTheme.glow,
               fontSize: '1.1rem',
-              letterSpacing: '1px'
+              letterSpacing: '1px',
+              transition: 'transform 0.2s'
             }}
+            onMouseOver={(e) => e.target.style.transform = 'scale(1.05)'}
+            onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
           >
             GITHUB CODEBASE
           </a>
