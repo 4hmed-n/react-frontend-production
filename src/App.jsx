@@ -1,12 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
 export default function App() {
-  // --- STATE MANAGEMENT ---
   const [activeTab, setActiveTab] = useState('stack');
-  const [isOpenForWork, setIsOpenForWork] = useState(true);
-  const [theme, setTheme] = useState('midnight'); // 'midnight' or 'forest'
+  const [theme, setTheme] = useState('glass'); // Options: 'midnight', 'forest', 'glass', 'crimson', 'nord'
 
-  // --- DATA ---
   const profile = {
     name: "Ahmed Numan",
     handle: "4hmed",
@@ -17,132 +14,203 @@ export default function App() {
   const stack = [
     "Python", "SQL", "JavaScript", "React", "React-Native", 
     "MongoDB", "Express.js", "Node.js", "C++", "C#", 
-    "SQLite", "FastAPI", "Tailwind", "Docker", "Firebase"
+    "SQLite", "HTML5", "CSS3", "FastAPI", "REST API", 
+    "Tailwind", "Expo.io", "Docker", "n8n", "Postman", "Firebase"
   ];
 
-  const categories = [
-    { title: "Backend & DevOps", skills: "FastAPI, Docker, Node.js, MongoDB, SQL" },
-    { title: "Automation & Tools", skills: "n8n, Python, Postman, Firebase" },
-    { title: "Frontend & Mobile", skills: "React, React-Native, Tailwind CSS, Expo.io" }
+  const focusAreas = [
+    { 
+      title: "Backend & DevOps", 
+      skills: "FastAPI, Docker, Node.js, MongoDB, SQL, Firebase, REST API" 
+    },
+    { 
+      title: "Automation & Tools", 
+      skills: "n8n, Python Automation, Postman API Testing, Low/No Code Solutions" 
+    },
+    { 
+      title: "Full-Stack Development", 
+      skills: "React, React-Native (Expo), Tailwind CSS, Express.js" 
+    }
   ];
 
-  // --- THEME CONFIG ---
   const colors = {
-    midnight: { bg: '#0f172a', card: '#1e293b', accent: '#38bdf8', text: '#f8fafc' },
-    forest: { bg: '#064e3b', card: '#065f46', accent: '#34d399', text: '#ecfdf5' }
+    midnight: { 
+      bg: '#0f172a', 
+      card: '#1e293b', 
+      accent: '#38bdf8', 
+      text: '#f8fafc',
+      subtext: '#94a3b8',
+      glass: false 
+    },
+    forest: { 
+      bg: '#064e3b', 
+      card: '#065f46', 
+      accent: '#34d399', 
+      text: '#ecfdf5',
+      subtext: '#a7f3d0',
+      glass: false 
+    },
+    glass: { 
+      bg: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', 
+      card: 'rgba(255, 255, 255, 0.1)', 
+      accent: '#ffffff', 
+      text: '#ffffff',
+      subtext: '#e2e8f0',
+      glass: true 
+    },
+    crimson: { 
+      bg: '#450a0a', 
+      card: '#7f1d1d', 
+      accent: '#f87171', 
+      text: '#fef2f2',
+      subtext: '#fca5a5',
+      glass: false 
+    },
+    nord: { 
+      bg: '#2e3440', 
+      card: '#3b4252', 
+      accent: '#88c0d0', 
+      text: '#eceff4',
+      subtext: '#d8dee9',
+      glass: false 
+    }
   };
 
   const currentTheme = colors[theme];
 
+  const baseCardStyle = {
+    backgroundColor: currentTheme.card, 
+    padding: '1.75rem', 
+    borderRadius: '16px',
+    border: currentTheme.glass ? '1px solid rgba(255, 255, 255, 0.2)' : '1px solid #334155',
+    backdropFilter: currentTheme.glass ? 'blur(12px)' : 'none',
+    boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.37)',
+    transition: 'all 0.3s ease'
+  };
+
   return (
     <div style={{ 
-      backgroundColor: currentTheme.bg, 
+      background: currentTheme.bg, 
       color: currentTheme.text, 
       minHeight: '100vh', 
       fontFamily: 'Inter, system-ui, sans-serif',
-      transition: 'all 0.4s ease'
+      transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
+      paddingBottom: '4rem'
     }}>
       
-      {/* --- TOP CONTROL BAR --- */}
-      <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '1rem', gap: '1rem' }}>
-        <button 
-          onClick={() => setTheme(theme === 'midnight' ? 'forest' : 'midnight')}
-          style={controlBtnStyle(currentTheme)}
-        >
-          {theme === 'midnight' ? '🌲 Forest Theme' : '🌌 Midnight Theme'}
-        </button>
+      {/* Theme Selection Bar */}
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        padding: '1.5rem', 
+        gap: '0.75rem',
+        flexWrap: 'wrap' 
+      }}>
+        {Object.keys(colors).map((t) => (
+          <button 
+            key={t}
+            onClick={() => setTheme(t)}
+            style={{
+              backgroundColor: theme === t ? currentTheme.accent : currentTheme.card,
+              color: theme === t ? (t === 'glass' ? '#000' : currentTheme.bg) : currentTheme.text,
+              border: '1px solid rgba(255,255,255,0.1)',
+              padding: '6px 12px',
+              borderRadius: '20px',
+              cursor: 'pointer',
+              fontSize: '0.75rem',
+              fontWeight: '700',
+              textTransform: 'capitalize',
+              transition: 'all 0.2s'
+            }}
+          >
+            {t}
+          </button>
+        ))}
       </div>
 
-      {/* --- APP HEADER --- */}
-      <header style={{ textAlign: 'center', padding: '2rem 1rem' }}>
-        <div style={{ 
-          display: 'inline-block', 
-          padding: '5px 15px', 
-          borderRadius: '20px', 
-          backgroundColor: isOpenForWork ? '#10b98133' : '#ef444433',
-          color: isOpenForWork ? '#10b981' : '#ef4444',
-          fontSize: '0.8rem',
-          fontWeight: 'bold',
-          marginBottom: '1rem',
-          cursor: 'pointer'
-        }} onClick={() => setIsOpenForWork(!isOpenForWork)}>
-          {isOpenForWork ? '● Open for Projects' : '○ Currently Busy'}
-        </div>
-        
-        <h1 style={{ fontSize: '3.5rem', fontWeight: '800', margin: 0, color: currentTheme.accent }}>
+      {/* Header */}
+      <header style={{ textAlign: 'center', padding: '2rem 1rem 3rem' }}>
+        <h1 style={{ 
+          fontSize: 'clamp(2.5rem, 8vw, 4rem)', 
+          fontWeight: '900', 
+          margin: 0, 
+          color: currentTheme.accent,
+          textShadow: currentTheme.glass ? '0 4px 10px rgba(0,0,0,0.2)' : 'none'
+        }}>
           {profile.name}
         </h1>
-        <p style={{ color: '#94a3b8', fontSize: '1.2rem', marginTop: '10px' }}>
+        <p style={{ color: currentTheme.subtext, fontSize: '1.2rem', marginTop: '10px', fontWeight: '500' }}>
           @{profile.handle} | {profile.location}
         </p>
       </header>
 
-      {/* --- MAIN NAVIGATION --- */}
-      <main style={{ maxWidth: '800px', margin: '0 auto', padding: '1rem 2rem' }}>
+      {/* Navigation */}
+      <main style={{ maxWidth: '850px', margin: '0 auto', padding: '0 1.5rem' }}>
         <div style={{ 
           display: 'flex', 
-          gap: '2rem', 
-          borderBottom: `1px solid ${currentTheme.card}`, 
-          marginBottom: '2rem', 
+          gap: '2.5rem', 
+          borderBottom: `2px solid ${currentTheme.card}`, 
+          marginBottom: '2.5rem', 
           justifyContent: 'center' 
         }}>
-          {['stack', 'focus', 'interests'].map((tab) => (
-            <button 
-              key={tab}
-              onClick={() => setActiveTab(tab)} 
-              style={tabStyle(activeTab === tab, currentTheme)}
-            >
-              {tab.charAt(0).toUpperCase() + tab.slice(1)}
-            </button>
-          ))}
+          <button 
+            onClick={() => setActiveTab('stack')} 
+            style={tabStyle(activeTab === 'stack', currentTheme)}
+          >
+            Tech Stack
+          </button>
+          <button 
+            onClick={() => setActiveTab('focus')} 
+            style={tabStyle(activeTab === 'focus', currentTheme)}
+          >
+            Focus Areas
+          </button>
         </div>
 
-        {/* --- DYNAMIC CONTENT --- */}
-        <div style={{ minHeight: '300px' }}>
-          {activeTab === 'stack' && (
+        {/* Content */}
+        <div style={{ minHeight: '350px' }}>
+          {activeTab === 'stack' ? (
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', justifyContent: 'center' }}>
               {stack.map(s => (
-                <div key={s} style={tagStyle(currentTheme)}>{s}</div>
+                <div key={s} style={{
+                  ...baseCardStyle,
+                  padding: '10px 20px', 
+                  borderRadius: '12px',
+                  fontSize: '0.9rem',
+                  fontWeight: '600'
+                }}>{s}</div>
               ))}
             </div>
-          )}
-
-          {activeTab === 'focus' && (
-            <div style={{ display: 'grid', gap: '1.5rem' }}>
-              {categories.map((c, i) => (
-                <div key={i} style={cardStyle(currentTheme)}>
-                  <h3 style={{ color: currentTheme.accent, marginTop: 0 }}>{c.title}</h3>
-                  <p style={{ color: '#94a3b8', margin: 0, lineHeight: '1.6' }}>{c.skills}</p>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
+              {focusAreas.map((c, i) => (
+                <div key={i} style={baseCardStyle}>
+                  <h3 style={{ color: currentTheme.accent, marginTop: 0, fontSize: '1.4rem' }}>{c.title}</h3>
+                  <p style={{ color: currentTheme.subtext, margin: 0, lineHeight: '1.7', fontSize: '1rem' }}>{c.skills}</p>
                 </div>
               ))}
             </div>
           )}
-
-          {activeTab === 'interests' && (
-            <div style={{ textAlign: 'center', padding: '2rem' }}>
-              <p style={{ fontSize: '1.1rem', color: '#94a3b8' }}>
-                Machine Learning/AI • DevOps • Fintech • RPA
-              </p>
-            </div>
-          )}
         </div>
 
-        {/* --- FOOTER --- */}
-        <footer style={{ textAlign: 'center', marginTop: '4rem', paddingBottom: '2rem' }}>
+        {/* Footer */}
+        <footer style={{ textAlign: 'center', marginTop: '5rem' }}>
           <a 
             href={`https://github.com/${profile.github}`} 
             target="_blank" 
             rel="noreferrer"
             style={{ 
-              color: currentTheme.accent, 
+              backgroundColor: currentTheme.accent,
+              color: theme === 'glass' || theme === 'nord' ? '#1a202c' : currentTheme.bg,
               textDecoration: 'none', 
-              fontWeight: 'bold',
-              padding: '10px 20px',
-              border: `1px solid ${currentTheme.accent}`,
-              borderRadius: '8px'
+              fontWeight: '800',
+              padding: '14px 32px',
+              borderRadius: '12px',
+              display: 'inline-block',
+              boxShadow: '0 4px 14px 0 rgba(0,118,255,0.39)'
             }}
           >
-            View GitHub Codebase
+            GitHub Profile
           </a>
         </footer>
       </main>
@@ -150,43 +218,15 @@ export default function App() {
   );
 }
 
-// --- SHARED STYLES ---
 const tabStyle = (isActive, theme) => ({
   background: 'none',
   border: 'none',
-  borderBottom: isActive ? `3px solid ${theme.accent}` : '3px solid transparent',
-  color: isActive ? theme.accent : '#64748b',
-  padding: '10px 0',
+  borderBottom: isActive ? `4px solid ${theme.accent}` : '4px solid transparent',
+  color: isActive ? theme.accent : theme.subtext,
+  padding: '12px 0',
   cursor: 'pointer',
-  fontSize: '1rem',
-  fontWeight: 'bold',
-  transition: '0.3s'
-});
-
-const tagStyle = (theme) => ({
-  backgroundColor: theme.card, 
-  padding: '10px 20px', 
-  borderRadius: '8px', 
-  border: '1px solid #334155',
-  fontSize: '0.9rem',
-  fontWeight: '500'
-});
-
-const cardStyle = (theme) => ({
-  backgroundColor: theme.card, 
-  padding: '1.5rem', 
-  borderRadius: '12px',
-  border: '1px solid #334155',
-  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-});
-
-const controlBtnStyle = (theme) => ({
-  backgroundColor: theme.card,
-  color: theme.text,
-  border: 'none',
-  padding: '8px 15px',
-  borderRadius: '8px',
-  cursor: 'pointer',
-  fontSize: '0.85rem',
-  fontWeight: '600'
+  fontSize: '1.1rem',
+  fontWeight: '800',
+  transition: '0.3s',
+  opacity: isActive ? 1 : 0.6
 });
