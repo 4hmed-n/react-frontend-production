@@ -5,7 +5,6 @@ export default function App() {
   const [theme, setTheme] = useState('glass');
   const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
 
-  // Handle window resizing for responsive adjustments
   useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth);
     window.addEventListener('resize', handleResize);
@@ -41,62 +40,72 @@ export default function App() {
     }
   ];
 
+  // --- REIMAGINED THEMES ---
   const colors = {
     midnight: { 
-      bg: '#0f172a', 
-      card: '#1e293b', 
+      bg: 'radial-gradient(circle at top, #1e293b 0%, #020617 100%)', 
+      card: '#0f172a', 
       accent: '#38bdf8', 
       text: '#f8fafc',
       subtext: '#94a3b8',
-      glass: false 
+      border: '1px solid #334155',
+      glow: '0 0 20px rgba(56, 189, 248, 0.15)'
     },
     forest: { 
-      bg: '#064e3b', 
+      bg: 'linear-gradient(180deg, #064e3b 0%, #022c22 100%)', 
       card: '#065f46', 
       accent: '#34d399', 
       text: '#ecfdf5',
       subtext: '#a7f3d0',
-      glass: false 
+      border: '1px solid #064e3b',
+      glow: '0 0 20px rgba(52, 211, 153, 0.1)'
     },
     glass: { 
-      bg: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', 
-      card: 'rgba(255, 255, 255, 0.1)', 
+      bg: 'linear-gradient(135deg, #0c0c0c 0%, #252525 100%)', 
+      card: 'rgba(255, 255, 255, 0.05)', 
       accent: '#ffffff', 
       text: '#ffffff',
-      subtext: '#e2e8f0',
-      glass: true 
+      subtext: '#cbd5e1',
+      border: '1px solid rgba(255, 255, 255, 0.1)',
+      glass: true,
+      glow: '0 8px 32px 0 rgba(0, 0, 0, 0.8)'
     },
     crimson: { 
-      bg: '#450a0a', 
+      bg: 'linear-gradient(45deg, #450a0a 0%, #180303 100%)', 
       card: '#7f1d1d', 
-      accent: '#f87171', 
+      accent: '#ef4444', 
       text: '#fef2f2',
       subtext: '#fca5a5',
-      glass: false 
+      border: '1px solid #991b1b',
+      glow: '0 0 30px rgba(239, 68, 68, 0.2)'
     },
-    nord: { 
-      bg: '#2e3440', 
-      card: '#3b4252', 
-      accent: '#88c0d0', 
-      text: '#eceff4',
-      subtext: '#d8dee9',
-      glass: false 
+    cyber: { 
+      bg: '#000000', 
+      card: '#0a0a0a', 
+      accent: '#f0db4f', 
+      text: '#ffffff',
+      subtext: '#888888',
+      border: '2px solid #f0db4f',
+      glow: '0 0 15px #f0db4f'
     }
   };
 
   const currentTheme = colors[theme];
   const isMobile = windowWidth < 640;
+  const isLaptop = windowWidth >= 1024;
 
   const baseCardStyle = {
     backgroundColor: currentTheme.card, 
     padding: isMobile ? '1.25rem' : '1.75rem', 
-    borderRadius: '16px',
-    border: currentTheme.glass ? '1px solid rgba(255, 255, 255, 0.2)' : '1px solid #334155',
-    backdropFilter: currentTheme.glass ? 'blur(12px)' : 'none',
-    boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.37)',
-    transition: 'all 0.3s ease',
+    borderRadius: '20px',
+    border: currentTheme.border,
+    backdropFilter: currentTheme.glass ? 'blur(16px)' : 'none',
+    boxShadow: currentTheme.glow,
+    transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
     width: '100%',
-    boxSizing: 'border-box'
+    boxSizing: 'border-box',
+    display: 'flex',
+    flexDirection: 'column'
   };
 
   return (
@@ -104,35 +113,42 @@ export default function App() {
       background: currentTheme.bg, 
       color: currentTheme.text, 
       minHeight: '100vh', 
-      fontFamily: 'Inter, system-ui, sans-serif',
-      transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
-      paddingBottom: '4rem',
-      overflowX: 'hidden'
+      fontFamily: theme === 'cyber' ? 'monospace' : 'Inter, system-ui, sans-serif',
+      transition: 'all 0.6s ease',
+      paddingBottom: '3rem',
+      overflowX: 'hidden',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center'
     }}>
       
-      {/* Theme Selection Bar */}
+      {/* --- THEME PICKER --- */}
       <div style={{ 
         display: 'flex', 
         justifyContent: 'center', 
-        padding: isMobile ? '1rem' : '1.5rem', 
-        gap: '0.5rem',
-        flexWrap: 'wrap' 
+        padding: '2rem 1rem', 
+        gap: '0.75rem',
+        flexWrap: 'wrap',
+        width: '100%',
+        maxWidth: '1200px',
+        zIndex: 10
       }}>
         {Object.keys(colors).map((t) => (
           <button 
             key={t}
             onClick={() => setTheme(t)}
             style={{
-              backgroundColor: theme === t ? currentTheme.accent : currentTheme.card,
-              color: theme === t ? (t === 'glass' ? '#000' : currentTheme.bg) : currentTheme.text,
-              border: '1px solid rgba(255,255,255,0.1)',
-              padding: isMobile ? '4px 10px' : '6px 12px',
-              borderRadius: '20px',
+              backgroundColor: theme === t ? currentTheme.accent : 'transparent',
+              color: theme === t ? '#000' : currentTheme.text,
+              border: `1px solid ${currentTheme.accent}`,
+              padding: '8px 16px',
+              borderRadius: '30px',
               cursor: 'pointer',
-              fontSize: '0.7rem',
-              fontWeight: '700',
-              textTransform: 'capitalize',
-              transition: 'all 0.2s'
+              fontSize: '0.75rem',
+              fontWeight: '900',
+              textTransform: 'uppercase',
+              letterSpacing: '1px',
+              transition: 'all 0.3s ease'
             }}
           >
             {t}
@@ -140,95 +156,104 @@ export default function App() {
         ))}
       </div>
 
-      {/* Header */}
-      <header style={{ textAlign: 'center', padding: isMobile ? '1.5rem 1rem' : '2rem 1rem 3rem' }}>
+      {/* --- HEADER --- */}
+      <header style={{ 
+        textAlign: 'center', 
+        padding: isMobile ? '1rem' : '2rem 1rem 4rem',
+        width: '100%',
+        maxWidth: '1100px'
+      }}>
         <h1 style={{ 
-          fontSize: 'clamp(2rem, 10vw, 4rem)', 
+          fontSize: 'clamp(3rem, 12vw, 6rem)', 
           fontWeight: '900', 
           margin: 0, 
           color: currentTheme.accent,
-          textShadow: currentTheme.glass ? '0 4px 10px rgba(0,0,0,0.2)' : 'none',
-          lineHeight: 1.1
+          textShadow: theme === 'cyber' ? `3px 3px 0px ${currentTheme.text}` : 'none',
+          lineHeight: 0.9,
+          letterSpacing: '-2px'
         }}>
           {profile.name}
         </h1>
         <p style={{ 
           color: currentTheme.subtext, 
-          fontSize: isMobile ? '1rem' : '1.2rem', 
-          marginTop: '10px', 
-          fontWeight: '500' 
+          fontSize: isMobile ? '1.1rem' : '1.4rem', 
+          marginTop: '20px', 
+          fontWeight: '600',
+          opacity: 0.8
         }}>
-          @{profile.handle} | {profile.location}
+          {profile.location}
         </p>
       </header>
 
-      {/* Navigation */}
+      {/* --- MAIN CONTENT --- */}
       <main style={{ 
-        maxWidth: '850px', 
-        margin: '0 auto', 
-        padding: isMobile ? '0 1rem' : '0 1.5rem',
-        boxSizing: 'border-box'
+        width: '100%',
+        maxWidth: '1100px', 
+        padding: isMobile ? '0 1.25rem' : '0 3rem',
+        boxSizing: 'border-box',
+        flex: 1
       }}>
         <div style={{ 
           display: 'flex', 
-          gap: isMobile ? '1.5rem' : '2.5rem', 
+          gap: isMobile ? '2rem' : '4rem', 
           borderBottom: `2px solid ${currentTheme.card}`, 
-          marginBottom: '2rem', 
+          marginBottom: '3rem', 
           justifyContent: 'center' 
         }}>
-          <button 
-            onClick={() => setActiveTab('stack')} 
-            style={tabStyle(activeTab === 'stack', currentTheme, isMobile)}
-          >
-            Stack
-          </button>
-          <button 
-            onClick={() => setActiveTab('focus')} 
-            style={tabStyle(activeTab === 'focus', currentTheme, isMobile)}
-          >
-            Focus
-          </button>
+          {['stack', 'focus'].map(tab => (
+            <button 
+              key={tab}
+              onClick={() => setActiveTab(tab)} 
+              style={tabStyle(activeTab === tab, currentTheme, isMobile)}
+            >
+              {tab.toUpperCase()}
+            </button>
+          ))}
         </div>
 
-        {/* Content */}
-        <div style={{ minHeight: '350px' }}>
+        <div style={{ minHeight: '400px' }}>
           {activeTab === 'stack' ? (
             <div style={{ 
-              display: 'flex', 
-              flexWrap: 'wrap', 
-              gap: isMobile ? '8px' : '12px', 
+              display: 'grid', 
+              gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', 
+              gap: isMobile ? '10px' : '15px', 
               justifyContent: 'center' 
             }}>
               {stack.map(s => (
                 <div key={s} style={{
                   ...baseCardStyle,
-                  width: 'auto',
-                  padding: isMobile ? '8px 14px' : '10px 20px', 
+                  padding: '12px 10px', 
                   borderRadius: '12px',
-                  fontSize: isMobile ? '0.8rem' : '0.9rem',
-                  fontWeight: '600',
-                  flexGrow: 0
+                  fontSize: isMobile ? '0.85rem' : '1rem',
+                  fontWeight: '700',
+                  textAlign: 'center',
+                  alignItems: 'center',
+                  justifyContent: 'center'
                 }}>{s}</div>
               ))}
             </div>
           ) : (
             <div style={{ 
               display: 'grid', 
-              gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(280px, 1fr))', 
-              gap: '1.25rem' 
+              gridTemplateColumns: isMobile ? '1fr' : (isLaptop ? '1fr 1fr 1fr' : '1fr 1fr'), 
+              gap: '1.5rem' 
             }}>
               {focusAreas.map((c, i) => (
                 <div key={i} style={baseCardStyle}>
                   <h3 style={{ 
                     color: currentTheme.accent, 
                     marginTop: 0, 
-                    fontSize: isMobile ? '1.2rem' : '1.4rem' 
+                    fontSize: '1.5rem',
+                    marginBottom: '1rem',
+                    borderLeft: `4px solid ${currentTheme.accent}`,
+                    paddingLeft: '12px'
                   }}>{c.title}</h3>
                   <p style={{ 
                     color: currentTheme.subtext, 
                     margin: 0, 
-                    lineHeight: '1.6', 
-                    fontSize: isMobile ? '0.9rem' : '1rem' 
+                    lineHeight: '1.8', 
+                    fontSize: '1.05rem',
+                    fontWeight: '500'
                   }}>{c.skills}</p>
                 </div>
               ))}
@@ -236,25 +261,26 @@ export default function App() {
           )}
         </div>
 
-        {/* Footer */}
-        <footer style={{ textAlign: 'center', marginTop: isMobile ? '3rem' : '5rem' }}>
+        {/* --- FOOTER --- */}
+        <footer style={{ textAlign: 'center', marginTop: '6rem', paddingBottom: '3rem' }}>
           <a 
             href={`https://github.com/${profile.github}`} 
             target="_blank" 
             rel="noreferrer"
             style={{ 
               backgroundColor: currentTheme.accent,
-              color: theme === 'glass' || theme === 'nord' ? '#1a202c' : currentTheme.bg,
+              color: '#000',
               textDecoration: 'none', 
-              fontWeight: '800',
-              padding: isMobile ? '12px 24px' : '14px 32px',
-              borderRadius: '12px',
+              fontWeight: '900',
+              padding: '18px 48px',
+              borderRadius: '50px',
               display: 'inline-block',
-              boxShadow: '0 4px 14px 0 rgba(0,118,255,0.39)',
-              fontSize: isMobile ? '0.9rem' : '1rem'
+              boxShadow: currentTheme.glow,
+              fontSize: '1.1rem',
+              letterSpacing: '1px'
             }}
           >
-            GitHub Profile
+            GITHUB CODEBASE
           </a>
         </footer>
       </main>
@@ -265,12 +291,13 @@ export default function App() {
 const tabStyle = (isActive, theme, isMobile) => ({
   background: 'none',
   border: 'none',
-  borderBottom: isActive ? `4px solid ${theme.accent}` : '4px solid transparent',
+  borderBottom: isActive ? `5px solid ${theme.accent}` : '5px solid transparent',
   color: isActive ? theme.accent : theme.subtext,
-  padding: '8px 0',
+  padding: '15px 0',
   cursor: 'pointer',
-  fontSize: isMobile ? '1rem' : '1.1rem',
-  fontWeight: '800',
-  transition: '0.3s',
-  opacity: isActive ? 1 : 0.6
+  fontSize: isMobile ? '1rem' : '1.2rem',
+  fontWeight: '900',
+  transition: 'all 0.3s ease',
+  letterSpacing: '2px',
+  opacity: isActive ? 1 : 0.4
 });
