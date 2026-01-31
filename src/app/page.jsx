@@ -22,6 +22,29 @@ const MainSkills = [
   'Git/GitHub',
 ];
 
+function SkillCircle({ skill, icon }) {
+  const [isHovered, setIsHovered] = useState(false);
+  
+  return (
+    <div
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className={`relative w-28 h-28 rounded-full border border-white/10 bg-gradient-to-br from-slate-800/50 to-slate-900/80 backdrop-blur-xl flex flex-col items-center justify-center transition-all duration-300 cursor-pointer ${
+        isHovered ? 'border-blue-400/50 shadow-lg shadow-blue-500/20 scale-110' : ''
+      }`}
+    >
+      <span className="text-4xl mb-2">{icon}</span>
+      <span 
+        className={`text-xs font-medium text-gray-300 text-center px-2 transition-opacity duration-300 ${
+          isHovered ? 'opacity-100' : 'opacity-0'
+        }`}
+      >
+        {skill}
+      </span>
+    </div>
+  );
+}
+
 export default function Page() {
   const [pfpHovered, setPfpHovered] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
@@ -84,126 +107,43 @@ export default function Page() {
       </section>
 
       <section id="skills" className="mx-auto max-w-7xl px-6 md:px-20 py-20">
-        <div className="text-center">
-          <p className="text-xs uppercase tracking-widest text-blue-400">Tech Stack</p>
-          <h2 className="mt-3 text-4xl md:text-5xl font-bold tracking-tighter">Zero-Gravity Arsenal</h2>
-          <p className="mt-4 text-gray-400 max-w-2xl mx-auto">
-            A focused toolkit for building high-end digital experiences, from prototyping to production.
-          </p>
-        </div>
-
-        <div className="mt-12 rounded-[2rem] border border-white/10 bg-white/5 p-8 md:p-12 backdrop-blur-xl">
-          <div className="flex flex-wrap justify-center gap-6">
+        <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+          <p className="text-xs uppercase tracking-widest text-blue-400">Skills</p>
+          <div className="mt-4 flex flex-wrap gap-3">
             {[
-              { label: 'Python', size: 'w-24 h-24' },
-              { label: 'Data Science', size: 'w-28 h-28' },
-              { label: 'ML/AI', size: 'w-24 h-24' },
-              { label: 'SQL', size: 'w-20 h-20' },
-              { label: 'JavaScript', size: 'w-24 h-24' },
-              { label: 'React', size: 'w-20 h-20' },
-              { label: 'React Native', size: 'w-24 h-24' },
-              { label: 'MongoDB', size: 'w-20 h-20' },
-              { label: 'Express.js', size: 'w-20 h-20' },
-              { label: 'Node.js', size: 'w-20 h-20' },
-              { label: 'C++', size: 'w-16 h-16' },
-              { label: 'C#', size: 'w-16 h-16' },
-              { label: 'SQLite', size: 'w-20 h-20' },
-              { label: 'HTML5', size: 'w-20 h-20' },
-              { label: 'CSS3', size: 'w-20 h-20' },
-              { label: 'CSS', size: 'w-16 h-16' },
-              { label: 'FastAPI', size: 'w-20 h-20' },
-              { label: 'REST API', size: 'w-20 h-20' },
-              { label: 'Tailwind', size: 'w-20 h-20' },
-              { label: 'Expo', size: 'w-16 h-16' },
-              { label: 'Computer Vision', size: 'w-24 h-24' },
-              { label: 'Particle', size: 'w-20 h-20' },
-              { label: 'Docker', size: 'w-20 h-20' },
-              { label: 'n8n', size: 'w-16 h-16' },
-              { label: 'Git/GitHub', size: 'w-24 h-24' },
-              { label: 'Postman', size: 'w-20 h-20' },
-              { label: 'Firebase', size: 'w-20 h-20' },
-            ].map((bubble) => (
-              <div
-                key={bubble.label}
-                className={`flex flex-col ${bubble.size} items-center justify-center rounded-3xl border border-white/15 bg-slate-900/60 text-[10px] md:text-xs font-semibold uppercase tracking-widest text-gray-200 shadow-inner shadow-white/5 hover:border-blue-400/50 hover:bg-slate-800/80 transition-all`}
+              'Python',
+              'SQL',
+              'JavaScript',
+              'React',
+              'React Native',
+              'MongoDB',
+              'Express.js',
+              'Node.js',
+              'C++',
+              'C#',
+              'SQLite',
+              'HTML5',
+              'CSS3',
+              'CSS',
+              'FastAPI',
+              'REST API',
+              'Tailwind',
+              'Expo',
+              'Computer Vision',
+              'Particle',
+              'Docker',
+              'n8n',
+              'Git/GitHub',
+              'Postman',
+              'Firebase',
+            ].map((skill) => (
+              <span
+                key={skill}
+                className="rounded-xl bg-slate-900/60 px-3 py-2 text-xs uppercase tracking-widest text-gray-200"
               >
-                <span className="text-2xl mb-1">{TechIcons[bubble.label] || '🔧'}</span>
-                <span className="px-2 text-center leading-tight">{bubble.label}</span>
-              </div>
+                {skill}
+              </span>
             ))}
-          </div>
-        </div>
-
-        <div className="mt-10 grid gap-6 md:grid-cols-2">
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-            <p className="text-xs uppercase tracking-widest text-blue-400">Skills</p>
-            <div className="mt-4 flex flex-wrap gap-3">
-              {[
-                'Python',
-                'SQL',
-                'JavaScript',
-                'React',
-                'React Native',
-                'MongoDB',
-                'Express.js',
-                'Node.js',
-                'C++',
-                'C#',
-                'SQLite',
-                'HTML5',
-                'CSS3',
-                'CSS',
-                'FastAPI',
-                'REST API',
-                'Tailwind',
-                'Expo',
-                'Computer Vision',
-                'Particle',
-                'Docker',
-                'n8n',
-                'Git/GitHub',
-                'Postman',
-                'Firebase',
-              ].map((skill) => (
-                <span
-                  key={skill}
-                  className="rounded-xl bg-slate-900/60 px-3 py-2 text-xs uppercase tracking-widest text-gray-200"
-                >
-                  {skill}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-            <p className="text-xs uppercase tracking-widest text-blue-400">Interests</p>
-            <div className="mt-4 flex flex-wrap gap-3">
-              {[
-                'Beginner Friendly',
-                'Databases',
-                'Design',
-                'DevOps',
-                'Education',
-                'Enterprise',
-                'Fintech',
-                'Health',
-                'IoT',
-                'Low/No Code',
-                'Machine Learning/AI',
-                'Mobile',
-                'Productivity',
-                'Robotic Process Automation',
-                'Social Good',
-                'Web',
-              ].map((interest) => (
-                <span
-                  key={interest}
-                  className="rounded-xl bg-slate-900/60 px-3 py-2 text-xs uppercase tracking-widest text-gray-200"
-                >
-                  {interest}
-                </span>
-              ))}
-            </div>
           </div>
         </div>
       </section>
@@ -257,6 +197,22 @@ export default function Page() {
         </div>
       </section>
 
+      <section className="mx-auto max-w-7xl px-6 md:px-20 py-20">
+        <div className="text-center">
+          <p className="text-xs uppercase tracking-widest text-blue-400">Core Technologies</p>
+          <h2 className="mt-3 text-4xl md:text-5xl font-bold tracking-tighter">Main Tech Stack</h2>
+          <p className="mt-4 text-gray-400 max-w-2xl mx-auto">
+            My primary toolkit for building powerful, modern applications from concept to deployment.
+          </p>
+        </div>
+
+        <div className="mt-12 flex flex-wrap justify-center gap-8">
+          {MainSkills.map((skill) => (
+            <SkillCircle key={skill} skill={skill} icon={TechIcons[skill]} />
+          ))}
+        </div>
+      </section>
+
       <section id="projects" className="mx-auto max-w-7xl px-6 md:px-20 py-20">
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
           <div>
@@ -302,7 +258,7 @@ export default function Page() {
       </section>
 
       <section id="contact" className="mx-auto max-w-7xl px-6 md:px-20 py-20">
-        <div className="relative rounded-[2rem] border border-white/10 bg-gradient-to-br from-slate-900/80 via-[#1a1030]/80 to-slate-950/90 p-6 md:p-10 backdrop-blur-xl overflow-hidden">
+        <div className="relative rounded-[2rem] border border-white/10 bg-gradient-to-br from-slate-900/80 via-[#1a1030]/80 to-slate-950/90 p-6 md:p-8 backdrop-blur-xl overflow-hidden">
           <div className="absolute inset-0 pointer-events-none">
             <div className="absolute -top-24 -left-24 h-64 w-64 rounded-full bg-purple-500/20 blur-3xl" />
             <div className="absolute -bottom-20 -right-20 h-64 w-64 rounded-full bg-cyan-500/20 blur-3xl" />
@@ -318,8 +274,8 @@ export default function Page() {
               <span className="ml-3">contact_protocol.exe</span>
             </div>
 
-            <div className="relative grid gap-10 md:grid-cols-[1.1fr_0.9fr] px-6 md:px-10 py-10">
-              <form className="space-y-8">
+            <div className="relative grid gap-10 md:grid-cols-[1.1fr_0.9fr] px-6 md:px-10 py-8">
+              <form className="space-y-6">
                 <div className="flex items-center gap-3 text-purple-200">
                   <span className="text-xl">➔</span>
                   <p className="text-sm uppercase tracking-[0.2em]">Initialize transmission...</p>
@@ -329,7 +285,7 @@ export default function Page() {
                   <label className="space-y-3">
                     <span className="text-xs uppercase tracking-[0.3em] text-gray-400">Identity</span>
                     <input
-                      className="w-full border-b border-white/20 bg-transparent py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-cyan-300"
+                      className="w-full border-b border-white/20 bg-transparent py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-cyan-300"
                       placeholder="Enter Name"
                       type="text"
                       name="name"
@@ -338,7 +294,7 @@ export default function Page() {
                   <label className="space-y-3">
                     <span className="text-xs uppercase tracking-[0.3em] text-gray-400">Frequency (Email)</span>
                     <input
-                      className="w-full border-b border-white/20 bg-transparent py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-cyan-300"
+                      className="w-full border-b border-white/20 bg-transparent py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-cyan-300"
                       placeholder="Enter Email"
                       type="email"
                       name="email"
@@ -349,9 +305,9 @@ export default function Page() {
                 <label className="space-y-3 block">
                   <span className="text-xs uppercase tracking-[0.3em] text-gray-400">Data Packet (Message)</span>
                   <textarea
-                    className="w-full border-b border-white/20 bg-transparent py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-cyan-300 resize-none"
+                    className="w-full border-b border-white/20 bg-transparent py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-cyan-300 resize-none"
                     placeholder="Type your message here..."
-                    rows="4"
+                    rows="3"
                     name="message"
                   />
                 </label>
@@ -399,11 +355,50 @@ export default function Page() {
       </section>
 
       <footer className="footer-section mt-10">
-        <div className="mx-auto max-w-7xl px-6 md:px-20 py-10 flex flex-col md:flex-row items-center justify-between gap-4 text-xs uppercase tracking-widest text-gray-400">
-          <span>Muhammad Ahmed © 2026</span>
-          <span>Frontend Developer</span>
+        <div className="mx-auto max-w-7xl px-6 md:px-20 py-12 border-t border-white/10">
+          <div className="grid md:grid-cols-3 gap-8 mb-8">
+            <div>
+              <h3 className="text-lg font-bold tracking-tight mb-3">Muhammad Ahmed</h3>
+              <p className="text-sm text-gray-400">Creative Developer</p>
+              <p className="text-sm text-gray-400 mt-2">RYK, Punjab, Pakistan</p>
+            </div>
+            <div>
+              <h4 className="text-sm font-semibold uppercase tracking-widest text-blue-400 mb-3">Navigation</h4>
+              <div className="flex flex-col gap-2">
+                <a href="#skills" className="text-sm text-gray-400 hover:text-white transition-colors">Skills</a>
+                <a href="#projects" className="text-sm text-gray-400 hover:text-white transition-colors">Projects</a>
+                <a href="#contact" className="text-sm text-gray-400 hover:text-white transition-colors">Contact</a>
+                <a href="#about" className="text-sm text-gray-400 hover:text-white transition-colors">About</a>
+              </div>
+            </div>
+            <div>
+              <h4 className="text-sm font-semibold uppercase tracking-widest text-blue-400 mb-3">Connect</h4>
+              <div className="flex flex-col gap-2">
+                <a href="https://github.com/4hmed-n" target="_blank" rel="noopener noreferrer" className="text-sm text-gray-400 hover:text-white transition-colors">GitHub</a>
+                <a href="mailto:ahmednuman3044@gmail.com" className="text-sm text-gray-400 hover:text-white transition-colors">Email</a>
+              </div>
+            </div>
+          </div>
+          <div className="pt-6 border-t border-white/10 text-center">
+            <p className="text-xs uppercase tracking-widest text-gray-400">
+              © 2026 Muhammad Ahmed. All rights reserved.
+            </p>
+          </div>
         </div>
       </footer>
+
+      {/* Scroll to Top Button */}
+      {showScrollTop && (
+        <button
+          onClick={scrollToTop}
+          className="fixed bottom-8 right-8 z-50 w-12 h-12 rounded-full bg-blue-500/20 border border-blue-400/50 text-blue-300 hover:bg-blue-500/30 hover:shadow-lg hover:shadow-blue-500/20 transition-all duration-300 flex items-center justify-center"
+          aria-label="Scroll to top"
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+          </svg>
+        </button>
+      )}
     </div>
   );
 }
