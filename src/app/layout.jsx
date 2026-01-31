@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import './globals.css';
 import ParticleBackground from './ParticleBackground';
 
@@ -107,26 +108,27 @@ export default function Layout({ children }) {
         />
       </div>
       
-      <nav className={`sticky top-0 w-full z-50 transition-all duration-300 ${
-        isScrolled ? 'bg-slate-900/95 backdrop-blur-xl border-b border-white/10' : 'bg-transparent'
+      <nav className={`sticky top-4 left-0 right-0 mx-auto max-w-5xl z-50 rounded-full transition-all duration-300 ${
+        isScrolled 
+          ? 'bg-slate-900/50 backdrop-blur-xl border border-white/15 shadow-2xl shadow-black/40' 
+          : 'bg-slate-900/40 backdrop-blur-lg border border-white/10'
       }`} style={{ zIndex: 100 }}>
-        <div className="mx-auto max-w-7xl px-6 md:px-20 py-6 flex items-center">
-          <a href="#home" className="text-lg font-bold tracking-tighter uppercase font-display hover:text-blue-400 transition-colors">
+        <div className="px-8 md:px-12 py-4 flex items-center justify-between">
+          <Link to="/" className="text-base md:text-lg font-bold tracking-tighter uppercase font-display hover:text-sky-400 transition-colors duration-300">
             Muhammad Ahmed
-          </a>
-          <div className="hidden md:flex flex-1 items-center justify-center gap-8 text-sm uppercase tracking-widest text-gray-300 font-display">
-            <a className="hover:text-white transition-colors" href="#skills">Skills</a>
-            <a className="hover:text-white transition-colors" href="#projects">Projects</a>
-            <a className="hover:text-white transition-colors" href="#contact">Contact</a>
-            <a className="hover:text-white transition-colors" href="#about">About</a>
+          </Link>
+          <div className="hidden md:flex flex-1 items-center justify-center gap-10 text-xs uppercase tracking-widest text-gray-400 font-display">
+            <a className="hover:text-sky-400 transition-colors duration-300" href="#skills">Skills</a>
+            <a className="hover:text-sky-400 transition-colors duration-300" href="#projects">Projects</a>
+            <a className="hover:text-sky-400 transition-colors duration-300" href="#contact">Contact</a>
+            <a className="hover:text-sky-400 transition-colors duration-300" href="#about">About</a>
           </div>
-          <a
-            href="/resume.pdf"
-            download
-            className="ml-auto inline-flex md:inline-flex items-center rounded-full bg-blue-500/20 border border-blue-400/50 px-4 md:px-5 py-2 text-xs uppercase tracking-widest text-white hover:bg-blue-500/30 hover:border-blue-400/70 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/20"
+          <Link
+            to="/resume"
+            className="ml-auto md:ml-10 inline-flex items-center rounded-full bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border border-blue-400/40 px-5 py-2 text-xs uppercase tracking-widest text-gray-200 hover:from-blue-500/30 hover:to-cyan-500/30 hover:border-blue-400/70 hover:text-sky-400 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/25"
           >
             Resume
-          </a>
+          </Link>
         </div>
       </nav>
       <main className="relative" style={{ zIndex: 10 }}>{children}</main>

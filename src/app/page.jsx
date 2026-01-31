@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
+import Matter from 'matter-js';
 
 const TechIcons = {
   'Python': () => (
@@ -103,212 +104,330 @@ const MainSkills = [
   'Postman',
 ];
 
-function SkillCircle({ skill, icon, initialX, initialY, containerRef, bubblePositions, setBubblePositions, bubbleId }) {
-  const [isHovered, setIsHovered] = useState(false);
-  const [isDragging, setIsDragging] = useState(false);
-  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
-  const [deformation, setDeformation] = useState({ scaleX: 1, scaleY: 1 });
-  const bubbleSize = 96; // 24 * 4 = 96px (w-24)
-  const bubbleRadius = bubbleSize / 2;
-
-  const position = bubblePositions[bubbleId] || { x: initialX, y: initialY };
-
-  const checkCollisionWithOthers = (newX, newY) => {
-    const centerX = newX + bubbleRadius;
-    const centerY = newY + bubbleRadius;
-    
-    let adjustedX = newX;
-    let adjustedY = newY;
-    let hasCollision = false;
-    
-    for (const [id, otherPos] of Object.entries(bubblePositions)) {
-      if (id === bubbleId) continue;
-      
-      const otherCenterX = otherPos.x + bubbleRadius;
-      const otherCenterY = otherPos.y + bubbleRadius;
-      
-      // Calculate distance between centers
-      const dx = centerX - otherCenterX;
-      const dy = centerY - otherCenterY;
-      const distance = Math.sqrt(dx * dx + dy * dy);
-      
-      // Minimum distance for surface-to-surface contact (sum of two radii)
-      const minDistance = bubbleRadius * 2;
-      
-      // Check if surfaces are touching or overlapping
-      if (distance < minDistance && distance > 0) {
-        hasCollision = true;
-        
-        // Calculate collision normal (direction from other to this)
-        const nx = dx / distance;
-        const ny = dy / distance;
-        
-        // Calculate overlap amount
-        const overlap = minDistance - distance;
-        
-        // Push this bubble away (the one being dragged)
-        adjustedX = newX + nx * overlap * 0.6;
-        adjustedY = newY + ny * overlap * 0.6;
-        
-        // Push the other bubble away too (physics!)
-        const pushForce = overlap * 0.4;
-        setBubblePositions(prev => ({
-          ...prev,
-          [id]: {
-            x: otherPos.x - nx * pushForce,
-            y: otherPos.y - ny * pushForce
-          }
-        }));
-        
-        // Calculate deformation based on collision angle and force
-        const collisionForce = Math.min(overlap / bubbleSize * 2, 0.4);
-        
-        // Deform along the collision axis
-        const absNx = Math.abs(nx);
-        const absNy = Math.abs(ny);
-        
-        setDeformation({ 
-          scaleX: 1 - collisionForce * absNx,
-          scaleY: 1 - collisionForce * absNy
-        });
-        
-        // Only handle one collision at a time for simplicity
-        break;
-      }
-    }
-    
-    if (!hasCollision && !isDragging) {
-      // Reset deformation if no collision
-      setDeformation({ scaleX: 1, scaleY: 1 });
-    }
-    
-    return { x: adjustedX, y: adjustedY };
-  };
-
-  const handleMouseDown = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(true);
-    setDragStart({
-      x: e.clientX - position.x,
-      y: e.clientY - position.y
-    });
-  };
-
-  const handleMouseMove = (e) => {
-    if (isDragging && containerRef.current) {
-      const container = containerRef.current.getBoundingClientRect();
-      let newX = e.clientX - dragStart.x;
-      let newY = e.clientY - dragStart.y;
-
-      // Calculate boundaries (accounting for bubble size and padding)
-      const padding = 48; // 12 * 4 = 48px (p-8)
-      const minX = padding;
-      const maxX = container.width - bubbleSize - padding;
-      const minY = padding;
-      const maxY = container.height - bubbleSize - padding;
-
-      // Calculate deformation based on how much we're pushing against walls
-      let scaleX = 1;
-      let scaleY = 1;
-      const deformAmount = 0.3; // How much to squash
-
-      if (newX < minX) {
-        const pushAmount = Math.min((minX - newX) / 30, 1);
-        scaleX = 1 - pushAmount * deformAmount;
-        scaleY = 1 + pushAmount * deformAmount * 0.5;
-        newX = minX;
-      } else if (newX > maxX) {
-        const pushAmount = Math.min((newX - maxX) / 30, 1);
-        scaleX = 1 - pushAmount * deformAmount;
-        scaleY = 1 + pushAmount * deformAmount * 0.5;
-        newX = maxX;
-      }
-
-      if (newY < minY) {
-        const pushAmount = Math.min((minY - newY) / 30, 1);
-        scaleY = 1 - pushAmount * deformAmount;
-        scaleX = 1 + pushAmount * deformAmount * 0.5;
-        newY = minY;
-      } else if (newY > maxY) {
-        const pushAmount = Math.min((newY - maxY) / 30, 1);
-        scaleY = 1 - pushAmount * deformAmount;
-        scaleX = 1 + pushAmount * deformAmount * 0.5;
-        newY = maxY;
-      }
-
-      // Check collision with other bubbles
-      const adjustedPos = checkCollisionWithOthers(newX, newY);
-      
-      // Update position in shared state
-      setBubblePositions(prev => ({
-        ...prev,
-        [bubbleId]: adjustedPos
-      }));
-      
-      setDeformation({ scaleX, scaleY });
-    }
-  };
-
-  const handleMouseUp = () => {
-    setIsDragging(false);
-    // Reset deformation with elastic bounce
-    setTimeout(() => {
-      setDeformation({ scaleX: 1, scaleY: 1 });
-    }, 50);
-  };
+// Physics-based Bubble Component using Matter.js with Soft-Body Deformation
+function PhysicsBubbleContainer({ containerRef }) {
+  const sceneRef = useRef(null);
+  const canvasRef = useRef(null);
+  const engineRef = useRef(null);
+  const runnerRef = useRef(null);
+  const bodiesRef = useRef({});
+  const mouseRef = useRef(null);
+  const [bubbleStates, setBubbleStates] = useState({});
+  const [hoveredBubble, setHoveredBubble] = useState(null);
+  const [deformations, setDeformations] = useState({});
 
   useEffect(() => {
-    if (isDragging) {
-      const onMove = (e) => handleMouseMove(e);
-      const onUp = () => handleMouseUp();
-      
-      window.addEventListener('mousemove', onMove);
-      window.addEventListener('mouseup', onUp);
-      
-      return () => {
-        window.removeEventListener('mousemove', onMove);
-        window.removeEventListener('mouseup', onUp);
-      };
+    if (!containerRef.current || !sceneRef.current) return;
+
+    const containerRect = containerRef.current.getBoundingClientRect();
+    const width = containerRect.width;
+    const height = 600;
+
+    // Calculate header position for dynamic wall sync
+    const headerElement = document.querySelector('nav');
+    const headerHeight = headerElement ? headerElement.offsetHeight + 16 : 80;
+
+    // Matter.js modules
+    const { Engine, Runner, World, Bodies, Mouse, MouseConstraint, Events, Body, Query } = Matter;
+
+    // Create engine with sleeping to eliminate jitter
+    const engine = Engine.create({
+      gravity: { x: 0, y: 0 },
+      enableSleeping: true // Enable sleeping to stop jitter when settled
+    });
+    
+    // HIGH precision iterations to prevent overlap and sticking
+    engine.positionIterations = 20;
+    engine.velocityIterations = 20;
+    engine.constraintIterations = 10;
+    
+    // Set resolver slop to prevent sinking
+    if (engine.solver) {
+      engine.solver.slop = 0.01;
     }
-  }, [isDragging, dragStart, bubblePositions]);
-  
+    
+    engineRef.current = engine;
+
+    // Create visible canvas for interaction layer
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    canvas.style.position = 'absolute';
+    canvas.style.top = '0';
+    canvas.style.left = '0';
+    canvas.style.width = '100%';
+    canvas.style.height = '100%';
+    canvas.style.opacity = '0';
+    canvas.style.cursor = 'grab';
+    sceneRef.current.appendChild(canvas);
+    canvasRef.current = canvas;
+
+    // Collision group for all bodies to be on same layer
+    const collisionGroup = Matter.Events ? 0x0001 : 1;
+
+    // Create SOFT-BODY BOUNDARY WALLS
+    const wallThickness = 60;
+    const padding = 48;
+    const topWallY = Math.max(headerHeight, padding);
+    
+    const wallOptions = {
+      isStatic: true,
+      restitution: 0.9, // Sweet spot for bounce without jitter
+      friction: 0, // No friction to prevent sticking
+      frictionStatic: 0, // No static friction
+      density: 0.001,
+      collisionFilter: { category: collisionGroup, mask: collisionGroup }
+    };
+
+    // Create four boundary walls
+    const walls = [
+      Bodies.rectangle(width / 2, topWallY - 20, width, wallThickness, { 
+        ...wallOptions, 
+        label: 'topWall' 
+      }),
+      Bodies.rectangle(width / 2, height - padding / 2, width, wallThickness, { 
+        ...wallOptions, 
+        label: 'bottomWall' 
+      }),
+      Bodies.rectangle(padding / 2, height / 2, wallThickness, height, { 
+        ...wallOptions, 
+        label: 'leftWall' 
+      }),
+      Bodies.rectangle(width - padding / 2, height / 2, wallThickness, height, { 
+        ...wallOptions, 
+        label: 'rightWall' 
+      })
+    ];
+
+    // Create DYNAMIC SOFT-BODY BUBBLES
+    const bubbleRadius = 48;
+    const bubbles = MainSkills.map((skill, index) => {
+      const angle = (index / MainSkills.length) * Math.PI * 2;
+      const radius = 100 + Math.random() * 120;
+      const x = width / 2 + Math.cos(angle) * radius;
+      const y = height / 2 + Math.sin(angle) * radius;
+
+      const bubble = Bodies.circle(x, y, bubbleRadius, {
+        isStatic: false,
+        restitution: 0.9, // Perfect bounce - not too high (no infinite jitter), not too low (no sticking)
+        friction: 0, // Zero friction - slide instantly off surfaces
+        frictionStatic: 0, // No static friction to prevent sticking
+        frictionAir: 0.06, // Increased damping to settle faster
+        density: 0.01,
+        label: skill,
+        collisionFilter: { category: collisionGroup, mask: collisionGroup },
+        sleepThreshold: 0.01 // Sleep when nearly still
+      });
+
+      bodiesRef.current[skill] = bubble;
+      return bubble;
+    });
+
+    // Add everything to world
+    World.add(engine.world, [...walls, ...bubbles]);
+
+    // Create mouse for interaction
+    const mouse = Mouse.create(canvas);
+    mouseRef.current = mouse;
+    
+    // HIGH STIFFNESS for solid pushing interaction
+    const mouseConstraint = MouseConstraint.create(engine, {
+      mouse: mouse,
+      constraint: {
+        stiffness: 0.8, // High stiffness - acts like solid pushing
+        render: { visible: false }
+      }
+    });
+
+    World.add(engine.world, mouseConstraint);
+
+    // Track when dragging
+    Events.on(mouseConstraint, 'startdrag', (event) => {
+      canvas.style.cursor = 'grabbing';
+    });
+
+    Events.on(mouseConstraint, 'enddrag', (event) => {
+      canvas.style.cursor = 'grab';
+    });
+
+    // Hover detection using Query.point on actual bubble bodies
+    Events.on(engine, 'afterUpdate', () => {
+      if (mouse.position.x && mouse.position.y) {
+        const hoveredBodies = Query.point(bubbles, mouse.position);
+        if (hoveredBodies.length > 0) {
+          setHoveredBubble(hoveredBodies[0].label);
+        } else {
+          setHoveredBubble(null);
+        }
+      }
+    });
+
+    // Update positions AND deformations for React rendering
+    const updateLoop = () => {
+      const newStates = {};
+      const newDeformations = {};
+      
+      MainSkills.forEach(skill => {
+        const body = bodiesRef.current[skill];
+        if (body) {
+          // Calculate velocity magnitude for deformation intensity
+          const speedX = Math.abs(body.velocity.x);
+          const speedY = Math.abs(body.velocity.y);
+          const totalSpeed = Math.sqrt(speedX * speedX + speedY * speedY);
+          
+          // Determine deformation based on velocity direction and magnitude
+          let scaleX = 1;
+          let scaleY = 1;
+          
+          // If moving horizontally more than vertically, compress vertically
+          if (speedX > speedY && speedX > 2) {
+            const compressionAmount = Math.min(speedX / 15, 0.35);
+            scaleX = 1 + compressionAmount * 0.5; // Elongate horizontally
+            scaleY = 1 - compressionAmount; // Compress vertically
+          }
+          // If moving vertically more than horizontally, compress horizontally
+          else if (speedY > speedX && speedY > 2) {
+            const compressionAmount = Math.min(speedY / 15, 0.35);
+            scaleY = 1 + compressionAmount * 0.5; // Elongate vertically
+            scaleX = 1 - compressionAmount; // Compress horizontally
+          }
+          // Gentle idle squash/bounce
+          else if (totalSpeed < 2) {
+            const idleBounce = Math.sin(Date.now() / 200) * 0.05;
+            scaleX = 1 + idleBounce * 0.3;
+            scaleY = 1 - idleBounce * 0.3;
+          }
+          
+          newStates[skill] = {
+            x: body.position.x - bubbleRadius,
+            y: body.position.y - bubbleRadius,
+            angle: body.angle,
+            velocityX: body.velocity.x,
+            velocityY: body.velocity.y
+          };
+          
+          newDeformations[skill] = { scaleX, scaleY };
+        }
+      });
+      
+      setBubbleStates(newStates);
+      setDeformations(newDeformations);
+    };
+
+    // Apply Brownian motion (gentle floating) + Anti-overlap force
+    Events.on(engine, 'beforeUpdate', () => {
+      bubbles.forEach(bubble => {
+        // Very small random forces for floating effect
+        const forceMagnitude = 0.00005;
+        Body.applyForce(bubble, bubble.position, {
+          x: (Math.random() - 0.5) * forceMagnitude,
+          y: (Math.random() - 0.5) * forceMagnitude
+        });
+      });
+
+      // Anti-overlap force: detect overlapping bubbles and push apart
+      for (let i = 0; i < bubbles.length; i++) {
+        for (let j = i + 1; j < bubbles.length; j++) {
+          const b1 = bubbles[i];
+          const b2 = bubbles[j];
+          const dx = b2.position.x - b1.position.x;
+          const dy = b2.position.y - b1.position.y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          const minDistance = bubbleRadius * 2; // Two bubble radii
+
+          // If overlapping, push apart
+          if (distance < minDistance) {
+            const overlap = minDistance - distance;
+            const separationForce = 0.0008 * overlap;
+            const nx = distance > 0 ? dx / distance : 1;
+            const ny = distance > 0 ? dy / distance : 0;
+
+            // Apply equal and opposite forces
+            Body.applyForce(b1, b1.position, { x: -nx * separationForce, y: -ny * separationForce });
+            Body.applyForce(b2, b2.position, { x: nx * separationForce, y: ny * separationForce });
+          }
+        }
+      }
+
+      updateLoop();
+    });
+
+    // Start CONTINUOUS ENGINE RUNNER
+    const runner = Runner.create();
+    runnerRef.current = runner;
+    Runner.run(runner, engine);
+
+    console.log('Physics engine initialized:', {
+      positionIterations: engine.positionIterations,
+      velocityIterations: engine.velocityIterations,
+      bubbleCount: bubbles.length,
+      wallCount: walls.length
+    });
+
+    // Cleanup
+    return () => {
+      Runner.stop(runner);
+      World.clear(engine.world, false);
+      Engine.clear(engine);
+      if (canvas && canvas.parentNode) {
+        canvas.parentNode.removeChild(canvas);
+      }
+      Events.off(engine);
+      Events.off(mouseConstraint);
+    };
+  }, [containerRef]);
+
   return (
-    <div 
-      className="absolute flex flex-col items-center"
-      style={{ 
-        left: `${position.x}px`, 
-        top: `${position.y}px`,
-        cursor: isDragging ? 'grabbing' : 'grab',
-        userSelect: 'none',
-        zIndex: isDragging ? 50 : 1
-      }}
-    >
-      <div
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-        onMouseDown={handleMouseDown}
-        className={`w-24 h-24 rounded-full border border-white/10 bg-gradient-to-br from-slate-800/80 to-slate-900/90 backdrop-blur-xl flex items-center justify-center transition-all duration-300 ${
-          isHovered && !isDragging ? 'border-blue-400/50 shadow-2xl shadow-blue-500/30 scale-110' : ''
-        } ${isDragging ? 'shadow-2xl shadow-blue-500/50' : ''}`}
-        style={{ 
-          transform: `scale(${deformation.scaleX}, ${deformation.scaleY})`,
-          transition: isDragging ? 'box-shadow 0.3s' : 'all 0.3s ease-out'
-        }}
-      >
-        <div style={{ pointerEvents: 'none' }}>
-          {typeof icon === 'function' ? icon() : <span className="text-5xl">{icon}</span>}
-        </div>
-      </div>
-      <span 
-        className={`absolute -bottom-6 text-xs font-medium text-gray-300 text-center whitespace-nowrap transition-all duration-300 ${
-          isHovered ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
-        }`}
-        style={{ pointerEvents: 'none' }}
-      >
-        {skill}
-      </span>
-    </div>
+    <>
+      <div ref={sceneRef} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }} />
+      {MainSkills.map((skill) => {
+        const state = bubbleStates[skill];
+        const deform = deformations[skill] || { scaleX: 1, scaleY: 1 };
+        if (!state) return null;
+
+        const isHovered = hoveredBubble === skill;
+        const speed = Math.sqrt(state.velocityX ** 2 + state.velocityY ** 2);
+        const isMoving = speed > 0.5;
+
+        return (
+          <div
+            key={skill}
+            className="absolute pointer-events-none"
+            style={{
+              left: `${state.x}px`,
+              top: `${state.y}px`,
+              transform: `rotate(${state.angle}rad)`,
+              transition: 'none'
+            }}
+          >
+            <div 
+              className={`relative flex items-center justify-center w-24 h-24 rounded-full bg-gradient-to-br from-blue-500/10 to-purple-500/10 border-2 backdrop-blur-sm transition-all duration-75 ${
+                isHovered 
+                  ? 'border-blue-400/70 shadow-2xl shadow-blue-500/50' 
+                  : isMoving 
+                    ? 'border-cyan-400/50 shadow-lg shadow-cyan-500/30'
+                    : 'border-blue-400/30 shadow-lg shadow-blue-500/20'
+              }`}
+              style={{
+                transform: `scale(${deform.scaleX}, ${deform.scaleY})`,
+                transformOrigin: 'center'
+              }}
+            >
+              <div className="pointer-events-none select-none">
+                {TechIcons[skill]()}
+              </div>
+            </div>
+            {isHovered && (
+              <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 whitespace-nowrap">
+                <span className="text-xs font-medium text-blue-300 bg-slate-900/90 px-3 py-1 rounded-full border border-blue-400/30 backdrop-blur-sm">
+                  {skill}
+                </span>
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </>
   );
 }
 
@@ -317,19 +436,6 @@ export default function Page() {
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [showScrollExplore, setShowScrollExplore] = useState(true);
   const techStackContainerRef = useRef(null);
-  
-  // Initialize bubble positions
-  const [bubblePositions, setBubblePositions] = useState(() => {
-    const positions = {};
-    MainSkills.forEach((skill, index) => {
-      const angle = (index / MainSkills.length) * 2 * Math.PI;
-      const radius = 100 + Math.random() * 120;
-      const x = 250 + Math.cos(angle) * radius;
-      const y = 250 + Math.sin(angle) * radius;
-      positions[skill] = { x, y };
-    });
-    return positions;
-  });
 
   useEffect(() => {
     const handleScroll = () => {
@@ -438,17 +544,32 @@ export default function Page() {
               <div className="ml-4 text-gray-400"><span className="text-purple-400">constructor</span>() {'{'}</div>
               <div className="ml-8 text-gray-500"><span className="text-cyan-400">this</span>.name = <span className="text-green-400">"Muhammad Ahmed"</span>;</div>
               <div className="ml-8 text-gray-500"><span className="text-cyan-400">this</span>.role = <span className="text-green-400">"AI Architect & Full-Stack Developer"</span>;</div>
-              <div className="ml-8 text-gray-500"><span className="text-cyan-400">this</span>.location = <span className="text-green-400">"Pakistan 🇵🇰"</span>;</div>
+              <div className="ml-8 text-gray-500"><span className="text-cyan-400">this</span>.location = <span className="text-green-400">"Gulshan-e-Ravi, RYK, Punjab, Pakistan"</span>;</div>
+              <div className="ml-8 text-gray-500"><span className="text-cyan-400">this</span>.experience = <span className="text-orange-400">3</span>; <span className="text-gray-600">// years</span></div>
+              <div className="ml-8 text-gray-500"><span className="text-cyan-400">this</span>.passion = <span className="text-pink-400">Infinity</span>;</div>
               <div className="ml-8 text-gray-500"><span className="text-cyan-400">this</span>.skills = {'{'}</div>
-              <div className="ml-12 text-gray-500">backend: [<span className="text-green-400">"Python"</span>, <span className="text-green-400">"Node.js"</span>, <span className="text-green-400">"FastAPI"</span>],</div>
-              <div className="ml-12 text-gray-500">frontend: [<span className="text-green-400">"React"</span>, <span className="text-green-400">"TypeScript"</span>, <span className="text-green-400">"Tailwind"</span>],</div>
-              <div className="ml-12 text-gray-500">ai: [<span className="text-green-400">"TensorFlow"</span>, <span className="text-green-400">"PyTorch"</span>, <span className="text-green-400">"Scikit-learn"</span>],</div>
-              <div className="ml-12 text-gray-500">databases: [<span className="text-green-400">"MongoDB"</span>, <span className="text-green-400">"PostgreSQL"</span>, <span className="text-green-400">"Redis"</span>],</div>
-              <div className="ml-12 text-gray-500">devOps: [<span className="text-green-400">"Docker"</span>, <span className="text-green-400">"Git"</span>, <span className="text-green-400">"CI/CD"</span>]</div>
+              <div className="ml-12 text-gray-500">backend: [<span className="text-green-400">"Python"</span>, <span className="text-green-400">"Node.js"</span>, <span className="text-green-400">"FastAPI"</span>, <span className="text-green-400">"Express.js"</span>],</div>
+              <div className="ml-12 text-gray-500">frontend: [<span className="text-green-400">"React"</span>, <span className="text-green-400">"TypeScript"</span>, <span className="text-green-400">"Tailwind"</span>, <span className="text-green-400">"Next.js"</span>],</div>
+              <div className="ml-12 text-gray-500">ai: [<span className="text-green-400">"TensorFlow"</span>, <span className="text-green-400">"PyTorch"</span>, <span className="text-green-400">"Scikit-learn"</span>, <span className="text-green-400">"OpenCV"</span>],</div>
+              <div className="ml-12 text-gray-500">databases: [<span className="text-green-400">"MongoDB"</span>, <span className="text-green-400">"PostgreSQL"</span>, <span className="text-green-400">"Redis"</span>, <span className="text-green-400">"Firebase"</span>],</div>
+              <div className="ml-12 text-gray-500">devOps: [<span className="text-green-400">"Docker"</span>, <span className="text-green-400">"Git"</span>, <span className="text-green-400">"CI/CD"</span>, <span className="text-green-400">"AWS"</span>],</div>
+              <div className="ml-12 text-gray-500">tools: [<span className="text-green-400">"VS Code"</span>, <span className="text-green-400">"Jupyter"</span>, <span className="text-green-400">"Postman"</span>, <span className="text-green-400">"Figma"</span>]</div>
               <div className="ml-8 text-gray-500">{'}'};</div>
+              <div className="ml-8 text-gray-500"><span className="text-cyan-400">this</span>.currentFocus = [</div>
+              <div className="ml-12 text-gray-500"><span className="text-green-400">"Large Language Models"</span>,</div>
+              <div className="ml-12 text-gray-500"><span className="text-green-400">"Microservices Architecture"</span>,</div>
+              <div className="ml-12 text-gray-500"><span className="text-green-400">"Real-time Data Processing"</span></div>
+              <div className="ml-8 text-gray-500">];</div>
               <div className="ml-4 text-gray-400">{'}'}</div>
+              <div className="ml-4 text-gray-400"></div>
               <div className="ml-4 text-gray-400"><span className="text-purple-400">async</span> <span className="text-yellow-400">buildSolutions</span>() {'{'}</div>
-              <div className="ml-8 text-gray-500"><span className="text-purple-400">return await</span> <span className="text-cyan-400">this</span>.<span className="text-yellow-400">innovate</span>() && <span className="text-cyan-400">this</span>.<span className="text-yellow-400">deliver</span>();</div>
+              <div className="ml-8 text-gray-500"><span className="text-purple-400">const</span> ideas = <span className="text-purple-400">await</span> <span className="text-cyan-400">this</span>.<span className="text-yellow-400">brainstorm</span>();</div>
+              <div className="ml-8 text-gray-500"><span className="text-purple-400">const</span> code = <span className="text-cyan-400">this</span>.<span className="text-yellow-400">implement</span>(ideas);</div>
+              <div className="ml-8 text-gray-500"><span className="text-purple-400">return</span> <span className="text-cyan-400">this</span>.<span className="text-yellow-400">deploy</span>(code).<span className="text-yellow-400">withImpact</span>();</div>
+              <div className="ml-4 text-gray-400">{'}'}</div>
+              <div className="ml-4 text-gray-400"></div>
+              <div className="ml-4 text-gray-400"><span className="text-yellow-400">getMotivation</span>() {'{'}</div>
+              <div className="ml-8 text-gray-500"><span className="text-purple-400">return</span> <span className="text-green-400">"Turning complex problems into elegant solutions"</span>;</div>
               <div className="ml-4 text-gray-400">{'}'}</div>
               <div className="text-gray-500">{'}'}</div>
             </div>
@@ -466,24 +587,9 @@ export default function Page() {
         </div>
 
         <div className="grid md:grid-cols-2 gap-8">
-          {/* Left Side - Main Tech Stack */}
+          {/* Left Side - Main Tech Stack with Matter.js Physics */}
           <div ref={techStackContainerRef} className="rounded-3xl border border-white/10 bg-gradient-to-br from-slate-800/50 to-slate-900/80 backdrop-blur-xl p-8 relative overflow-hidden" style={{ minHeight: '600px' }}>
-            {MainSkills.map((skill) => {
-              const pos = bubblePositions[skill];
-              return (
-                <SkillCircle 
-                  key={skill} 
-                  skill={skill} 
-                  icon={TechIcons[skill]}
-                  initialX={pos.x}
-                  initialY={pos.y}
-                  containerRef={techStackContainerRef}
-                  bubblePositions={bubblePositions}
-                  setBubblePositions={setBubblePositions}
-                  bubbleId={skill}
-                />
-              );
-            })}
+            <PhysicsBubbleContainer containerRef={techStackContainerRef} />
           </div>
 
           {/* Right Side - Skills Block */}
@@ -649,7 +755,7 @@ export default function Page() {
                 
                 <div>
                   <p className="text-xs uppercase tracking-widest text-blue-400 mb-2">Location</p>
-                  <p className="text-gray-300 text-sm">RYK, Punjab, Pakistan</p>
+                  <p className="text-gray-300 text-sm">Gulshan-e-Ravi, RYK, Punjab, Pakistan</p>
                 </div>
 
                 <div>
@@ -736,7 +842,7 @@ export default function Page() {
             <div>
               <h3 className="text-lg font-bold tracking-tight mb-3">Muhammad Ahmed</h3>
               <p className="text-sm text-gray-400">Creative Developer</p>
-              <p className="text-sm text-gray-400 mt-2">RYK, Punjab, Pakistan</p>
+              <p className="text-sm text-gray-400 mt-2">Gulshan-e-Ravi, RYK, Punjab, Pakistan</p>
             </div>
 
             <div>
