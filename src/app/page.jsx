@@ -49,10 +49,12 @@ function SkillCircle({ skill, icon }) {
 export default function Page() {
   const [pfpHovered, setPfpHovered] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const [showScrollExplore, setShowScrollExplore] = useState(true);
 
   useEffect(() => {
     const handleScroll = () => {
       setShowScrollTop(window.scrollY > 300);
+      setShowScrollExplore(window.scrollY < 200);
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
@@ -99,12 +101,14 @@ export default function Page() {
             </div>
           </div>
         </div>
-        <div className="absolute bottom-20 left-1/2 -translate-x-1/2 text-xs uppercase tracking-widest text-gray-500 flex flex-col items-center gap-2">
-          <span>Scroll to explore</span>
-          <svg className="w-6 h-6 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-          </svg>
-        </div>
+        {showScrollExplore && (
+          <div className="absolute bottom-20 left-1/2 -translate-x-1/2 text-xs uppercase tracking-widest text-gray-500 flex flex-col items-center gap-2 transition-opacity duration-300">
+            <span>Scroll to explore</span>
+            <svg className="w-6 h-6 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+        )}
       </section>
 
       <section id="skills" className="mx-auto max-w-7xl px-6 md:px-20 py-20">
