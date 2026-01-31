@@ -27,17 +27,19 @@ function SkillCircle({ skill, icon }) {
   const [isHovered, setIsHovered] = useState(false);
   
   return (
-    <div
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      className={`relative w-28 h-28 rounded-full border border-white/10 bg-gradient-to-br from-slate-800/50 to-slate-900/80 backdrop-blur-xl flex flex-col items-center justify-center transition-all duration-300 cursor-pointer ${
-        isHovered ? 'border-blue-400/50 shadow-lg shadow-blue-500/20 scale-110' : ''
-      }`}
-    >
-      <span className="text-4xl mb-2">{icon}</span>
+    <div className="relative flex flex-col items-center">
+      <div
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        className={`w-20 h-20 rounded-full border border-white/10 bg-gradient-to-br from-slate-800/50 to-slate-900/80 backdrop-blur-xl flex items-center justify-center transition-all duration-300 cursor-pointer ${
+          isHovered ? 'border-blue-400/50 shadow-lg shadow-blue-500/20 scale-110' : ''
+        }`}
+      >
+        <span className="text-5xl">{icon}</span>
+      </div>
       <span 
-        className={`text-xs font-medium text-gray-300 text-center px-2 transition-opacity duration-300 ${
-          isHovered ? 'opacity-100' : 'opacity-0'
+        className={`mt-3 text-xs font-medium text-gray-300 text-center whitespace-nowrap transition-all duration-300 ${
+          isHovered ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
         }`}
       >
         {skill}
