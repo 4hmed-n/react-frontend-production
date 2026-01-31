@@ -103,22 +103,111 @@ const MainSkills = [
   'Postman',
 ];
 
-function SkillCircle({ skill, icon }) {
+function SkillCircle({ skill, icon, initialX, initialY }) {
   const [isHovered, setIsHovered] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const [position, setPosition] = useState({ x: initialX, y: initialY });
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+
+  const handleMouseDown = (e) => {
+    setIsDragging(true);
+    setDragStart({
+      x: e.clientX - position.x,
+      y: e.clientY - position.y
+    });
+  };
+
+  const handleMouseMove = (e) => {
+    if (isDragging) {
+      setPosition({
+        x: e.clientX - dragStart.x,
+        y: e.clientY - dragStart.y
+      });
+    }
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  useEffect(() => {
+    if (isDragging) {
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseup', handleMouseUp);
+      return () => {
+        window.removeEventListener('mousemove', handleMouseMove);
+        window.removeEventListener('mouseup', handleMouseUp);
+      };
+    }
+  }, [isDragging, dragStart]);
   
   return (
-    <div className="relative flex flex-col items-center">
+    <div 
+      className="absolute flex flex-col items-center"
+      style={{ 
+        left: `${position.x}px`, 
+        top: `${position.y}px`,
+        cursor: isDragging ? 'grabbing' : 'grab'
+      }}
+    >
       <div
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        className={`w-24 h-24 rounded-full border border-white/10 bg-gradient-to-br from-slate-800/80 to-slate-900/90 backdrop-blur-xl flex items-center justify-center transition-all duration-300 cursor-pointer ${
+        onMouseDown={handleMouseDown}
+        className={`w-24 h-24 rounded-full border border-white/10 bg-gradient-to-br from-slate-800/80 to-slate-900/90 backdrop-blur-xl flex items-center justify-center transition-all duration-300 select-none ${
           isHovered ? 'border-blue-400/50 shadow-2xl shadow-blue-500/30 scale-110' : ''
-        }`}
+        } ${isDragging ? 'scale-110 shadow-2xl shadow-blue-500/50' : ''}`}
       >
         {typeof icon === 'function' ? icon() : <span className="text-5xl">{icon}</span>}
       </div>
       <span 
-        className={`absolute -bottom-6 text-xs font-medium text-gray-300 text-center whitespace-nowrap transition-all duration-300 ${
+        className={`absolute -bottom-6 text-xs font-medium text-gray-300 text-center whitespace-nowrap transition-all duration-300 pointer-events-none
+      setPosition({
+        x: e.clientX - dragStart.x,
+        y: e.clientY - dragStart.y
+      });
+    }
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  useEffect(() => {
+    if (isDragging) {
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseup', handleMouseUp);
+      return () => {
+        window.removeEventListener('mousemove', handleMouseMove);
+        window.removeEventListener('mouseup', handleMouseUp);
+      };
+    }
+  }, [isDragging, dragStart]);
+  
+  return (
+    <div 
+      className="absolute flex flex-col items-center"
+      style={{ 
+        left: `${position.x}px`, 
+        top: `${position.y}px`,
+        transition: isDragging ? 'none' : 'transform 0.3s ease'
+      }}
+    >
+      <div
+        onMouseDown={handleMouseDown}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        className={`w-24 h-24 rounded-full border border-white/10 bg-gradient-to-br from-slate-800/80 to-slate-900/90 backdrop-blur-xl flex items-center justify-center transition-all duration-300 cursor-grab ${
+          isDragging ? 'cursor-grabbing scale-105' : ''
+        } ${
+          isHovered ? 'border-blue-400/50 shadow-2xl shadow-blue-500/30 scale-110' : ''
+        }`}
+        style={{ userSelect: 'none' }}
+      >
+        {typeof icon === 'function' ? icon() : <span className="text-5xl">{icon}</span>}
+      </div>
+      <span 
+        className={`absolute -bottom-6 text-xs font-medium text-gray-300 text-center whitespace-nowrap transition-all duration-300 pointer-events-none ${
           isHovered ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
         }`}
       >
@@ -253,12 +342,24 @@ export default function Page() {
 
         <div className="grid md:grid-cols-2 gap-8">
           {/* Left Side - Main Tech Stack */}
-          <div className="rounded-3xl border border-white/10 bg-gradient-to-br from-slate-800/50 to-slate-900/80 backdrop-blur-xl p-8">
-            <div className="flex flex-wrap justify-center gap-6">
-              {MainSkills.map((skill) => (
-                <SkillCircle key={skill} skill={skill} icon={TechIcons[skill]} />
-              ))}
-            </div>
+          <div className="rounded-3xl border border-white/10 bg-gradient-to-br from-slate-800/50 to-slate-900/80 backdrop-blur-xl p-8 relative overflow-hidden" style={{ minHeight: '600px' }}>
+            {MainSkills.map((skill, index) => {
+              // Generate scattered positions
+              const angle = (index / MainSkills.length) * 2 * Math.PI;
+              const radius = 100 + Math.random() * 120;
+              const x = 250 + Math.cos(angle) * radius;
+              const y = 250 + Math.sin(angle) * radius;
+              
+              return (
+                <SkillCircle 
+                  key={skill} 
+                  skill={skill} 
+                  icon={TechIcons[skill]}
+                  initialX={x}
+                  initialY={y}
+                />
+              );
+            })}
           </div>
 
           {/* Right Side - Skills Block */}
