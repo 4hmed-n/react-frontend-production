@@ -103,13 +103,54 @@ const MainSkills = [
   'Postman',
 ];
 
-function SkillCircle({ skill, icon, initialX, initialY, containerRef }) {
+function SkillCircle({ skill, icon, initialX, initialY, containerRef, bubblePositions, setBubblePositions, bubbleId }) {
   const [isHovered, setIsHovered] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
-  const [position, setPosition] = useState({ x: initialX, y: initialY });
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [deformation, setDeformation] = useState({ scaleX: 1, scaleY: 1 });
   const bubbleSize = 96; // 24 * 4 = 96px (w-24)
+  const bubbleRadius = bubbleSize / 2;
+
+  const position = bubblePositions[bubbleId] || { x: initialX, y: initialY };
+
+  const checkCollisionWithOthers = (newX, newY) => {
+    const centerX = newX + bubbleRadius;
+    const centerY = newY + bubbleRadius;
+    
+    for (const [id, otherPos] of Object.entries(bubblePositions)) {
+      if (id === bubbleId) continue;
+      
+      const otherCenterX = otherPos.x + bubbleRadius;
+      const otherCenterY = otherPos.y + bubbleRadius;
+      
+      const dx = centerX - otherCenterX;
+      const dy = centerY - otherCenterY;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+      const minDistance = bubbleSize; // Two radii
+      
+      if (distance < minDistance) {
+        // Collision detected! Push bubbles apart
+        const angle = Math.atan2(dy, dx);
+        const overlap = minDistance - distance;
+        
+        // Move this bubble away
+        newX += Math.cos(angle) * overlap * 0.5;
+        newY += Math.sin(angle) * overlap * 0.5;
+        
+        // Calculate deformation based on collision
+        const collisionForce = Math.min(overlap / 20, 1);
+        const deformX = 1 - collisionForce * 0.2 * Math.abs(Math.cos(angle));
+        const deformY = 1 - collisionForce * 0.2 * Math.abs(Math.sin(angle));
+        
+        setDeformation({ 
+          scaleX: deformX + (1 - deformX) * Math.abs(Math.sin(angle)),
+          scaleY: deformY + (1 - deformY) * Math.abs(Math.cos(angle))
+        });
+      }
+    }
+    
+    return { x: newX, y: newY };
+  };
 
   const handleMouseDown = (e) => {
     e.preventDefault();
@@ -163,7 +204,15 @@ function SkillCircle({ skill, icon, initialX, initialY, containerRef }) {
         newY = maxY;
       }
 
-      setPosition({ x: newX, y: newY });
+      // Check collision with other bubbles
+      const adjustedPos = checkCollisionWithOthers(newX, newY);
+      
+      // Update position in shared state
+      setBubblePositions(prev => ({
+        ...prev,
+        [bubbleId]: adjustedPos
+      }));
+      
       setDeformation({ scaleX, scaleY });
     }
   };
@@ -189,7 +238,7 @@ function SkillCircle({ skill, icon, initialX, initialY, containerRef }) {
         window.removeEventListener('mouseup', onUp);
       };
     }
-  }, [isDragging, dragStart, position]);
+  }, [isDragging, dragStart, bubblePositions]);
   
   return (
     <div 
@@ -198,7 +247,8 @@ function SkillCircle({ skill, icon, initialX, initialY, containerRef }) {
         left: `${position.x}px`, 
         top: `${position.y}px`,
         cursor: isDragging ? 'grabbing' : 'grab',
-        userSelect: 'none'
+        userSelect: 'none',
+        zIndex: isDragging ? 50 : 1
       }}
     >
       <div
@@ -234,6 +284,19 @@ export default function Page() {
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [showScrollExplore, setShowScrollExplore] = useState(true);
   const techStackContainerRef = useRef(null);
+  
+  // Initialize bubble positions
+  const [bubblePositions, setBubblePositions] = useState(() => {
+    const positions = {};
+    MainSkills.forEach((skill, index) => {
+      const angle = (index / MainSkills.length) * 2 * Math.PI;
+      const radius = 100 + Math.random() * 120;
+      const x = 250 + Math.cos(angle) * radius;
+      const y = 250 + Math.sin(angle) * radius;
+      positions[skill] = { x, y };
+    });
+    return positions;
+  });
 
   useEffect(() => {
     const handleScroll = () => {
@@ -356,21 +419,19 @@ export default function Page() {
         <div className="grid md:grid-cols-2 gap-8">
           {/* Left Side - Main Tech Stack */}
           <div ref={techStackContainerRef} className="rounded-3xl border border-white/10 bg-gradient-to-br from-slate-800/50 to-slate-900/80 backdrop-blur-xl p-8 relative overflow-hidden" style={{ minHeight: '600px' }}>
-            {MainSkills.map((skill, index) => {
-              // Generate scattered positions
-              const angle = (index / MainSkills.length) * 2 * Math.PI;
-              const radius = 100 + Math.random() * 120;
-              const x = 250 + Math.cos(angle) * radius;
-              const y = 250 + Math.sin(angle) * radius;
-              
+            {MainSkills.map((skill) => {
+              const pos = bubblePositions[skill];
               return (
                 <SkillCircle 
                   key={skill} 
                   skill={skill} 
                   icon={TechIcons[skill]}
-                  initialX={x}
-                  initialY={y}
+                  initialX={pos.x}
+                  initialY={pos.y}
                   containerRef={techStackContainerRef}
+                  bubblePositions={bubblePositions}
+                  setBubblePositions={setBubblePositions}
+                  bubbleId={skill}
                 />
               );
             })}
