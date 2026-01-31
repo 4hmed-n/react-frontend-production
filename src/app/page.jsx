@@ -111,48 +111,6 @@ export default function Page() {
         )}
       </section>
 
-      <section id="skills" className="mx-auto max-w-7xl px-6 md:px-20 py-20">
-        <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-          <p className="text-xs uppercase tracking-widest text-blue-400">Skills</p>
-          <div className="mt-4 flex flex-wrap gap-3">
-            {[
-              'Python',
-              'SQL',
-              'JavaScript',
-              'React',
-              'React Native',
-              'MongoDB',
-              'Express.js',
-              'Node.js',
-              'C++',
-              'C#',
-              'SQLite',
-              'HTML5',
-              'CSS3',
-              'CSS',
-              'FastAPI',
-              'REST API',
-              'Tailwind',
-              'Expo',
-              'Computer Vision',
-              'Particle',
-              'Docker',
-              'n8n',
-              'Git/GitHub',
-              'Postman',
-              'Firebase',
-            ].map((skill) => (
-              <span
-                key={skill}
-                className="rounded-xl bg-slate-900/60 px-3 py-2 text-xs uppercase tracking-widest text-gray-200"
-              >
-                {skill}
-              </span>
-            ))}
-          </div>
-        </div>
-      </section>
-
       <section id="about" className="mx-auto max-w-7xl px-6 md:px-20 py-20">
         <div className="grid gap-10 md:grid-cols-2 items-start">
           <div>
@@ -198,6 +156,48 @@ export default function Page() {
               <div className="ml-4 text-gray-400">{'}'}</div>
               <div className="text-gray-500">{'}'};</div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="skills" className="mx-auto max-w-7xl px-6 md:px-20 py-20">
+        <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+          <p className="text-xs uppercase tracking-widest text-blue-400">Skills</p>
+          <div className="mt-4 flex flex-wrap gap-3">
+            {[
+              'Python',
+              'SQL',
+              'JavaScript',
+              'React',
+              'React Native',
+              'MongoDB',
+              'Express.js',
+              'Node.js',
+              'C++',
+              'C#',
+              'SQLite',
+              'HTML5',
+              'CSS3',
+              'CSS',
+              'FastAPI',
+              'REST API',
+              'Tailwind',
+              'Expo',
+              'Computer Vision',
+              'Particle',
+              'Docker',
+              'n8n',
+              'Git/GitHub',
+              'Postman',
+              'Firebase',
+            ].map((skill) => (
+              <span
+                key={skill}
+                className="rounded-xl bg-slate-900/60 px-3 py-2 text-xs uppercase tracking-widest text-gray-200"
+              >
+                {skill}
+              </span>
+            ))}
           </div>
         </div>
       </section>
