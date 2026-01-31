@@ -125,7 +125,7 @@ export default function Layout({ children }) {
             download
             className="ml-auto hidden md:inline-flex items-center rounded-full bg-blue-500/20 border border-blue-400/50 px-5 py-2 text-xs uppercase tracking-widest text-blue-300 hover:bg-blue-500/30 hover:border-blue-400/70 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/20"
           >
-            While
+            Resume
           </a>
         </div>
       </nav>
