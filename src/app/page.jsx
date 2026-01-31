@@ -5,22 +5,38 @@ const TechIcons = {
   'Python': '🐍',
   'Data Science': '📊',
   'ML/AI': '🤖',
-  'JavaScript': '🟨',
+  'JavaScript': '⚡',
   'React': '⚛️',
+  'Node.js': '🟢',
   'MongoDB': '🍃',
+  'Express.js': '🚂',
+  'SQL': '🗄️',
   'Docker': '🐳',
-  'Git/GitHub': '🐙',
+  'Git/GitHub': '🔀',
+  'REST API': '🔌',
+  'FastAPI': '⚡',
+  'Tailwind': '💨',
+  'Firebase': '🔥',
+  'Postman': '📮',
 };
 
 const MainSkills = [
   'Python',
-  'Data Science',
-  'ML/AI',
   'JavaScript',
   'React',
+  'Node.js',
   'MongoDB',
+  'Express.js',
+  'Data Science',
+  'ML/AI',
+  'SQL',
   'Docker',
   'Git/GitHub',
+  'REST API',
+  'FastAPI',
+  'Tailwind',
+  'Firebase',
+  'Postman',
 ];
 
 function SkillCircle({ skill, icon }) {
@@ -174,17 +190,9 @@ export default function Page() {
         <div className="grid md:grid-cols-2 gap-8">
           {/* Left Side - Main Tech Stack */}
           <div className="rounded-3xl border border-white/10 bg-gradient-to-br from-slate-800/50 to-slate-900/80 backdrop-blur-xl p-8">
-            <div className="grid grid-cols-2 gap-6">
+            <div className="flex flex-wrap justify-center gap-6">
               {MainSkills.map((skill) => (
-                <div
-                  key={skill}
-                  className="group rounded-2xl border border-white/10 bg-white/5 p-6 hover:border-blue-400/50 hover:shadow-lg hover:shadow-blue-500/20 transition-all duration-300 cursor-pointer flex flex-col items-center justify-center gap-3"
-                >
-                  <span className="text-5xl">{TechIcons[skill]}</span>
-                  <span className="text-xs font-medium text-gray-300 text-center whitespace-nowrap">
-                    {skill}
-                  </span>
-                </div>
+                <SkillCircle key={skill} skill={skill} icon={TechIcons[skill]} />
               ))}
             </div>
           </div>
