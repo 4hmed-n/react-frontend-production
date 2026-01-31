@@ -345,10 +345,10 @@ export default function Page() {
               <span className="text-blue-400">Muhammad Ahmed</span>
             </h1>
             <p className="mt-4 text-2xl md:text-3xl font-light text-gray-300 font-display">
-              Creative Developer
+              Software Engineer & AI Architect
             </p>
             <p className="mt-6 text-lg text-gray-400 max-w-xl leading-relaxed">
-              Full-Stack Developer and Data Science enthusiast from Pakistan. I build intelligent web applications combining modern frontend frameworks with machine learning and data-driven backends.
+              Bridging the gap between intelligent systems and elegant user experiences. I architect scalable full-stack solutions powered by machine learning, transforming complex data into intuitive, production-ready applications that drive real-world impact.
             </p>
             <div className="mt-8">
               <a
@@ -389,21 +389,30 @@ export default function Page() {
               About <span className="text-blue-400">Me</span>
             </h2>
             <p className="mt-6 text-gray-300 leading-relaxed text-lg">
-              I'm Muhammad Ahmed, a passionate Creative Developer based in Pakistan. I specialize in building immersive web experiences that blend art with technology and data science.
+              I'm a software engineer specializing in the intersection of artificial intelligence and modern web development. Based in Pakistan, I craft end-to-end solutions that leverage machine learning algorithms, real-time data processing, and cutting-edge frontend technologies.
             </p>
             <p className="mt-4 text-gray-400 leading-relaxed">
-              With expertise in Python, Machine Learning, and modern web frameworks like React and FastAPI, I transform data into actionable insights and create elegant, performant solutions. I'm passionate about solving complex problems and building products that matter.
+              From designing neural networks to building responsive React interfaces, I bring a holistic approach to software development. My work spans predictive analytics, computer vision applications, RESTful microservices, and cloud-native architectures—all unified by a commitment to clean code, scalability, and measurable business outcomes.
             </p>
-            <div className="mt-8 flex flex-wrap gap-4">
-              <div className="rounded-2xl border border-blue-500/30 bg-blue-500/10 px-5 py-3">
-                <span className="text-sm font-medium text-blue-400">Data Science</span>
-              </div>
-              <div className="rounded-2xl border border-purple-500/30 bg-purple-500/10 px-5 py-3">
-                <span className="text-sm font-medium text-purple-400">ML Engineering</span>
-              </div>
-              <div className="rounded-2xl border border-cyan-500/30 bg-cyan-500/10 px-5 py-3">
-                <span className="text-sm font-medium text-cyan-400">Full-Stack Dev</span>
-              </div>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <a href="#skills" className="rounded-2xl border border-blue-500/30 bg-blue-500/10 px-5 py-3 hover:bg-blue-500/20 hover:border-blue-500/50 transition-all duration-300 cursor-pointer group">
+                <span className="text-sm font-medium text-blue-400 group-hover:text-blue-300">Data Science</span>
+              </a>
+              <a href="#skills" className="rounded-2xl border border-purple-500/30 bg-purple-500/10 px-5 py-3 hover:bg-purple-500/20 hover:border-purple-500/50 transition-all duration-300 cursor-pointer group">
+                <span className="text-sm font-medium text-purple-400 group-hover:text-purple-300">ML Engineering</span>
+              </a>
+              <a href="#skills" className="rounded-2xl border border-cyan-500/30 bg-cyan-500/10 px-5 py-3 hover:bg-cyan-500/20 hover:border-cyan-500/50 transition-all duration-300 cursor-pointer group">
+                <span className="text-sm font-medium text-cyan-400 group-hover:text-cyan-300">Full-Stack Dev</span>
+              </a>
+              <a href="#skills" className="rounded-2xl border border-green-500/30 bg-green-500/10 px-5 py-3 hover:bg-green-500/20 hover:border-green-500/50 transition-all duration-300 cursor-pointer group">
+                <span className="text-sm font-medium text-green-400 group-hover:text-green-300">API Development</span>
+              </a>
+              <a href="#skills" className="rounded-2xl border border-pink-500/30 bg-pink-500/10 px-5 py-3 hover:bg-pink-500/20 hover:border-pink-500/50 transition-all duration-300 cursor-pointer group">
+                <span className="text-sm font-medium text-pink-400 group-hover:text-pink-300">Deep Learning</span>
+              </a>
+              <a href="#skills" className="rounded-2xl border border-orange-500/30 bg-orange-500/10 px-5 py-3 hover:bg-orange-500/20 hover:border-orange-500/50 transition-all duration-300 cursor-pointer group">
+                <span className="text-sm font-medium text-orange-400 group-hover:text-orange-300">Cloud Architecture</span>
+              </a>
             </div>
           </div>
           <div className="rounded-3xl border border-white/10 bg-gradient-to-br from-slate-800/50 to-slate-900/80 backdrop-blur-xl overflow-hidden">
@@ -416,16 +425,23 @@ export default function Page() {
               <span className="ml-4 text-xs text-gray-400">developer.js</span>
             </div>
             <div className="p-6 font-mono text-sm">
-              <div className="text-gray-500">const <span className="text-blue-400">developer</span> = {'{'}</div>
-              <div className="ml-4 text-gray-400">name: <span className="text-green-400">"Muhammad Ahmed"</span>,</div>
-              <div className="ml-4 text-gray-400">role: <span className="text-green-400">"Full-Stack Developer"</span>,</div>
-              <div className="ml-4 text-gray-400">expertise: [<span className="text-green-400">"Python"</span>, <span className="text-green-400">"ML/AI"</span>, <span className="text-green-400">"React"</span>],</div>
-              <div className="ml-4 text-gray-400">passionate: <span className="text-orange-400">true</span>,</div>
-              <div className="ml-4 text-gray-400">innovative: <span className="text-orange-400">true</span>,</div>
-              <div className="ml-4 text-gray-400">available: <span className="text-purple-400">function</span>() {'{'}</div>
-              <div className="ml-8 text-gray-500">return <span className="text-orange-400">true</span>;</div>
+              <div className="text-gray-500"><span className="text-purple-400">class</span> <span className="text-blue-400">SoftwareEngineer</span> {'{'}</div>
+              <div className="ml-4 text-gray-400"><span className="text-purple-400">constructor</span>() {'{'}</div>
+              <div className="ml-8 text-gray-500"><span className="text-cyan-400">this</span>.name = <span className="text-green-400">"Muhammad Ahmed"</span>;</div>
+              <div className="ml-8 text-gray-500"><span className="text-cyan-400">this</span>.role = <span className="text-green-400">"AI Architect & Full-Stack Developer"</span>;</div>
+              <div className="ml-8 text-gray-500"><span className="text-cyan-400">this</span>.location = <span className="text-green-400">"Pakistan 🇵🇰"</span>;</div>
+              <div className="ml-8 text-gray-500"><span className="text-cyan-400">this</span>.skills = {'{'}</div>
+              <div className="ml-12 text-gray-500">backend: [<span className="text-green-400">"Python"</span>, <span className="text-green-400">"Node.js"</span>, <span className="text-green-400">"FastAPI"</span>],</div>
+              <div className="ml-12 text-gray-500">frontend: [<span className="text-green-400">"React"</span>, <span className="text-green-400">"TypeScript"</span>, <span className="text-green-400">"Tailwind"</span>],</div>
+              <div className="ml-12 text-gray-500">ai: [<span className="text-green-400">"TensorFlow"</span>, <span className="text-green-400">"PyTorch"</span>, <span className="text-green-400">"Scikit-learn"</span>],</div>
+              <div className="ml-12 text-gray-500">databases: [<span className="text-green-400">"MongoDB"</span>, <span className="text-green-400">"PostgreSQL"</span>, <span className="text-green-400">"Redis"</span>],</div>
+              <div className="ml-12 text-gray-500">devOps: [<span className="text-green-400">"Docker"</span>, <span className="text-green-400">"Git"</span>, <span className="text-green-400">"CI/CD"</span>]</div>
+              <div className="ml-8 text-gray-500">{'}'};</div>
               <div className="ml-4 text-gray-400">{'}'}</div>
-              <div className="text-gray-500">{'}'};</div>
+              <div className="ml-4 text-gray-400"><span className="text-purple-400">async</span> <span className="text-yellow-400">buildSolutions</span>() {'{'}</div>
+              <div className="ml-8 text-gray-500"><span className="text-purple-400">return await</span> <span className="text-cyan-400">this</span>.<span className="text-yellow-400">innovate</span>() && <span className="text-cyan-400">this</span>.<span className="text-yellow-400">deliver</span>();</div>
+              <div className="ml-4 text-gray-400">{'}'}</div>
+              <div className="text-gray-500">{'}'}</div>
             </div>
           </div>
         </div>
