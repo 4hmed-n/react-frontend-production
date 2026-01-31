@@ -325,7 +325,6 @@ export default function Page() {
 
               <form className="p-4 md:p-6 space-y-4">
                 <div className="flex items-center gap-2 text-purple-200 text-xs">
-                  <span>➔</span>
                   <p className="uppercase tracking-[0.2em]">Send a message</p>
                 </div>
 
