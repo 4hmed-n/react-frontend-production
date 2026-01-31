@@ -132,14 +132,18 @@ function SkillCircle({ skill, icon, initialX, initialY }) {
 
   useEffect(() => {
     if (isDragging) {
-      window.addEventListener('mousemove', handleMouseMove);
-      window.addEventListener('mouseup', handleMouseUp);
+      const onMove = (e) => handleMouseMove(e);
+      const onUp = () => handleMouseUp();
+      
+      window.addEventListener('mousemove', onMove);
+      window.addEventListener('mouseup', onUp);
+      
       return () => {
-        window.removeEventListener('mousemove', handleMouseMove);
-        window.removeEventListener('mouseup', handleMouseUp);
+        window.removeEventListener('mousemove', onMove);
+        window.removeEventListener('mouseup', onUp);
       };
     }
-  }, [isDragging, dragStart]);
+  }, [isDragging, dragStart, position]);
   
   return (
     <div 
@@ -157,52 +161,6 @@ function SkillCircle({ skill, icon, initialX, initialY }) {
         className={`w-24 h-24 rounded-full border border-white/10 bg-gradient-to-br from-slate-800/80 to-slate-900/90 backdrop-blur-xl flex items-center justify-center transition-all duration-300 select-none ${
           isHovered ? 'border-blue-400/50 shadow-2xl shadow-blue-500/30 scale-110' : ''
         } ${isDragging ? 'scale-110 shadow-2xl shadow-blue-500/50' : ''}`}
-      >
-        {typeof icon === 'function' ? icon() : <span className="text-5xl">{icon}</span>}
-      </div>
-      <span 
-        className={`absolute -bottom-6 text-xs font-medium text-gray-300 text-center whitespace-nowrap transition-all duration-300 pointer-events-none
-      setPosition({
-        x: e.clientX - dragStart.x,
-        y: e.clientY - dragStart.y
-      });
-    }
-  };
-
-  const handleMouseUp = () => {
-    setIsDragging(false);
-  };
-
-  useEffect(() => {
-    if (isDragging) {
-      window.addEventListener('mousemove', handleMouseMove);
-      window.addEventListener('mouseup', handleMouseUp);
-      return () => {
-        window.removeEventListener('mousemove', handleMouseMove);
-        window.removeEventListener('mouseup', handleMouseUp);
-      };
-    }
-  }, [isDragging, dragStart]);
-  
-  return (
-    <div 
-      className="absolute flex flex-col items-center"
-      style={{ 
-        left: `${position.x}px`, 
-        top: `${position.y}px`,
-        transition: isDragging ? 'none' : 'transform 0.3s ease'
-      }}
-    >
-      <div
-        onMouseDown={handleMouseDown}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-        className={`w-24 h-24 rounded-full border border-white/10 bg-gradient-to-br from-slate-800/80 to-slate-900/90 backdrop-blur-xl flex items-center justify-center transition-all duration-300 cursor-grab ${
-          isDragging ? 'cursor-grabbing scale-105' : ''
-        } ${
-          isHovered ? 'border-blue-400/50 shadow-2xl shadow-blue-500/30 scale-110' : ''
-        }`}
-        style={{ userSelect: 'none' }}
       >
         {typeof icon === 'function' ? icon() : <span className="text-5xl">{icon}</span>}
       </div>
