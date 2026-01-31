@@ -1,10 +1,11 @@
+'use client';
 import { useState, useEffect } from 'react';
 
 const TechIcons = {
   'Python': '🐍',
   'Data Science': '📊',
   'ML/AI': '🤖',
-  'JavaScript': '⚛️',
+  'JavaScript': '🟨',
   'React': '⚛️',
   'MongoDB': '🍃',
   'Docker': '🐳',
