@@ -162,50 +162,8 @@ export default function Page() {
         </div>
       </section>
 
-      <section id="skills" className="mx-auto max-w-7xl px-6 md:px-20 py-20">
-        <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-          <p className="text-xs uppercase tracking-widest text-blue-400">Skills</p>
-          <div className="mt-4 flex flex-wrap gap-3">
-            {[
-              'Python',
-              'SQL',
-              'JavaScript',
-              'React',
-              'React Native',
-              'MongoDB',
-              'Express.js',
-              'Node.js',
-              'C++',
-              'C#',
-              'SQLite',
-              'HTML5',
-              'CSS3',
-              'CSS',
-              'FastAPI',
-              'REST API',
-              'Tailwind',
-              'Expo',
-              'Computer Vision',
-              'Particle',
-              'Docker',
-              'n8n',
-              'Git/GitHub',
-              'Postman',
-              'Firebase',
-            ].map((skill) => (
-              <span
-                key={skill}
-                className="rounded-xl bg-slate-900/60 px-3 py-2 text-xs uppercase tracking-widest text-gray-200"
-              >
-                {skill}
-              </span>
-            ))}
-          </div>
-        </div>
-      </section>
-
       <section className="mx-auto max-w-7xl px-6 md:px-20 py-20">
-        <div className="text-center">
+        <div className="text-center mb-12">
           <p className="text-xs uppercase tracking-widest text-blue-400">Core Technologies</p>
           <h2 className="mt-3 text-4xl md:text-5xl font-bold tracking-tighter">Main Tech Stack</h2>
           <p className="mt-4 text-gray-400 max-w-2xl mx-auto">
@@ -213,10 +171,74 @@ export default function Page() {
           </p>
         </div>
 
-        <div className="mt-12 flex flex-wrap justify-center gap-8">
-          {MainSkills.map((skill) => (
-            <SkillCircle key={skill} skill={skill} icon={TechIcons[skill]} />
-          ))}
+        <div className="grid md:grid-cols-2 gap-8">
+          {/* Left Side - Main Tech Stack */}
+          <div className="rounded-3xl border border-white/10 bg-gradient-to-br from-slate-800/50 to-slate-900/80 backdrop-blur-xl p-8">
+            <div className="grid grid-cols-2 gap-6">
+              {MainSkills.map((skill) => (
+                <div
+                  key={skill}
+                  className="group rounded-2xl border border-white/10 bg-white/5 p-6 hover:border-blue-400/50 hover:shadow-lg hover:shadow-blue-500/20 transition-all duration-300 cursor-pointer flex flex-col items-center justify-center gap-3"
+                >
+                  <span className="text-5xl">{TechIcons[skill]}</span>
+                  <span className="text-xs font-medium text-gray-300 text-center whitespace-nowrap">
+                    {skill}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Right Side - Skills Block */}
+          <div className="rounded-3xl border border-white/10 bg-gradient-to-br from-slate-800/50 to-slate-900/80 backdrop-blur-xl overflow-hidden">
+            <div className="flex items-center gap-2 border-b border-white/10 px-4 py-3">
+              <div className="flex gap-2">
+                <div className="h-3 w-3 rounded-full bg-red-500"></div>
+                <div className="h-3 w-3 rounded-full bg-yellow-500"></div>
+                <div className="h-3 w-3 rounded-full bg-green-500"></div>
+              </div>
+              <span className="ml-4 text-xs text-gray-400">skills.json</span>
+            </div>
+            <div className="p-6">
+              <p className="text-xs uppercase tracking-widest text-purple-400 mb-4">Skills</p>
+              <div className="flex flex-wrap gap-2 max-h-[500px] overflow-y-auto">
+                {[
+                  'Python',
+                  'SQL',
+                  'JavaScript',
+                  'React',
+                  'React Native',
+                  'MongoDB',
+                  'Express.js',
+                  'Node.js',
+                  'C++',
+                  'C#',
+                  'SQLite',
+                  'HTML5',
+                  'CSS3',
+                  'CSS',
+                  'FastAPI',
+                  'REST API',
+                  'Tailwind',
+                  'Expo',
+                  'Computer Vision',
+                  'Particle',
+                  'Docker',
+                  'n8n',
+                  'Git/GitHub',
+                  'Postman',
+                  'Firebase',
+                ].map((skill) => (
+                  <span
+                    key={skill}
+                    className="rounded-lg bg-slate-900/60 border border-white/10 px-3 py-1.5 text-xs uppercase tracking-widest text-gray-200 hover:border-purple-400/50 hover:bg-purple-500/10 transition-all duration-200"
+                  >
+                    {skill}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
