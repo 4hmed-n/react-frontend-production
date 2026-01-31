@@ -364,7 +364,6 @@ export default function Page() {
                   className="w-full inline-flex items-center justify-center gap-2 rounded-md border border-cyan-400/60 bg-cyan-500/10 px-4 py-2.5 text-xs font-semibold uppercase tracking-[0.3em] text-cyan-300 hover:bg-cyan-500/20 transition-colors"
                 >
                   Send
-                  <span>✉️</span>
                 </button>
               </form>
             </div>
