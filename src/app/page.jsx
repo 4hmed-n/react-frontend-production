@@ -146,10 +146,19 @@ function SkillCircle({ skill, icon, initialX, initialY, containerRef, bubblePosi
         // Calculate overlap amount
         const overlap = minDistance - distance;
         
-        // Push this bubble away from the other bubble
-        // Move exactly the overlap distance to separate the surfaces
-        adjustedX = newX + nx * overlap;
-        adjustedY = newY + ny * overlap;
+        // Push this bubble away (the one being dragged)
+        adjustedX = newX + nx * overlap * 0.6;
+        adjustedY = newY + ny * overlap * 0.6;
+        
+        // Push the other bubble away too (physics!)
+        const pushForce = overlap * 0.4;
+        setBubblePositions(prev => ({
+          ...prev,
+          [id]: {
+            x: otherPos.x - nx * pushForce,
+            y: otherPos.y - ny * pushForce
+          }
+        }));
         
         // Calculate deformation based on collision angle and force
         const collisionForce = Math.min(overlap / bubbleSize * 2, 0.4);
@@ -481,50 +490,91 @@ export default function Page() {
           <div className="rounded-3xl border border-white/10 bg-gradient-to-br from-slate-800/50 to-slate-900/80 backdrop-blur-xl overflow-hidden">
             <div className="flex items-center gap-2 border-b border-white/10 px-4 py-3">
               <div className="flex gap-2">
-                <div className="h-3 w-3 rounded-full bg-red-500"></div>
+                <div className="h-3 w-3 rounded-full bg-red-500 animate-pulse"></div>
                 <div className="h-3 w-3 rounded-full bg-yellow-500"></div>
                 <div className="h-3 w-3 rounded-full bg-green-500"></div>
               </div>
-              <span className="ml-4 text-xs text-gray-400">skills.json</span>
+              <span className="ml-4 text-xs text-gray-400">skills.config.ts</span>
+              <div className="ml-auto text-xs text-gray-500">40+ technologies</div>
             </div>
-            <div className="p-6">
-              <p className="text-xs uppercase tracking-widest text-purple-400 mb-4">Skills</p>
-              <div className="flex flex-wrap gap-2 max-h-[500px] overflow-y-auto">
-                {[
-                  'Python',
-                  'SQL',
-                  'JavaScript',
-                  'React',
-                  'React Native',
-                  'MongoDB',
-                  'Express.js',
-                  'Node.js',
-                  'C++',
-                  'C#',
-                  'SQLite',
-                  'HTML5',
-                  'CSS3',
-                  'CSS',
-                  'FastAPI',
-                  'REST API',
-                  'Tailwind',
-                  'Expo',
-                  'Computer Vision',
-                  'Particle',
-                  'Docker',
-                  'n8n',
-                  'Git/GitHub',
-                  'Postman',
-                  'Firebase',
-                ].map((skill) => (
-                  <span
-                    key={skill}
-                    className="rounded-lg bg-slate-900/60 border border-white/10 px-3 py-1.5 text-xs uppercase tracking-widest text-gray-200 hover:border-purple-400/50 hover:bg-purple-500/10 transition-all duration-200"
-                  >
-                    {skill}
-                  </span>
-                ))}
+            <div className="p-6 max-h-[580px] overflow-y-auto custom-scrollbar">
+              
+              {/* Backend & Databases */}
+              <div className="mb-6">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-1 h-4 bg-gradient-to-b from-green-400 to-green-600 rounded-full"></div>
+                  <p className="text-xs uppercase tracking-widest text-green-400 font-semibold">Backend & Databases</p>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {['Python', 'Node.js', 'FastAPI', 'Express.js', 'REST API', 'MongoDB', 'PostgreSQL', 'SQL', 'SQLite', 'Redis'].map((skill) => (
+                    <span
+                      key={skill}
+                      className="group relative rounded-lg bg-gradient-to-br from-green-900/20 to-green-800/10 border border-green-500/20 px-3 py-2 text-xs font-medium text-gray-200 hover:border-green-400/60 hover:bg-green-500/20 hover:scale-105 hover:shadow-lg hover:shadow-green-500/20 transition-all duration-300 cursor-pointer"
+                    >
+                      {skill}
+                      <span className="absolute -top-1 -right-1 w-2 h-2 bg-green-400 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                    </span>
+                  ))}
+                </div>
               </div>
+
+              {/* Frontend & UI */}
+              <div className="mb-6">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-1 h-4 bg-gradient-to-b from-blue-400 to-blue-600 rounded-full"></div>
+                  <p className="text-xs uppercase tracking-widest text-blue-400 font-semibold">Frontend & UI</p>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {['React', 'TypeScript', 'JavaScript', 'React Native', 'Tailwind CSS', 'HTML5', 'CSS3', 'Expo', 'Vite'].map((skill) => (
+                    <span
+                      key={skill}
+                      className="group relative rounded-lg bg-gradient-to-br from-blue-900/20 to-blue-800/10 border border-blue-500/20 px-3 py-2 text-xs font-medium text-gray-200 hover:border-blue-400/60 hover:bg-blue-500/20 hover:scale-105 hover:shadow-lg hover:shadow-blue-500/20 transition-all duration-300 cursor-pointer"
+                    >
+                      {skill}
+                      <span className="absolute -top-1 -right-1 w-2 h-2 bg-blue-400 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* AI & Machine Learning */}
+              <div className="mb-6">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-1 h-4 bg-gradient-to-b from-purple-400 to-purple-600 rounded-full"></div>
+                  <p className="text-xs uppercase tracking-widest text-purple-400 font-semibold">AI & Machine Learning</p>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {['TensorFlow', 'PyTorch', 'Scikit-learn', 'Computer Vision', 'NLP', 'Deep Learning', 'Data Science', 'Pandas', 'NumPy'].map((skill) => (
+                    <span
+                      key={skill}
+                      className="group relative rounded-lg bg-gradient-to-br from-purple-900/20 to-purple-800/10 border border-purple-500/20 px-3 py-2 text-xs font-medium text-gray-200 hover:border-purple-400/60 hover:bg-purple-500/20 hover:scale-105 hover:shadow-lg hover:shadow-purple-500/20 transition-all duration-300 cursor-pointer"
+                    >
+                      {skill}
+                      <span className="absolute -top-1 -right-1 w-2 h-2 bg-purple-400 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* DevOps & Tools */}
+              <div>
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-1 h-4 bg-gradient-to-b from-orange-400 to-orange-600 rounded-full"></div>
+                  <p className="text-xs uppercase tracking-widest text-orange-400 font-semibold">DevOps & Tools</p>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {['Docker', 'Git/GitHub', 'CI/CD', 'Firebase', 'Postman', 'n8n', 'AWS', 'Vercel'].map((skill) => (
+                    <span
+                      key={skill}
+                      className="group relative rounded-lg bg-gradient-to-br from-orange-900/20 to-orange-800/10 border border-orange-500/20 px-3 py-2 text-xs font-medium text-gray-200 hover:border-orange-400/60 hover:bg-orange-500/20 hover:scale-105 hover:shadow-lg hover:shadow-orange-500/20 transition-all duration-300 cursor-pointer"
+                    >
+                      {skill}
+                      <span className="absolute -top-1 -right-1 w-2 h-2 bg-orange-400 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                    </span>
+                  ))}
+                </div>
+              </div>
+
             </div>
           </div>
         </div>
