@@ -50,61 +50,61 @@ export default function App() {
   const themes = {
     obsidian: {
       icon: '🪨',
-      bg: 'radial-gradient(circle at top, #020617 0%, #000000 85%)',
-      card: 'rgba(8,12,20,0.85)',
-      accent: '#22d3ee',
-      text: '#f8fafc',
-      subtext: '#94a3b8',
-      border: '1px solid rgba(34,211,238,0.25)',
-      glow: '0 0 30px rgba(34,211,238,0.15)',
+      bg: 'radial-gradient(circle at top, #1a1a2e 0%, #0f0f1e 50%, #000000 100%)',
+      card: 'rgba(15,15,30,0.9)',
+      accent: '#8b5cf6',
+      text: '#e5e7eb',
+      subtext: '#9ca3af',
+      border: '1px solid rgba(139,92,246,0.3)',
+      glow: '0 0 25px rgba(139,92,246,0.2), inset 0 0 20px rgba(139,92,246,0.05)',
       glass: true
     },
 
     neonvoid: {
       icon: '🪩',
-      bg: '#000000',
-      card: 'rgba(10,10,10,0.92)',
-      accent: '#7c3aed',
-      text: '#f4f4f5',
-      subtext: '#a1a1aa',
-      border: '1px solid rgba(124,58,237,0.45)',
-      glow: '0 0 40px rgba(124,58,237,0.4)',
+      bg: 'radial-gradient(ellipse at center, #0a0a0a 0%, #000000 70%)',
+      card: 'rgba(20,20,20,0.95)',
+      accent: '#ff00ff',
+      text: '#ffffff',
+      subtext: '#e0b3ff',
+      border: '1px solid rgba(255,0,255,0.6)',
+      glow: '0 0 50px rgba(255,0,255,0.5), 0 0 20px rgba(0,255,255,0.3)',
       glass: true
     },
 
     paper: {
       icon: '📄',
-      bg: '#fafafa',
+      bg: 'linear-gradient(to bottom, #ffffff 0%, #f5f5f5 100%)',
       card: '#ffffff',
-      accent: '#020617',
-      text: '#020617',
-      subtext: '#475569',
-      border: '1px solid #e5e7eb',
-      glow: 'none',
+      accent: '#1e40af',
+      text: '#1f2937',
+      subtext: '#6b7280',
+      border: '1px solid #d1d5db',
+      glow: '0 2px 8px rgba(0,0,0,0.08)',
       glass: false
     },
 
     royal: {
       icon: '👑',
-      bg: 'linear-gradient(135deg, #020617, #1e1b4b)',
-      card: 'rgba(30,27,75,0.75)',
-      accent: '#facc15',
-      text: '#f8fafc',
-      subtext: '#c7d2fe',
-      border: '1px solid rgba(250,204,21,0.4)',
-      glow: '0 0 35px rgba(250,204,21,0.25)',
+      bg: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4c1d95 100%)',
+      card: 'rgba(49,46,129,0.85)',
+      accent: '#fbbf24',
+      text: '#fef3c7',
+      subtext: '#fde68a',
+      border: '1px solid rgba(251,191,36,0.5)',
+      glow: '0 0 40px rgba(251,191,36,0.3), inset 0 0 30px rgba(251,191,36,0.1)',
       glass: true
     },
 
     hologram: {
       icon: '🌌',
-      bg: 'linear-gradient(120deg, #020617, #0f172a, #020617)',
-      card: 'rgba(255,255,255,0.08)',
-      accent: '#5eead4',
-      text: '#ecfeff',
-      subtext: '#99f6e4',
-      border: '1px solid rgba(94,234,212,0.45)',
-      glow: '0 0 45px rgba(94,234,212,0.4)',
+      bg: 'linear-gradient(120deg, #0c1445 0%, #1a0b2e 25%, #0c1445 50%, #1a0b2e 75%, #0c1445 100%)',
+      card: 'rgba(10,255,255,0.12)',
+      accent: '#00ffff',
+      text: '#e0ffff',
+      subtext: '#80ffff',
+      border: '1px solid rgba(0,255,255,0.5)',
+      glow: '0 0 60px rgba(0,255,255,0.4), 0 0 30px rgba(147,51,234,0.3)',
       glass: true
     }
   };
@@ -157,12 +157,15 @@ export default function App() {
                 borderRadius: '999px',
                 background: theme === k ? tk.accent : 'transparent',
                 border: `1px solid ${tk.accent}`,
-                color: theme === k ? '#000' : t.text,
+                color: theme === k 
+                  ? (k === 'paper' ? '#ffffff' : '#000000')
+                  : tk.accent,
                 fontWeight: 800,
                 letterSpacing: '1px',
                 cursor: 'pointer',
                 display: 'inline-flex',
-                alignItems: 'center'
+                alignItems: 'center',
+                transition: 'all 0.25s ease'
               }}
             >
               <span style={{ fontSize: '1.15rem', marginRight: '10px' }}>
@@ -302,11 +305,12 @@ export default function App() {
             padding: '16px 44px',
             borderRadius: '999px',
             background: t.accent,
-            color: '#000',
+            color: theme === 'paper' ? '#ffffff' : '#000000',
             fontWeight: 900,
             letterSpacing: '0.15em',
             textDecoration: 'none',
-            boxShadow: t.glow
+            boxShadow: t.glow,
+            transition: 'all 0.3s ease'
           }}
         >
           GITHUB
