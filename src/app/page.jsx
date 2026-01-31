@@ -117,39 +117,63 @@ function SkillCircle({ skill, icon, initialX, initialY, containerRef, bubblePosi
     const centerX = newX + bubbleRadius;
     const centerY = newY + bubbleRadius;
     
+    let adjustedX = newX;
+    let adjustedY = newY;
+    let hasCollision = false;
+    
     for (const [id, otherPos] of Object.entries(bubblePositions)) {
       if (id === bubbleId) continue;
       
       const otherCenterX = otherPos.x + bubbleRadius;
       const otherCenterY = otherPos.y + bubbleRadius;
       
+      // Calculate distance between centers
       const dx = centerX - otherCenterX;
       const dy = centerY - otherCenterY;
       const distance = Math.sqrt(dx * dx + dy * dy);
-      const minDistance = bubbleSize; // Two radii
       
-      if (distance < minDistance) {
-        // Collision detected! Push bubbles apart
-        const angle = Math.atan2(dy, dx);
+      // Minimum distance for surface-to-surface contact (sum of two radii)
+      const minDistance = bubbleRadius * 2;
+      
+      // Check if surfaces are touching or overlapping
+      if (distance < minDistance && distance > 0) {
+        hasCollision = true;
+        
+        // Calculate collision normal (direction from other to this)
+        const nx = dx / distance;
+        const ny = dy / distance;
+        
+        // Calculate overlap amount
         const overlap = minDistance - distance;
         
-        // Move this bubble away
-        newX += Math.cos(angle) * overlap * 0.5;
-        newY += Math.sin(angle) * overlap * 0.5;
+        // Push this bubble away from the other bubble
+        // Move exactly the overlap distance to separate the surfaces
+        adjustedX = newX + nx * overlap;
+        adjustedY = newY + ny * overlap;
         
-        // Calculate deformation based on collision
-        const collisionForce = Math.min(overlap / 20, 1);
-        const deformX = 1 - collisionForce * 0.2 * Math.abs(Math.cos(angle));
-        const deformY = 1 - collisionForce * 0.2 * Math.abs(Math.sin(angle));
+        // Calculate deformation based on collision angle and force
+        const collisionForce = Math.min(overlap / bubbleSize * 2, 0.4);
+        
+        // Deform along the collision axis
+        const absNx = Math.abs(nx);
+        const absNy = Math.abs(ny);
         
         setDeformation({ 
-          scaleX: deformX + (1 - deformX) * Math.abs(Math.sin(angle)),
-          scaleY: deformY + (1 - deformY) * Math.abs(Math.cos(angle))
+          scaleX: 1 - collisionForce * absNx,
+          scaleY: 1 - collisionForce * absNy
         });
+        
+        // Only handle one collision at a time for simplicity
+        break;
       }
     }
     
-    return { x: newX, y: newY };
+    if (!hasCollision && !isDragging) {
+      // Reset deformation if no collision
+      setDeformation({ scaleX: 1, scaleY: 1 });
+    }
+    
+    return { x: adjustedX, y: adjustedY };
   };
 
   const handleMouseDown = (e) => {
