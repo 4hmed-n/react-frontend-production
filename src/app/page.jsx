@@ -265,91 +265,91 @@ export default function Page() {
             <div className="absolute -bottom-20 -right-20 h-64 w-64 rounded-full bg-cyan-500/20 blur-3xl" />
           </div>
 
-          <div className="relative rounded-3xl border border-white/10 bg-white/5 overflow-hidden">
-            <div className="flex items-center gap-2 border-b border-white/10 px-5 py-3 text-xs text-gray-400">
-              <div className="flex gap-2">
-                <div className="h-3 w-3 rounded-full bg-red-500" />
-                <div className="h-3 w-3 rounded-full bg-yellow-500" />
-                <div className="h-3 w-3 rounded-full bg-green-500" />
+          <div className="relative grid gap-8 md:gap-12 md:grid-cols-[1fr_1.2fr]">
+            {/* Left Side - Get in Touch */}
+            <div className="flex flex-col justify-start">
+              <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-6">Get in Touch</h2>
+              <p className="text-gray-400 mb-8">
+                Have a project in mind or want to collaborate? I'd love to hear from you. Reach out and let's create something amazing together.
+              </p>
+              
+              <div className="space-y-6">
+                <div>
+                  <p className="text-xs uppercase tracking-widest text-blue-400 mb-2">Email</p>
+                  <a href="mailto:ahmednuman3044@gmail.com" className="text-white hover:text-blue-400 transition-colors text-sm">
+                    ahmednuman3044@gmail.com
+                  </a>
+                </div>
+                
+                <div>
+                  <p className="text-xs uppercase tracking-widest text-blue-400 mb-2">Location</p>
+                  <p className="text-gray-300 text-sm">RYK, Punjab, Pakistan</p>
+                </div>
+
+                <div>
+                  <p className="text-xs uppercase tracking-widest text-blue-400 mb-2">Social</p>
+                  <a href="https://github.com/4hmed-n" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-white transition-colors text-sm">
+                    GitHub
+                  </a>
+                </div>
               </div>
-              <span className="ml-3">contact_protocol.exe</span>
             </div>
 
-            <div className="relative grid gap-10 md:grid-cols-[1.1fr_0.9fr] px-6 md:px-10 py-8">
-              <form className="space-y-6">
-                <div className="flex items-center gap-3 text-purple-200">
-                  <span className="text-xl">➔</span>
-                  <p className="text-sm uppercase tracking-[0.2em]">Initialize transmission...</p>
+            {/* Right Side - Contact Form */}
+            <div className="rounded-3xl border border-white/10 bg-white/5 overflow-hidden">
+              <div className="flex items-center gap-2 border-b border-white/10 px-4 py-2 text-xs text-gray-400">
+                <div className="flex gap-2">
+                  <div className="h-3 w-3 rounded-full bg-red-500" />
+                  <div className="h-3 w-3 rounded-full bg-yellow-500" />
+                  <div className="h-3 w-3 rounded-full bg-green-500" />
+                </div>
+                <span className="ml-3">contact.exe</span>
+              </div>
+
+              <form className="p-4 md:p-6 space-y-4">
+                <div className="flex items-center gap-2 text-purple-200 text-xs">
+                  <span>➔</span>
+                  <p className="uppercase tracking-[0.2em]">Send a message</p>
                 </div>
 
-                <div className="grid gap-6 md:grid-cols-2">
-                  <label className="space-y-3">
-                    <span className="text-xs uppercase tracking-[0.3em] text-gray-400">Identity</span>
-                    <input
-                      className="w-full border-b border-white/20 bg-transparent py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-cyan-300"
-                      placeholder="Enter Name"
-                      type="text"
-                      name="name"
-                    />
-                  </label>
-                  <label className="space-y-3">
-                    <span className="text-xs uppercase tracking-[0.3em] text-gray-400">Frequency (Email)</span>
-                    <input
-                      className="w-full border-b border-white/20 bg-transparent py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-cyan-300"
-                      placeholder="Enter Email"
-                      type="email"
-                      name="email"
-                    />
-                  </label>
-                </div>
+                <label className="space-y-2 block">
+                  <span className="text-xs uppercase tracking-[0.3em] text-gray-400">Name</span>
+                  <input
+                    className="w-full border-b border-white/20 bg-transparent py-1.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-cyan-300"
+                    placeholder="Your name"
+                    type="text"
+                    name="name"
+                  />
+                </label>
 
-                <label className="space-y-3 block">
-                  <span className="text-xs uppercase tracking-[0.3em] text-gray-400">Data Packet (Message)</span>
+                <label className="space-y-2 block">
+                  <span className="text-xs uppercase tracking-[0.3em] text-gray-400">Email</span>
+                  <input
+                    className="w-full border-b border-white/20 bg-transparent py-1.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-cyan-300"
+                    placeholder="Your email"
+                    type="email"
+                    name="email"
+                  />
+                </label>
+
+                <label className="space-y-2 block">
+                  <span className="text-xs uppercase tracking-[0.3em] text-gray-400">Message</span>
                   <textarea
-                    className="w-full border-b border-white/20 bg-transparent py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-cyan-300 resize-none"
-                    placeholder="Type your message here..."
-                    rows="3"
+                    className="w-full border-b border-white/20 bg-transparent py-1.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-cyan-300 resize-none"
+                    placeholder="Your message"
+                    rows="2"
                     name="message"
                   />
                 </label>
 
-                <div className="flex flex-wrap items-center gap-4">
-                  <button
-                    type="submit"
-                    className="inline-flex items-center gap-2 rounded-md border border-cyan-400/60 bg-cyan-500/10 px-6 py-3 text-xs font-semibold uppercase tracking-[0.3em] text-cyan-300 hover:bg-cyan-500/20 transition-colors"
-                  >
-                    Send Message
-                    <span aria-hidden="true">✉️</span>
-                  </button>
-                  <a
-                    href="mailto:ahmednuman3044@gmail.com"
-                    className="text-xs uppercase tracking-[0.3em] text-gray-400 hover:text-cyan-200"
-                  >
-                    or email directly
-                  </a>
-                </div>
-              </form>
-
-              <div className="relative hidden md:block">
-                <svg
-                  className="absolute right-0 top-2 h-52 w-52 text-cyan-300/40"
-                  viewBox="0 0 200 200"
-                  fill="none"
+                <button
+                  type="submit"
+                  className="w-full inline-flex items-center justify-center gap-2 rounded-md border border-cyan-400/60 bg-cyan-500/10 px-4 py-2.5 text-xs font-semibold uppercase tracking-[0.3em] text-cyan-300 hover:bg-cyan-500/20 transition-colors"
                 >
-                  <circle cx="100" cy="100" r="2" fill="currentColor" />
-                  {Array.from({ length: 12 }).map((_, i) => (
-                    <line
-                      key={i}
-                      x1="100"
-                      y1="100"
-                      x2={100 + Math.cos((i * Math.PI) / 6) * 80}
-                      y2={100 + Math.sin((i * Math.PI) / 6) * 80}
-                      stroke="currentColor"
-                      strokeWidth="1"
-                    />
-                  ))}
-                </svg>
-              </div>
+                  Send
+                  <span>✉️</span>
+                </button>
+              </form>
             </div>
           </div>
         </div>
@@ -357,29 +357,42 @@ export default function Page() {
 
       <footer className="footer-section mt-10">
         <div className="mx-auto max-w-7xl px-6 md:px-20 py-12 border-t border-white/10">
-          <div className="grid md:grid-cols-3 gap-8 mb-8">
+          <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div>
               <h3 className="text-lg font-bold tracking-tight mb-3">Muhammad Ahmed</h3>
               <p className="text-sm text-gray-400">Creative Developer</p>
               <p className="text-sm text-gray-400 mt-2">RYK, Punjab, Pakistan</p>
             </div>
+
+            <div>
+              <h4 className="text-sm font-semibold uppercase tracking-widest text-blue-400 mb-3">Quick Links</h4>
+              <div className="flex flex-col gap-2">
+                <a href="#home" className="text-sm text-gray-400 hover:text-white transition-colors">Home</a>
+                <a href="#about" className="text-sm text-gray-400 hover:text-white transition-colors">About</a>
+                <a href="#skills" className="text-sm text-gray-400 hover:text-white transition-colors">Skills</a>
+                <a href="#projects" className="text-sm text-gray-400 hover:text-white transition-colors">Projects</a>
+              </div>
+            </div>
+
             <div>
               <h4 className="text-sm font-semibold uppercase tracking-widest text-blue-400 mb-3">Navigation</h4>
               <div className="flex flex-col gap-2">
-                <a href="#skills" className="text-sm text-gray-400 hover:text-white transition-colors">Skills</a>
-                <a href="#projects" className="text-sm text-gray-400 hover:text-white transition-colors">Projects</a>
                 <a href="#contact" className="text-sm text-gray-400 hover:text-white transition-colors">Contact</a>
-                <a href="#about" className="text-sm text-gray-400 hover:text-white transition-colors">About</a>
+                <a href="/resume.pdf" className="text-sm text-gray-400 hover:text-white transition-colors">Resume</a>
+                <a href="#" className="text-sm text-gray-400 hover:text-white transition-colors">Blog</a>
               </div>
             </div>
+
             <div>
               <h4 className="text-sm font-semibold uppercase tracking-widest text-blue-400 mb-3">Connect</h4>
               <div className="flex flex-col gap-2">
                 <a href="https://github.com/4hmed-n" target="_blank" rel="noopener noreferrer" className="text-sm text-gray-400 hover:text-white transition-colors">GitHub</a>
                 <a href="mailto:ahmednuman3044@gmail.com" className="text-sm text-gray-400 hover:text-white transition-colors">Email</a>
+                <a href="#" className="text-sm text-gray-400 hover:text-white transition-colors">LinkedIn</a>
               </div>
             </div>
           </div>
+
           <div className="pt-6 border-t border-white/10 text-center">
             <p className="text-xs uppercase tracking-widest text-gray-400">
               © 2026 Muhammad Ahmed. All rights reserved.
