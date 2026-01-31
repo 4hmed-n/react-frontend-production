@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 const TechIcons = {
   'Python': () => (
@@ -103,13 +103,17 @@ const MainSkills = [
   'Postman',
 ];
 
-function SkillCircle({ skill, icon, initialX, initialY }) {
+function SkillCircle({ skill, icon, initialX, initialY, containerRef }) {
   const [isHovered, setIsHovered] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [position, setPosition] = useState({ x: initialX, y: initialY });
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const [deformation, setDeformation] = useState({ scaleX: 1, scaleY: 1 });
+  const bubbleSize = 96; // 24 * 4 = 96px (w-24)
 
   const handleMouseDown = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
     setIsDragging(true);
     setDragStart({
       x: e.clientX - position.x,
@@ -118,16 +122,58 @@ function SkillCircle({ skill, icon, initialX, initialY }) {
   };
 
   const handleMouseMove = (e) => {
-    if (isDragging) {
-      setPosition({
-        x: e.clientX - dragStart.x,
-        y: e.clientY - dragStart.y
-      });
+    if (isDragging && containerRef.current) {
+      const container = containerRef.current.getBoundingClientRect();
+      let newX = e.clientX - dragStart.x;
+      let newY = e.clientY - dragStart.y;
+
+      // Calculate boundaries (accounting for bubble size and padding)
+      const padding = 48; // 12 * 4 = 48px (p-8)
+      const minX = padding;
+      const maxX = container.width - bubbleSize - padding;
+      const minY = padding;
+      const maxY = container.height - bubbleSize - padding;
+
+      // Calculate deformation based on how much we're pushing against walls
+      let scaleX = 1;
+      let scaleY = 1;
+      const deformAmount = 0.3; // How much to squash
+
+      if (newX < minX) {
+        const pushAmount = Math.min((minX - newX) / 30, 1);
+        scaleX = 1 - pushAmount * deformAmount;
+        scaleY = 1 + pushAmount * deformAmount * 0.5;
+        newX = minX;
+      } else if (newX > maxX) {
+        const pushAmount = Math.min((newX - maxX) / 30, 1);
+        scaleX = 1 - pushAmount * deformAmount;
+        scaleY = 1 + pushAmount * deformAmount * 0.5;
+        newX = maxX;
+      }
+
+      if (newY < minY) {
+        const pushAmount = Math.min((minY - newY) / 30, 1);
+        scaleY = 1 - pushAmount * deformAmount;
+        scaleX = 1 + pushAmount * deformAmount * 0.5;
+        newY = minY;
+      } else if (newY > maxY) {
+        const pushAmount = Math.min((newY - maxY) / 30, 1);
+        scaleY = 1 - pushAmount * deformAmount;
+        scaleX = 1 + pushAmount * deformAmount * 0.5;
+        newY = maxY;
+      }
+
+      setPosition({ x: newX, y: newY });
+      setDeformation({ scaleX, scaleY });
     }
   };
 
   const handleMouseUp = () => {
     setIsDragging(false);
+    // Reset deformation with elastic bounce
+    setTimeout(() => {
+      setDeformation({ scaleX: 1, scaleY: 1 });
+    }, 50);
   };
 
   useEffect(() => {
@@ -151,23 +197,31 @@ function SkillCircle({ skill, icon, initialX, initialY }) {
       style={{ 
         left: `${position.x}px`, 
         top: `${position.y}px`,
-        cursor: isDragging ? 'grabbing' : 'grab'
+        cursor: isDragging ? 'grabbing' : 'grab',
+        userSelect: 'none'
       }}
     >
       <div
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         onMouseDown={handleMouseDown}
-        className={`w-24 h-24 rounded-full border border-white/10 bg-gradient-to-br from-slate-800/80 to-slate-900/90 backdrop-blur-xl flex items-center justify-center transition-all duration-300 select-none ${
-          isHovered ? 'border-blue-400/50 shadow-2xl shadow-blue-500/30 scale-110' : ''
-        } ${isDragging ? 'scale-110 shadow-2xl shadow-blue-500/50' : ''}`}
+        className={`w-24 h-24 rounded-full border border-white/10 bg-gradient-to-br from-slate-800/80 to-slate-900/90 backdrop-blur-xl flex items-center justify-center transition-all duration-300 ${
+          isHovered && !isDragging ? 'border-blue-400/50 shadow-2xl shadow-blue-500/30 scale-110' : ''
+        } ${isDragging ? 'shadow-2xl shadow-blue-500/50' : ''}`}
+        style={{ 
+          transform: `scale(${deformation.scaleX}, ${deformation.scaleY})`,
+          transition: isDragging ? 'box-shadow 0.3s' : 'all 0.3s ease-out'
+        }}
       >
-        {typeof icon === 'function' ? icon() : <span className="text-5xl">{icon}</span>}
+        <div style={{ pointerEvents: 'none' }}>
+          {typeof icon === 'function' ? icon() : <span className="text-5xl">{icon}</span>}
+        </div>
       </div>
       <span 
-        className={`absolute -bottom-6 text-xs font-medium text-gray-300 text-center whitespace-nowrap transition-all duration-300 pointer-events-none ${
+        className={`absolute -bottom-6 text-xs font-medium text-gray-300 text-center whitespace-nowrap transition-all duration-300 ${
           isHovered ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
         }`}
+        style={{ pointerEvents: 'none' }}
       >
         {skill}
       </span>
@@ -179,6 +233,7 @@ export default function Page() {
   const [pfpHovered, setPfpHovered] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [showScrollExplore, setShowScrollExplore] = useState(true);
+  const techStackContainerRef = useRef(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -300,7 +355,7 @@ export default function Page() {
 
         <div className="grid md:grid-cols-2 gap-8">
           {/* Left Side - Main Tech Stack */}
-          <div className="rounded-3xl border border-white/10 bg-gradient-to-br from-slate-800/50 to-slate-900/80 backdrop-blur-xl p-8 relative overflow-hidden" style={{ minHeight: '600px' }}>
+          <div ref={techStackContainerRef} className="rounded-3xl border border-white/10 bg-gradient-to-br from-slate-800/50 to-slate-900/80 backdrop-blur-xl p-8 relative overflow-hidden" style={{ minHeight: '600px' }}>
             {MainSkills.map((skill, index) => {
               // Generate scattered positions
               const angle = (index / MainSkills.length) * 2 * Math.PI;
@@ -315,6 +370,7 @@ export default function Page() {
                   icon={TechIcons[skill]}
                   initialX={x}
                   initialY={y}
+                  containerRef={techStackContainerRef}
                 />
               );
             })}
