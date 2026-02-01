@@ -622,16 +622,48 @@ export default function Page() {
   const [pfpHovered, setPfpHovered] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [showScrollExplore, setShowScrollExplore] = useState(true);
+  const [currentSection, setCurrentSection] = useState('home');
   const techStackContainerRef = useRef(null);
 
   useEffect(() => {
     const handleScroll = () => {
       setShowScrollTop(window.scrollY > 300);
-      setShowScrollExplore(window.scrollY < 200);
+      
+      // Determine current section
+      const sections = ['home', 'about', 'skills', 'projects', 'contact'];
+      const scrollPosition = window.scrollY + window.innerHeight / 2;
+      
+      for (const sectionId of sections) {
+        const element = document.getElementById(sectionId);
+        if (element) {
+          const rect = element.getBoundingClientRect();
+          const elementTop = rect.top + window.scrollY;
+          const elementBottom = elementTop + rect.height;
+          
+          if (scrollPosition >= elementTop && scrollPosition < elementBottom) {
+            setCurrentSection(sectionId);
+            break;
+          }
+        }
+      }
+      
+      // Show arrow on all sections except the last one (contact)
+      setShowScrollExplore(currentSection !== 'contact');
     };
+    
+    handleScroll(); // Call once on mount
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [currentSection]);
+
+  const scrollToNextSection = () => {
+    const sections = ['home', 'about', 'skills', 'projects', 'contact'];
+    const currentIndex = sections.indexOf(currentSection);
+    if (currentIndex < sections.length - 1) {
+      const nextSection = sections[currentIndex + 1];
+      document.getElementById(nextSection)?.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -695,17 +727,6 @@ export default function Page() {
             </div>
           </div>
         </div>
-        {showScrollExplore && (
-          <button
-            onClick={() => document.getElementById('about').scrollIntoView({ behavior: 'smooth' })}
-            className="absolute bottom-20 left-1/2 -translate-x-1/2 text-xs uppercase tracking-widest text-gray-500 flex flex-col items-center gap-2 transition-opacity duration-300 hover:text-blue-400 group"
-          >
-            <span className="group-hover:text-blue-400 transition-colors">Scroll to explore</span>
-            <svg className="w-6 h-6 animate-bounce group-hover:text-blue-400 transition-colors cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
-          </button>
-        )}
       </section>
 
       <section id="about" className="mx-auto max-w-7xl px-6 md:px-20 py-20">
@@ -1095,6 +1116,19 @@ export default function Page() {
           </div>
         </div>
       </footer>
+
+      {/* Scroll to Next Section Arrow - Fixed at bottom middle */}
+      {showScrollExplore && currentSection !== 'contact' && (
+        <button
+          onClick={scrollToNextSection}
+          className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 text-xs uppercase tracking-widest text-white flex flex-col items-center gap-2 transition-all duration-300 hover:text-sky-400 group"
+        >
+          <span className="group-hover:text-sky-400 transition-colors">Scroll to explore</span>
+          <svg className="w-6 h-6 animate-bounce group-hover:text-sky-400 transition-colors cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+      )}
 
       {/* Scroll to Top Button */}
       {showScrollTop && (
