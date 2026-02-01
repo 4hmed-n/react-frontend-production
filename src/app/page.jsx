@@ -678,8 +678,8 @@ export default function Page() {
   };
 
   return (
-    <div className="min-h-screen w-full">
-      <section id="home" className="mx-auto max-w-7xl px-6 md:px-20 pt-28 md:pt-32 pb-20 min-h-screen flex items-center">
+    <div className="min-h-screen w-full snap-y snap-mandatory scroll-smooth">
+      <section id="home" className="mx-auto max-w-7xl px-6 md:px-20 pt-28 md:pt-32 pb-20 min-h-screen flex items-center snap-start">
         <div className="grid gap-10 md:grid-cols-2 items-center w-full">
           <div>
             <h1 className="text-5xl md:text-6xl font-bold leading-tight">
@@ -737,7 +737,7 @@ export default function Page() {
         </div>
       </section>
 
-      <section id="about" className="mx-auto max-w-7xl px-6 md:px-20 py-20">
+      <section id="about" className="mx-auto max-w-7xl px-6 md:px-20 py-20 min-h-screen snap-start">
         <div className="grid gap-10 md:grid-cols-2 items-start">
           <div>
             <h2 className="text-4xl md:text-5xl font-bold tracking-tight">
@@ -817,7 +817,7 @@ export default function Page() {
         </div>
       </section>
 
-      <section id="skills" className="mx-auto max-w-7xl px-6 md:px-20 py-20">
+      <section id="skills" className="mx-auto max-w-7xl px-6 md:px-20 py-20 min-h-screen snap-start">
         <div className="text-center mb-12">
           <p className="text-xs uppercase tracking-widest text-blue-400">Core Technologies</p>
           <h2 className="mt-3 text-4xl md:text-5xl font-bold tracking-tighter">Main Tech Stack</h2>
@@ -931,7 +931,7 @@ export default function Page() {
         </div>
       </section>
 
-      <section id="projects" className="mx-auto max-w-7xl px-6 md:px-20 py-20">
+      <section id="projects" className="mx-auto max-w-7xl px-6 md:px-20 py-20 min-h-screen snap-start">
         <div className="text-center">
           <p className="text-xs uppercase tracking-widest text-blue-400">Selected Work</p>
           <h2 className="mt-3 text-4xl md:text-5xl font-bold tracking-tighter">Projects</h2>
@@ -973,7 +973,7 @@ export default function Page() {
         </div>
       </section>
 
-      <section id="contact" className="mx-auto max-w-7xl px-6 md:px-20 py-20">
+      <section id="contact" className="mx-auto max-w-7xl px-6 md:px-20 py-20 min-h-screen snap-start">
         <div className="relative rounded-[2rem] border border-white/10 bg-gradient-to-br from-slate-900/80 via-[#1a1030]/80 to-slate-950/90 p-6 md:p-8 backdrop-blur-xl overflow-hidden">
           <div className="absolute inset-0 pointer-events-none">
             <div className="absolute -top-24 -left-24 h-64 w-64 rounded-full bg-purple-500/20 blur-3xl" />
