@@ -371,8 +371,8 @@ function PhysicsBubbleContainer({ containerRef }) {
 
     World.add(engine.world, mouseConstraint);
 
-    // INSTANT hover detection using mousemove event
-    canvas.addEventListener('mousemove', (e) => {
+    // INSTANT hover detection using mousemove event + sync Matter mouse
+    const handleMouseMove = (e) => {
       const rect = canvas.getBoundingClientRect();
       const scaleX = width / rect.width;
       const scaleY = height / rect.height;
@@ -380,7 +380,17 @@ function PhysicsBubbleContainer({ containerRef }) {
         x: (e.clientX - rect.left) * scaleX,
         y: (e.clientY - rect.top) * scaleY
       };
-      
+
+      // Sync Matter mouse for accurate picking
+      mouse.position.x = mousePos.x;
+      mouse.position.y = mousePos.y;
+      mouse.absolute.x = mousePos.x;
+      mouse.absolute.y = mousePos.y;
+      mouse.offset.x = rect.left;
+      mouse.offset.y = rect.top;
+      mouse.scale.x = scaleX;
+      mouse.scale.y = scaleY;
+
       const hoveredBodies = Query.point(bubbles, mousePos);
       if (hoveredBodies.length > 0) {
         setHoveredBubble(hoveredBodies[0].label);
@@ -389,11 +399,15 @@ function PhysicsBubbleContainer({ containerRef }) {
         setHoveredBubble(null);
         canvas.style.cursor = 'grab';
       }
-    });
+    };
 
-    canvas.addEventListener('mouseleave', () => {
+    const handleMouseLeave = () => {
       setHoveredBubble(null);
-    });
+      canvas.style.cursor = 'grab';
+    };
+
+    canvas.addEventListener('mousemove', handleMouseMove);
+    canvas.addEventListener('mouseleave', handleMouseLeave);
 
     // Update positions for React rendering - NO DEFORMATION for solid balls
     const updateLoop = () => {
@@ -501,6 +515,8 @@ function PhysicsBubbleContainer({ containerRef }) {
       Events.off(engine);
       Events.off(mouseConstraint);
       canvas.removeEventListener('dblclick', handleDblClick);
+      canvas.removeEventListener('mousemove', handleMouseMove);
+      canvas.removeEventListener('mouseleave', handleMouseLeave);
       shockwaveFnRef.current = null;
     };
   }, [containerRef]);
