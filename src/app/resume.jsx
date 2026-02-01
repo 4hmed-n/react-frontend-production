@@ -1,222 +1,256 @@
 'use client';
 
 import React, { useRef } from 'react';
-import { useReactToPrint } from 'react-to-print';
+import { useLocation } from 'react-router-dom';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
 export default function Resume() {
   const resumeRef = useRef();
+  const location = useLocation();
 
-  const handlePrint = useReactToPrint({
-    content: () => resumeRef.current,
-    documentTitle: 'Muhammad_Ahmed_Resume',
-    pageStyle: `
-      @page {
-        size: letter;
-        margin: 0.5in;
-      }
-      @media print {
-        html, body {
-          width: 8.5in;
-          height: 11in;
-          margin: 0;
-          padding: 0;
-          background: #0f172a;
-        }
-        body {
-          background-color: #0f172a !important;
-          color: white;
-        }
-        * {
-          -webkit-print-color-adjust: exact;
-          print-color-adjust: exact;
-        }
-        .no-print { display: none !important; }
-        .sticky, nav { position: static !important; }
-        section { page-break-inside: avoid; }
-        h1, h2, h3, h4 { page-break-after: avoid; }
-        ul, ol { page-break-inside: avoid; }
-        img { max-width: 100%; }
-      }
-    `
-  });
-
-  const skills = [
-    { name: 'React', cat: 'Frontend' },
-    { name: 'TypeScript', cat: 'Frontend' },
-    { name: 'FastAPI', cat: 'Backend' },
-    { name: 'Python', cat: 'Backend' },
-    { name: 'Docker', cat: 'DevOps' },
-    { name: 'Firebase', cat: 'DevOps' },
-    { name: 'Git', cat: 'DevOps' },
-    { name: 'PostgreSQL', cat: 'Database' },
-    { name: 'MongoDB', cat: 'Database' },
-    { name: 'TensorFlow', cat: 'AI/ML' },
-    { name: 'PyTorch', cat: 'AI/ML' },
-    { name: 'Express.js', cat: 'Backend' }
-  ];
-
-  const getCategoryColor = (category) => {
-    const colors = {
-      'Frontend': 'from-blue-500 to-cyan-500',
-      'Backend': 'from-purple-500 to-pink-500',
-      'DevOps': 'from-orange-500 to-red-500',
-      'Database': 'from-green-500 to-emerald-500',
-      'AI/ML': 'from-indigo-500 to-blue-500'
-    };
-    return colors[category] || 'from-slate-500 to-slate-600';
+  const handleDownloadPDF = async () => {
+    const element = resumeRef.current;
+    const canvas = await html2canvas(element, {
+      scale: 2,
+      useCORS: true,
+      logging: false,
+      backgroundColor: '#ffffff'
+    });
+    
+    const imgData = canvas.toDataURL('image/png');
+    const pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: 'a4'
+    });
+    
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = pdf.internal.pageSize.getHeight();
+    const imgWidth = canvas.width;
+    const imgHeight = canvas.height;
+    const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
+    const imgX = (pdfWidth - imgWidth * ratio) / 2;
+    const imgY = 0;
+    
+    pdf.addImage(imgData, 'PNG', imgX, imgY, imgWidth * ratio, imgHeight * ratio);
+    pdf.save('Muhammad_Ahmed_Resume.pdf');
   };
 
-  const categories = Array.from(new Set(skills.map(s => s.cat)));
+  const personalInfo = {
+    name: 'Muhammad Ahmed',
+    email: 'ahmednuman3044@gmail.com',
+    phone: '+92 444 5050',
+    location: 'Gulshan-e-Ravi, RYK, Punjab, Pakistan',
+    github: 'github.com/4hmed-n'
+  };
+
+  const hardSkills = [
+    'Python', 'JavaScript', 'TypeScript', 'React', 'Node.js',
+    'FastAPI', 'Express.js', 'MongoDB', 'PostgreSQL', 'Docker',
+    'Git', 'Firebase', 'Tailwind CSS', 'REST API', 'ML/AI'
+  ];
+
+  const softSkills = [
+    'Problem Solving', 'Team Collaboration', 'Communication',
+    'Leadership', 'Time Management'
+  ];
+
+  const languages = [
+    { lang: 'English', level: 'Bilingual Proficiency' },
+    { lang: 'Urdu', level: 'Native' },
+    { lang: 'Punjabi', level: 'Native' }
+  ];
+
+  const workExperience = [
+    {
+      title: 'Full-Stack AI Engineer',
+      company: 'Freelance / Contract',
+      period: '2021 - Present',
+      description: [
+        'Architected scalable full-stack applications using React, FastAPI, and PostgreSQL',
+        'Implemented AI/ML models for predictive analytics and automation',
+        'Led DevOps infrastructure with Docker, Firebase, and CI/CD pipelines',
+        'Delivered production-grade solutions with cross-functional collaboration'
+      ]
+    }
+  ];
+
+  const education = [
+    {
+      degree: 'BS in Data Science',
+      institution: 'KFUEIT',
+      description: 'Specialized in machine learning, data analysis, and statistical modeling with focus on real-world applications'
+    }
+  ];
+
+  const certificates = [
+    'Advanced Python Programming',
+    'Machine Learning Specialization',
+    'Full-Stack Web Development',
+    'Cloud Architecture and DevOps'
+  ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute w-2 h-2 bg-white rounded-full top-10 left-10 opacity-60"></div>
-        <div className="absolute w-1.5 h-1.5 bg-blue-400 rounded-full top-32 right-20 opacity-40"></div>
-        <div className="absolute w-1 h-1 bg-cyan-400 rounded-full bottom-40 left-1/3 opacity-50"></div>
-        <div className="absolute w-2 h-2 bg-purple-400 rounded-full top-1/2 right-1/4 opacity-40"></div>
+    <div className="min-h-screen bg-gray-100 py-8">
+      <div className="fixed top-6 right-6 z-50">
+        <button
+          onClick={handleDownloadPDF}
+          className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white px-6 py-3 rounded-full shadow-2xl transition-all duration-300 hover:scale-105 flex items-center gap-2 font-semibold"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+          Download PDF
+        </button>
       </div>
 
-      <div className="relative z-10">
-        <header className="sticky top-4 mx-auto max-w-5xl z-50 px-4 no-print">
-          <div className="rounded-full bg-slate-900/40 backdrop-blur-lg border border-white/10 px-8 py-4 shadow-2xl hover:bg-slate-900/50 transition-colors">
-            <div className="flex justify-between items-center">
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-sky-400 to-cyan-400 bg-clip-text text-transparent">
-                Muhammad Ahmed
-              </h1>
-              <button
-                onClick={handlePrint}
-                className="inline-flex items-center rounded-full bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border border-yellow-400/40 px-5 py-2 text-xs uppercase tracking-widest text-yellow-200 hover:from-yellow-500/30 hover:to-orange-500/30 transition-all duration-300"
-              >
-                📥 Download PDF
-              </button>
+      <div className="max-w-5xl mx-auto bg-white shadow-2xl" ref={resumeRef}>
+        <div className="flex">
+          <div className="w-80 bg-gradient-to-b from-slate-800 via-slate-900 to-slate-950 text-white p-8">
+            <div className="mb-8">
+              <div className="w-32 h-32 mx-auto bg-gradient-to-br from-blue-400 to-cyan-500 rounded-full flex items-center justify-center text-5xl font-bold text-white shadow-xl">
+                MA
+              </div>
+            </div>
+
+            <div className="mb-8">
+              <h3 className="text-sm uppercase tracking-widest font-bold mb-4 text-cyan-400">
+                Contact
+              </h3>
+              <div className="space-y-3 text-xs">
+                <div className="flex items-start gap-2">
+                  <span className="text-cyan-400">📧</span>
+                  <span className="break-all">{personalInfo.email}</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="text-cyan-400">📱</span>
+                  <span>{personalInfo.phone}</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="text-cyan-400">📍</span>
+                  <span>{personalInfo.location}</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="text-cyan-400">🔗</span>
+                  <span className="break-all">{personalInfo.github}</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="mb-8">
+              <h3 className="text-sm uppercase tracking-widest font-bold mb-4 text-cyan-400">
+                Hard Skills
+              </h3>
+              <div className="space-y-2">
+                {hardSkills.map((skill, idx) => (
+                  <div key={idx} className="text-xs py-1.5 px-3 bg-slate-700/50 rounded-md border border-slate-600">
+                    {skill}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="mb-8">
+              <h3 className="text-sm uppercase tracking-widest font-bold mb-4 text-cyan-400">
+                Soft Skills
+              </h3>
+              <div className="space-y-2">
+                {softSkills.map((skill, idx) => (
+                  <div key={idx} className="flex items-center gap-2 text-xs">
+                    <div className="w-2 h-2 bg-cyan-400 rounded-full"></div>
+                    <span>{skill}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="mb-8">
+              <h3 className="text-sm uppercase tracking-widest font-bold mb-4 text-cyan-400">
+                Languages
+              </h3>
+              <div className="space-y-3">
+                {languages.map((item, idx) => (
+                  <div key={idx} className="text-xs">
+                    <div className="font-semibold">{item.lang}</div>
+                    <div className="text-gray-400 text-[10px]">{item.level}</div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
-        </header>
 
-        <main className="max-w-5xl mx-auto px-4 py-12" ref={resumeRef}>
-          <section className="mb-16">
-            <div className="rounded-2xl bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-md border border-white/10 p-8 shadow-2xl">
-              <div className="flex gap-8 items-start">
-                <div className="flex-shrink-0">
-                  <div className="w-32 h-32 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center shadow-lg">
-                    <span className="text-4xl">👨‍💼</span>
-                  </div>
-                </div>
-                <div className="flex-1">
-                  <h1 className="text-4xl font-bold text-white mb-2">Muhammad Ahmed</h1>
-                  <h2 className="text-xl font-semibold bg-gradient-to-r from-sky-400 via-cyan-400 to-blue-400 bg-clip-text text-transparent mb-4">
-                    Software Engineer & AI Architect
-                  </h2>
-                  <p className="text-slate-300 text-lg leading-relaxed mb-4">
-                    Bridging the gap between intelligent systems and elegant user experiences. Passionate about creating scalable solutions with cutting-edge AI and intuitive interfaces.
-                  </p>
-                  <div className="flex gap-4 text-sm text-slate-400">
-                    <span>📍 Gulshan-e-Ravi, RYK, Punjab, Pakistan</span>
-                    <span>💼 3+ Years Experience</span>
-                  </div>
-                </div>
-              </div>
+          <div className="flex-1 p-10">
+            <div className="mb-8 border-b-4 border-slate-800 pb-6">
+              <h1 className="text-4xl font-bold text-slate-900 mb-2">{personalInfo.name}</h1>
+              <p className="text-lg text-cyan-600 font-semibold">
+                Full-Stack AI Engineer | Data Scientist
+              </p>
+              <p className="text-sm text-gray-600 mt-2 leading-relaxed">
+                Innovative software engineer specializing in AI/ML solutions and full-stack development. 
+                Passionate about creating scalable, intelligent systems that drive real-world impact.
+              </p>
             </div>
-          </section>
 
-          <section className="mb-16">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center">
-                <span className="text-white font-bold">💼</span>
-              </div>
-              <h3 className="text-2xl font-bold text-white">WORK EXPERIENCE</h3>
-            </div>
-            <div className="space-y-6">
-              <div className="rounded-lg bg-slate-800/30 border border-white/5 p-6">
-                <div className="flex justify-between items-start mb-2">
-                  <h4 className="text-lg font-bold text-white">Software Engineer</h4>
-                  <span className="text-yellow-400 text-sm font-semibold">2021 - Present</span>
-                </div>
-                <p className="text-cyan-400 text-sm mb-3">Full-Stack Development | AI Integration</p>
-                <ul className="space-y-2 text-slate-300 text-sm">
-                  <li>• Architected scalable full-stack applications using React, FastAPI, and PostgreSQL</li>
-                  <li>• Implemented AI/ML models for predictive analytics and automation</li>
-                  <li>• Led DevOps infrastructure with Docker, Firebase, and CI/CD pipelines</li>
-                  <li>• Delivered production-grade solutions with cross-functional collaboration</li>
-                </ul>
-              </div>
-            </div>
-          </section>
-
-          <section className="mb-16">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center">
-                <span className="text-white font-bold">🎓</span>
-              </div>
-              <h3 className="text-2xl font-bold text-white">EDUCATION</h3>
-            </div>
-            <div className="rounded-lg bg-slate-800/30 border border-white/5 p-6">
-              <div className="flex justify-between items-start mb-2">
-                <h4 className="text-lg font-bold text-white">BS Data Science</h4>
-              </div>
-              <p className="text-cyan-400 text-sm">KFUEIT</p>
-              <p className="text-slate-300 text-sm mt-2">ML, data analysis, statistical modeling with real-world applications.</p>
-            </div>
-          </section>
-
-          <section className="mb-16">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center">
-                <span className="text-white font-bold">⚡</span>
-              </div>
-              <h3 className="text-2xl font-bold text-white">SKILLS</h3>
-            </div>
-            <div className="space-y-6">
-              {categories.map(cat => (
-                <div key={cat}>
-                  <h4 className="text-sm font-bold text-yellow-400 mb-3 uppercase">{cat}</h4>
-                  <div className="flex flex-wrap gap-3">
-                    {skills.filter(s => s.cat === cat).map(skill => (
-                      <div
-                        key={skill.name}
-                        className={`px-4 py-2 rounded-full bg-gradient-to-r ${getCategoryColor(skill.cat)} text-white text-sm font-semibold shadow-lg`}
-                      >
-                        {skill.name}
+            <div className="mb-8">
+              <h2 className="text-xl font-bold text-slate-900 mb-4 border-b-2 border-cyan-500 pb-2">
+                WORK EXPERIENCE
+              </h2>
+              <div className="space-y-6">
+                {workExperience.map((job, idx) => (
+                  <div key={idx}>
+                    <div className="flex justify-between items-start mb-2">
+                      <div>
+                        <h3 className="text-base font-bold text-slate-800">{job.title}</h3>
+                        <p className="text-sm text-cyan-600 font-semibold">{job.company}</p>
                       </div>
-                    ))}
+                      <span className="text-xs text-gray-500 font-semibold bg-gray-100 px-3 py-1 rounded-full">
+                        {job.period}
+                      </span>
+                    </div>
+                    <ul className="space-y-1.5 text-xs text-gray-700 ml-4">
+                      {job.description.map((item, i) => (
+                        <li key={i} className="flex items-start gap-2">
+                          <span className="text-cyan-500 mt-1">•</span>
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </section>
 
-          <section className="mb-16">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center">
-                <span className="text-white font-bold">🚀</span>
-              </div>
-              <h3 className="text-2xl font-bold text-white">PROJECTS</h3>
-            </div>
-            <div className="space-y-6">
-              <div className="rounded-lg bg-slate-800/30 border border-white/5 p-6">
-                <h4 className="text-lg font-bold text-white mb-2">Employee Burnout Analysis</h4>
-                <p className="text-cyan-400 text-sm mb-3">Python | Pandas | Scikit-learn | Predictive ML</p>
-                <p className="text-slate-300 text-sm">Developed predictive model analyzing 10,000+ employee records, identifying burnout patterns, providing actionable HR insights.</p>
-              </div>
-              <div className="rounded-lg bg-slate-800/30 border border-white/5 p-6">
-                <h4 className="text-lg font-bold text-white mb-2">Apple Leaf Disease Detection</h4>
-                <p className="text-cyan-400 text-sm mb-3">Computer Vision | TensorFlow | CNN | 94% Accuracy</p>
-                <p className="text-slate-300 text-sm">Image classification system for detecting apple leaf diseases. Processed 5,000+ images with deep learning.</p>
-              </div>
-              <div className="rounded-lg bg-slate-800/30 border border-white/5 p-6">
-                <h4 className="text-lg font-bold text-white mb-2">Interactive Physics Portfolio</h4>
-                <p className="text-cyan-400 text-sm mb-3">React | Matter.js | Tailwind CSS | Physics Engine</p>
-                <p className="text-slate-300 text-sm">Real-time 2D rigid-body physics with soft-body deformations, glassmorphic UI, 60fps performance optimization.</p>
+            <div className="mb-8">
+              <h2 className="text-xl font-bold text-slate-900 mb-4 border-b-2 border-cyan-500 pb-2">
+                EDUCATION
+              </h2>
+              <div className="space-y-4">
+                {education.map((edu, idx) => (
+                  <div key={idx}>
+                    <h3 className="text-base font-bold text-slate-800">{edu.degree}</h3>
+                    <p className="text-sm text-cyan-600 font-semibold mb-2">{edu.institution}</p>
+                    <p className="text-xs text-gray-700">{edu.description}</p>
+                  </div>
+                ))}
               </div>
             </div>
-          </section>
 
-          <footer className="border-t border-white/10 pt-8 pb-16 text-center text-slate-400 text-sm">
-            <p>📧 ahmednuman3044@gmail.com | 🔗 github.com/4hmed-n | 💼 linkedin.com/in/muhammadahmed</p>
-            <p className="text-xs mt-4 text-slate-500">Built with React, Tailwind CSS & Matter.js Physics Engine</p>
-          </footer>
-        </main>
+            <div className="mb-8">
+              <h2 className="text-xl font-bold text-slate-900 mb-4 border-b-2 border-cyan-500 pb-2">
+                CERTIFICATES
+              </h2>
+              <ul className="space-y-2">
+                {certificates.map((cert, idx) => (
+                  <li key={idx} className="flex items-start gap-2 text-xs text-gray-700">
+                    <span className="text-cyan-500 mt-1">✓</span>
+                    <span>{cert}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -50,13 +50,24 @@ function SidebarIcon({ href, icon, label, showTooltip = true, isClickable = true
 
 export default function Layout({ children }) {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [currentPath, setCurrentPath] = useState(window.location.pathname);
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
     };
+    
+    const handleLocationChange = () => {
+      setCurrentPath(window.location.pathname);
+    };
+    
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener('popstate', handleLocationChange);
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('popstate', handleLocationChange);
+    };
   }, []);
 
   const scrollToTop = () => {
@@ -123,12 +134,21 @@ export default function Layout({ children }) {
             <a className="hover:text-sky-400 transition-colors duration-300" href="#contact">Contact</a>
             <a className="hover:text-sky-400 transition-colors duration-300" href="#about">About</a>
           </div>
-          <Link
-            to="/resume"
-            className="ml-auto md:ml-10 inline-flex items-center rounded-full bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border border-blue-400/40 px-5 py-2 text-xs uppercase tracking-widest text-gray-200 hover:from-blue-500/30 hover:to-cyan-500/30 hover:border-blue-400/70 hover:text-sky-400 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/25"
-          >
-            Resume
-          </Link>
+          {currentPath === '/resume' ? (
+            <a
+              href="/"
+              className="ml-auto md:ml-10 inline-flex items-center rounded-full bg-gradient-to-r from-green-500/20 to-emerald-500/20 border border-green-400/40 px-5 py-2 text-xs uppercase tracking-widest text-gray-200 hover:from-green-500/30 hover:to-emerald-500/30 hover:border-green-400/70 hover:text-green-400 transition-all duration-300 hover:shadow-lg hover:shadow-green-500/25"
+            >
+              ← Home
+            </a>
+          ) : (
+            <Link
+              to="/resume"
+              className="ml-auto md:ml-10 inline-flex items-center rounded-full bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border border-blue-400/40 px-5 py-2 text-xs uppercase tracking-widest text-gray-200 hover:from-blue-500/30 hover:to-cyan-500/30 hover:border-blue-400/70 hover:text-sky-400 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/25"
+            >
+              Resume
+            </Link>
+          )}
         </div>
       </nav>
       <main className="relative" style={{ zIndex: 10 }}>{children}</main>
