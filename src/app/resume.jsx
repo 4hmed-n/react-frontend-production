@@ -1,31 +1,44 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useRef } from 'react';
+import { useReactToPrint } from 'react-to-print';
 
 export default function Resume() {
-  useEffect(() => {
-    const style = document.createElement('style');
-    style.textContent = `
-      @media print {
-        body { background-color: #0f172a !important; }
-        .no-print { display: none !important; }
-        .sticky { position: static !important; }
-        section { page-break-inside: avoid; }
-      }
-      @page {
-        margin: 0.5in;
-        size: letter;
-      }
-    `;
-    document.head.appendChild(style);
-    return () => {
-      try { document.head.removeChild(style); } catch(e) {}
-    };
-  }, []);
+  const resumeRef = useRef();
 
-  const downloadPDF = () => {
-    window.print();
-  };
+  const handlePrint = useReactToPrint({
+    content: () => resumeRef.current,
+    documentTitle: 'Muhammad_Ahmed_Resume',
+    pageStyle: `
+      @page {
+        size: letter;
+        margin: 0.5in;
+      }
+      @media print {
+        html, body {
+          width: 8.5in;
+          height: 11in;
+          margin: 0;
+          padding: 0;
+          background: #0f172a;
+        }
+        body {
+          background-color: #0f172a !important;
+          color: white;
+        }
+        * {
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+        .no-print { display: none !important; }
+        .sticky, nav { position: static !important; }
+        section { page-break-inside: avoid; }
+        h1, h2, h3, h4 { page-break-after: avoid; }
+        ul, ol { page-break-inside: avoid; }
+        img { max-width: 100%; }
+      }
+    `
+  });
 
   const skills = [
     { name: 'React', cat: 'Frontend' },
@@ -72,7 +85,7 @@ export default function Resume() {
                 Muhammad Ahmed
               </h1>
               <button
-                onClick={downloadPDF}
+                onClick={handlePrint}
                 className="inline-flex items-center rounded-full bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border border-yellow-400/40 px-5 py-2 text-xs uppercase tracking-widest text-yellow-200 hover:from-yellow-500/30 hover:to-orange-500/30 transition-all duration-300"
               >
                 📥 Download PDF
@@ -81,7 +94,7 @@ export default function Resume() {
           </div>
         </header>
 
-        <main className="max-w-5xl mx-auto px-4 py-12">
+        <main className="max-w-5xl mx-auto px-4 py-12" ref={resumeRef}>
           <section className="mb-16">
             <div className="rounded-2xl bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-md border border-white/10 p-8 shadow-2xl">
               <div className="flex gap-8 items-start">
@@ -141,9 +154,8 @@ export default function Resume() {
             <div className="rounded-lg bg-slate-800/30 border border-white/5 p-6">
               <div className="flex justify-between items-start mb-2">
                 <h4 className="text-lg font-bold text-white">BS Data Science</h4>
-                <span className="text-yellow-400 text-sm font-semibold">Class 5A</span>
               </div>
-              <p className="text-cyan-400 text-sm">KFUEIT - Iqra University Islamabad</p>
+              <p className="text-cyan-400 text-sm">KFUEIT</p>
               <p className="text-slate-300 text-sm mt-2">ML, data analysis, statistical modeling with real-world applications.</p>
             </div>
           </section>
@@ -201,7 +213,7 @@ export default function Resume() {
           </section>
 
           <footer className="border-t border-white/10 pt-8 pb-16 text-center text-slate-400 text-sm">
-            <p>📧 hello@muhammadahmed.dev | 🔗 github.com/4hmed-n | 💼 linkedin.com/in/muhammadahmed</p>
+            <p>📧 ahmednuman3044@gmail.com | 🔗 github.com/4hmed-n | 💼 linkedin.com/in/muhammadahmed</p>
             <p className="text-xs mt-4 text-slate-500">Built with React, Tailwind CSS & Matter.js Physics Engine</p>
           </footer>
         </main>

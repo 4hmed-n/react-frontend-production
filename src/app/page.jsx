@@ -2,6 +2,74 @@
 import { useState, useEffect, useRef } from 'react';
 import Matter from 'matter-js';
 
+// TYPEWRITER COMPONENT
+function Typewriter({ 
+  strings = [], 
+  typingSpeed = 75, 
+  deletingSpeed = 50, 
+  delayBetweenStrings = 2000,
+  cursorColor = '#38bdf8'
+}) {
+  const [displayText, setDisplayText] = useState('');
+  const [stringIndex, setStringIndex] = useState(0);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [cursorVisible, setCursorVisible] = useState(true);
+  const typingTimeoutRef = useRef(null);
+  const cursorTimeoutRef = useRef(null);
+
+  // Cursor blinking effect
+  useEffect(() => {
+    cursorTimeoutRef.current = setInterval(() => {
+      setCursorVisible(prev => !prev);
+    }, 500);
+    return () => clearInterval(cursorTimeoutRef.current);
+  }, []);
+
+  // Typing effect
+  useEffect(() => {
+    const currentString = strings[stringIndex] || '';
+    const speed = isDeleting ? deletingSpeed : typingSpeed;
+
+    if (!isDeleting && displayText === currentString) {
+      // Finished typing, wait before deleting
+      typingTimeoutRef.current = setTimeout(() => {
+        setIsDeleting(true);
+      }, delayBetweenStrings);
+    } else if (isDeleting && displayText === '') {
+      // Finished deleting, move to next string
+      setIsDeleting(false);
+      setStringIndex((prev) => (prev + 1) % strings.length);
+    } else {
+      // Typing or deleting
+      typingTimeoutRef.current = setTimeout(() => {
+        setDisplayText((prev) => {
+          if (isDeleting) {
+            return prev.slice(0, -1);
+          } else {
+            return currentString.slice(0, prev.length + 1);
+          }
+        });
+      }, speed);
+    }
+
+    return () => clearTimeout(typingTimeoutRef.current);
+  }, [displayText, stringIndex, isDeleting, strings, typingSpeed, deletingSpeed, delayBetweenStrings]);
+
+  return (
+    <span>
+      {displayText}
+      <span style={{
+        color: cursorColor,
+        opacity: cursorVisible ? 1 : 0,
+        transition: 'opacity 0.1s',
+        marginLeft: '2px'
+      }}>
+        |
+      </span>
+    </span>
+  );
+}
+
 const TechIcons = {
   'Python': () => (
     <svg className="w-12 h-12" viewBox="0 0 24 24" fill="none">
@@ -115,6 +183,9 @@ function PhysicsBubbleContainer({ containerRef }) {
   const [bubbleStates, setBubbleStates] = useState({});
   const [hoveredBubble, setHoveredBubble] = useState(null);
   const [deformations, setDeformations] = useState({});
+  const [shockwave, setShockwave] = useState(null); // {x, y, radius}
+  const shockwaveRef = useRef(null);
+  const shockwaveFnRef = useRef(null);
 
   useEffect(() => {
     if (!containerRef.current || !sceneRef.current) return;
@@ -128,7 +199,7 @@ function PhysicsBubbleContainer({ containerRef }) {
     const headerHeight = headerElement ? headerElement.offsetHeight + 16 : 80;
 
     // Matter.js modules
-    const { Engine, Runner, World, Bodies, Mouse, MouseConstraint, Events, Body, Query } = Matter;
+    const { Engine, Runner, World, Bodies, Mouse, MouseConstraint, Events, Body, Query, Composite, Vector } = Matter;
 
     // Create engine with sleeping to eliminate jitter
     const engine = Engine.create({
@@ -159,48 +230,50 @@ function PhysicsBubbleContainer({ containerRef }) {
     canvas.style.height = '100%';
     canvas.style.opacity = '0';
     canvas.style.cursor = 'grab';
+    canvas.style.pointerEvents = 'auto';
+    canvas.style.zIndex = '10';
     sceneRef.current.appendChild(canvas);
     canvasRef.current = canvas;
 
     // Collision group for all bodies to be on same layer
     const collisionGroup = Matter.Events ? 0x0001 : 1;
 
-    // Create SOFT-BODY BOUNDARY WALLS
-    const wallThickness = 60;
+    // Create 100px THICK INVISIBLE BOUNDARY WALLS for stable containment
+    const wallThickness = 100;
     const padding = 48;
     const topWallY = Math.max(headerHeight, padding);
     
     const wallOptions = {
       isStatic: true,
-      restitution: 0.9, // Sweet spot for bounce without jitter
-      friction: 0, // No friction to prevent sticking
-      frictionStatic: 0, // No static friction
+      restitution: 0.8,
+      friction: 0,
+      frictionStatic: 0,
       density: 0.001,
       collisionFilter: { category: collisionGroup, mask: collisionGroup }
     };
 
-    // Create four boundary walls
+    // Create four 100px thick invisible boundary walls
     const walls = [
-      Bodies.rectangle(width / 2, topWallY - 20, width, wallThickness, { 
+      Bodies.rectangle(width / 2, topWallY - 50, width + 200, wallThickness, { 
         ...wallOptions, 
         label: 'topWall' 
       }),
-      Bodies.rectangle(width / 2, height - padding / 2, width, wallThickness, { 
+      Bodies.rectangle(width / 2, height + 50, width + 200, wallThickness, { 
         ...wallOptions, 
         label: 'bottomWall' 
       }),
-      Bodies.rectangle(padding / 2, height / 2, wallThickness, height, { 
+      Bodies.rectangle(padding - 50, height / 2, wallThickness, height + 200, { 
         ...wallOptions, 
         label: 'leftWall' 
       }),
-      Bodies.rectangle(width - padding / 2, height / 2, wallThickness, height, { 
+      Bodies.rectangle(width - padding + 50, height / 2, wallThickness, height + 200, { 
         ...wallOptions, 
         label: 'rightWall' 
       })
     ];
 
-    // Create DYNAMIC SOFT-BODY BUBBLES
-    const bubbleRadius = 48;
+    // Create DYNAMIC STABLE BUBBLES (45% smaller, perfect circles, no deformation)
+    const bubbleRadius = 25; // 29 * 0.85 = 24.65 ≈ 25 (15% reduction from current)
     const bubbles = MainSkills.map((skill, index) => {
       const angle = (index / MainSkills.length) * Math.PI * 2;
       const radius = 100 + Math.random() * 120;
@@ -209,14 +282,15 @@ function PhysicsBubbleContainer({ containerRef }) {
 
       const bubble = Bodies.circle(x, y, bubbleRadius, {
         isStatic: false,
-        restitution: 0.9, // Perfect bounce - not too high (no infinite jitter), not too low (no sticking)
-        friction: 0, // Zero friction - slide instantly off surfaces
-        frictionStatic: 0, // No static friction to prevent sticking
-        frictionAir: 0.06, // Increased damping to settle faster
+        restitution: 0.8, // Stable bounce without excessive jiggle
+        friction: 0, // Zero friction - slide cleanly
+        frictionStatic: 0, // No static friction
+        frictionAir: 0.06, // Damping for settling
         density: 0.01,
         label: skill,
         collisionFilter: { category: collisionGroup, mask: collisionGroup },
-        sleepThreshold: 0.01 // Sleep when nearly still
+        sleepThreshold: 0.01,
+        originalRadius: 41 // Store for shockwave calculations
       });
 
       bodiesRef.current[skill] = bubble;
@@ -239,16 +313,57 @@ function PhysicsBubbleContainer({ containerRef }) {
       }
     });
 
-    World.add(engine.world, mouseConstraint);
-
-    // Track when dragging
+    // Add constraint bounds to prevent bubbles from escaping through walls
     Events.on(mouseConstraint, 'startdrag', (event) => {
       canvas.style.cursor = 'grabbing';
+      const body = event.body;
+      if (body) {
+        // Store original position for boundary checking
+        body.isBeingDragged = true;
+      }
     });
 
     Events.on(mouseConstraint, 'enddrag', (event) => {
       canvas.style.cursor = 'grab';
+      const body = event.body;
+      if (body) {
+        body.isBeingDragged = false;
+      }
     });
+
+    // Constrain bubble positions to prevent wall tunneling
+    Events.on(engine, 'beforeUpdate', () => {
+      bubbles.forEach(bubble => {
+        const margin = bubbleRadius + 2; // Add 2px buffer for tight confinement
+        // Hard boundary clamp - ensures bubbles NEVER cross borders
+        if (bubble.position.x - margin < padding) {
+          bubble.position.x = padding + margin;
+          bubble.velocity.x = Math.max(0, bubble.velocity.x);
+        }
+        if (bubble.position.x + margin > width - padding) {
+          bubble.position.x = width - padding - margin;
+          bubble.velocity.x = Math.min(0, bubble.velocity.x);
+        }
+        if (bubble.position.y - margin < topWallY) {
+          bubble.position.y = topWallY + margin;
+          bubble.velocity.y = Math.max(0, bubble.velocity.y);
+        }
+        if (bubble.position.y + margin > height - padding) {
+          bubble.position.y = height - padding - margin;
+          bubble.velocity.y = Math.min(0, bubble.velocity.y);
+        }
+
+        // Max velocity cap to prevent tunneling
+        const speed = Math.sqrt(bubble.velocity.x ** 2 + bubble.velocity.y ** 2);
+        if (speed > 20) {
+          const scale = 20 / speed;
+          bubble.velocity.x *= scale;
+          bubble.velocity.y *= scale;
+        }
+      });
+    });
+
+    World.add(engine.world, mouseConstraint);
 
     // Hover detection using Query.point on actual bubble bodies
     Events.on(engine, 'afterUpdate', () => {
@@ -275,27 +390,27 @@ function PhysicsBubbleContainer({ containerRef }) {
           const speedY = Math.abs(body.velocity.y);
           const totalSpeed = Math.sqrt(speedX * speedX + speedY * speedY);
           
-          // Determine deformation based on velocity direction and magnitude
+          // SUBTLE JIGGLE - Minimal deformation for natural feel
           let scaleX = 1;
           let scaleY = 1;
           
-          // If moving horizontally more than vertically, compress vertically
+          // If moving horizontally more than vertically, compress vertically (SUBTLE)
           if (speedX > speedY && speedX > 2) {
-            const compressionAmount = Math.min(speedX / 15, 0.35);
-            scaleX = 1 + compressionAmount * 0.5; // Elongate horizontally
-            scaleY = 1 - compressionAmount; // Compress vertically
+            const compressionAmount = Math.min(speedX / 20, 0.15); // Reduced from 0.35 to 0.15
+            scaleX = 1 + compressionAmount * 0.3; // Reduced from 0.5 to 0.3
+            scaleY = 1 - compressionAmount * 0.7; // Reduced multiplier
           }
-          // If moving vertically more than horizontally, compress horizontally
+          // If moving vertically more than horizontally, compress horizontally (SUBTLE)
           else if (speedY > speedX && speedY > 2) {
-            const compressionAmount = Math.min(speedY / 15, 0.35);
-            scaleY = 1 + compressionAmount * 0.5; // Elongate vertically
-            scaleX = 1 - compressionAmount; // Compress horizontally
+            const compressionAmount = Math.min(speedY / 20, 0.15); // Reduced from 0.35 to 0.15
+            scaleY = 1 + compressionAmount * 0.3; // Reduced from 0.5 to 0.3
+            scaleX = 1 - compressionAmount * 0.7; // Reduced multiplier
           }
-          // Gentle idle squash/bounce
+          // Very gentle idle squash/bounce
           else if (totalSpeed < 2) {
-            const idleBounce = Math.sin(Date.now() / 200) * 0.05;
-            scaleX = 1 + idleBounce * 0.3;
-            scaleY = 1 - idleBounce * 0.3;
+            const idleBounce = Math.sin(Date.now() / 300) * 0.02; // Reduced from 0.05 to 0.02
+            scaleX = 1 + idleBounce * 0.15; // Reduced from 0.3 to 0.15
+            scaleY = 1 - idleBounce * 0.15; // Reduced from 0.3 to 0.15
           }
           
           newStates[skill] = {
@@ -333,12 +448,12 @@ function PhysicsBubbleContainer({ containerRef }) {
           const dx = b2.position.x - b1.position.x;
           const dy = b2.position.y - b1.position.y;
           const distance = Math.sqrt(dx * dx + dy * dy);
-          const minDistance = bubbleRadius * 2; // Two bubble radii
+          const minDistance = bubbleRadius * 2 + 4; // Two radii + 4px buffer for visual spacing
 
-          // If overlapping, push apart
+          // If overlapping or too close, push apart
           if (distance < minDistance) {
             const overlap = minDistance - distance;
-            const separationForce = 0.0008 * overlap;
+            const separationForce = 0.0015 * overlap; // Increased from 0.0008 for stronger separation
             const nx = distance > 0 ? dx / distance : 1;
             const ny = distance > 0 ? dy / distance : 0;
 
@@ -364,6 +479,36 @@ function PhysicsBubbleContainer({ containerRef }) {
       wallCount: walls.length
     });
 
+    // SHOCKWAVE / MAGNETIC PULSE EFFECT
+    const createShockwave = (epicenterX, epicenterY) => {
+      console.log('Pulse fired!', { mouseX: epicenterX, mouseY: epicenterY });
+      setShockwave({ x: epicenterX, y: epicenterY, radius: 0, createdAt: Date.now() });
+
+      const bodies = Composite.allBodies(engine.world).filter(body => !body.isStatic);
+      console.log('Targeting', bodies.length, 'dynamic bodies');
+      
+      bodies.forEach((bubble) => {
+        const delta = Vector.sub(bubble.position, { x: epicenterX, y: epicenterY });
+        const distance = Vector.magnitude(delta) || 1;
+        const forceMagnitude = (1 / distance) * 50;
+        const force = Vector.mult(Vector.normalise(delta), forceMagnitude);
+        Body.applyForce(bubble, bubble.position, force);
+      });
+    };
+
+    shockwaveFnRef.current = createShockwave;
+
+    // Direct dblclick listener on canvas
+    const handleDblClick = (event) => {
+      const rect = canvas.getBoundingClientRect();
+      const mouseX = event.clientX - rect.left;
+      const mouseY = event.clientY - rect.top;
+      console.log('Double-click detected:', { mouseX, mouseY, rectTop: rect.top, rectLeft: rect.left });
+      createShockwave(mouseX, mouseY);
+    };
+
+    canvas.addEventListener('dblclick', handleDblClick);
+
     // Cleanup
     return () => {
       Runner.stop(runner);
@@ -374,12 +519,14 @@ function PhysicsBubbleContainer({ containerRef }) {
       }
       Events.off(engine);
       Events.off(mouseConstraint);
+      canvas.removeEventListener('dblclick', handleDblClick);
+      shockwaveFnRef.current = null;
     };
   }, [containerRef]);
 
   return (
     <>
-      <div ref={sceneRef} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }} />
+      <div ref={sceneRef} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'auto', cursor: 'grab' }} />
       {MainSkills.map((skill) => {
         const state = bubbleStates[skill];
         const deform = deformations[skill] || { scaleX: 1, scaleY: 1 };
@@ -392,7 +539,7 @@ function PhysicsBubbleContainer({ containerRef }) {
         return (
           <div
             key={skill}
-            className="absolute pointer-events-none"
+            className="absolute pointer-events-none select-none"
             style={{
               left: `${state.x}px`,
               top: `${state.y}px`,
@@ -401,7 +548,7 @@ function PhysicsBubbleContainer({ containerRef }) {
             }}
           >
             <div 
-              className={`relative flex items-center justify-center w-24 h-24 rounded-full bg-gradient-to-br from-blue-500/10 to-purple-500/10 border-2 backdrop-blur-sm transition-all duration-75 ${
+              className={`relative flex items-center justify-center w-24 h-24 rounded-full bg-gradient-to-br from-blue-500/10 to-purple-500/10 border-2 backdrop-blur-sm transition-all duration-75 select-none ${
                 isHovered 
                   ? 'border-blue-400/70 shadow-2xl shadow-blue-500/50' 
                   : isMoving 
@@ -427,6 +574,46 @@ function PhysicsBubbleContainer({ containerRef }) {
           </div>
         );
       })}
+      
+      {/* SHOCKWAVE RIPPLE VISUALIZATION */}
+      {shockwave && (
+        <div
+          ref={shockwaveRef}
+          style={{
+            position: 'absolute',
+            left: `${shockwave.x}px`,
+            top: `${shockwave.y}px`,
+            width: '0px',
+            height: '0px',
+            border: '2px solid #38bdf8',
+            borderRadius: '50%',
+            pointerEvents: 'none',
+            animation: 'shockwave-expand 0.5s ease-out forwards',
+            boxShadow: '0 0 20px rgba(56, 189, 248, 0.6)'
+          }}
+        />
+      )}
+      
+      <style>{`
+        @keyframes shockwave-expand {
+          0% {
+            width: 0px;
+            height: 0px;
+            opacity: 1;
+            left: ${shockwave?.x}px;
+            top: ${shockwave?.y}px;
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.8);
+          }
+          100% {
+            width: 400px;
+            height: 400px;
+            opacity: 0;
+            left: calc(${shockwave?.x}px - 200px);
+            top: calc(${shockwave?.y}px - 200px);
+            box-shadow: 0 0 0px rgba(56, 189, 248, 0);
+          }
+        }
+      `}</style>
     </>
   );
 }
@@ -460,7 +647,28 @@ export default function Page() {
               <span className="text-blue-400">Muhammad Ahmed</span>
             </h1>
             <p className="mt-4 text-2xl md:text-3xl font-light text-gray-300 font-display">
-              Software Engineer & AI Architect
+              <Typewriter 
+                strings={[
+                  'Full-Stack AI Engineer',
+                  'Machine Learning Engineer',
+                  'Data Scientist',
+                  'Backend Engineer',
+                  'Frontend Engineer',
+                  'MLOps Engineer',
+                  'Database Administrator',
+                  'DevOps Engineer',
+                  'AI Solutions Architect',
+                  'Software Engineer',
+                  'Big Data Engineer',
+                  'Computer Vision Engineer',
+                  'NLP Specialist',
+                  'Systems Architect'
+                ]}
+                typingSpeed={75}
+                deletingSpeed={50}
+                delayBetweenStrings={2000}
+                cursorColor="#38bdf8"
+              />
             </p>
             <p className="mt-6 text-lg text-gray-400 max-w-xl leading-relaxed">
               Bridging the gap between intelligent systems and elegant user experiences. I architect scalable full-stack solutions powered by machine learning, transforming complex data into intuitive, production-ready applications that drive real-world impact.
@@ -504,7 +712,7 @@ export default function Page() {
               About <span className="text-blue-400">Me</span>
             </h2>
             <p className="mt-6 text-gray-300 leading-relaxed text-lg">
-              I'm a software engineer specializing in the intersection of artificial intelligence and modern web development. Based in Pakistan, I craft end-to-end solutions that leverage machine learning algorithms, real-time data processing, and cutting-edge frontend technologies.
+              I'm a software engineer specializing in the intersection of artificial intelligence and modern web development. With a BS in Data Science from KFUEIT, based in Pakistan, I craft end-to-end solutions that leverage machine learning algorithms, real-time data processing, and cutting-edge frontend technologies.
             </p>
             <p className="mt-4 text-gray-400 leading-relaxed">
               From designing neural networks to building responsive React interfaces, I bring a holistic approach to software development. My work spans predictive analytics, computer vision applications, RESTful microservices, and cloud-native architectures—all unified by a commitment to clean code, scalability, and measurable business outcomes.
@@ -577,7 +785,7 @@ export default function Page() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-6 md:px-20 py-20">
+      <section id="skills" className="mx-auto max-w-7xl px-6 md:px-20 py-20">
         <div className="text-center mb-12">
           <p className="text-xs uppercase tracking-widest text-blue-400">Core Technologies</p>
           <h2 className="mt-3 text-4xl md:text-5xl font-bold tracking-tighter">Main Tech Stack</h2>
@@ -586,14 +794,18 @@ export default function Page() {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8">
+        <div className="grid md:grid-cols-2 gap-8 md:auto-rows-[600px]">
           {/* Left Side - Main Tech Stack with Matter.js Physics */}
-          <div ref={techStackContainerRef} className="rounded-3xl border border-white/10 bg-gradient-to-br from-slate-800/50 to-slate-900/80 backdrop-blur-xl p-8 relative overflow-hidden" style={{ minHeight: '600px' }}>
+          <div
+            ref={techStackContainerRef}
+            className="rounded-3xl border border-white/10 bg-gradient-to-br from-slate-800/50 to-slate-900/80 backdrop-blur-xl p-8 relative overflow-hidden h-full"
+          >
             <PhysicsBubbleContainer containerRef={techStackContainerRef} />
           </div>
 
           {/* Right Side - Skills Block */}
-          <div className="rounded-3xl border border-white/10 bg-gradient-to-br from-slate-800/50 to-slate-900/80 backdrop-blur-xl overflow-hidden">
+          <div className="flex flex-col h-full">
+            <div className="rounded-3xl border border-white/10 bg-gradient-to-br from-slate-800/50 to-slate-900/80 backdrop-blur-xl overflow-hidden flex-1 flex flex-col">
             <div className="flex items-center gap-2 border-b border-white/10 px-4 py-3">
               <div className="flex gap-2">
                 <div className="h-3 w-3 rounded-full bg-red-500 animate-pulse"></div>
@@ -682,17 +894,16 @@ export default function Page() {
               </div>
 
             </div>
+            </div>
           </div>
         </div>
       </section>
 
       <section id="projects" className="mx-auto max-w-7xl px-6 md:px-20 py-20">
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
-          <div>
-            <p className="text-xs uppercase tracking-widest text-blue-400">Selected Work</p>
-            <h2 className="mt-3 text-4xl md:text-5xl font-bold tracking-tighter">Projects</h2>
-          </div>
-          <p className="text-gray-400 max-w-md">
+        <div className="text-center">
+          <p className="text-xs uppercase tracking-widest text-blue-400">Selected Work</p>
+          <h2 className="mt-3 text-4xl md:text-5xl font-bold tracking-tighter">Projects</h2>
+          <p className="mt-4 text-gray-400 max-w-2xl mx-auto">
             A mix of product launches, interactive websites, and visual experiments designed to
             elevate digital presence.
           </p>
@@ -826,7 +1037,7 @@ export default function Page() {
 
                 <button
                   type="submit"
-                  className="w-full inline-flex items-center justify-center gap-2 rounded-md border border-cyan-400/60 bg-cyan-500/10 px-4 py-2.5 text-xs font-semibold uppercase tracking-[0.3em] text-cyan-300 hover:bg-cyan-500/20 transition-colors"
+                  className="w-full inline-flex items-center justify-center gap-2 rounded-2xl border border-cyan-400/60 bg-cyan-500/10 px-4 py-2.5 text-xs font-semibold uppercase tracking-[0.3em] text-cyan-300 hover:bg-cyan-500/20 transition-colors"
                 >
                   Send
                 </button>
@@ -841,7 +1052,7 @@ export default function Page() {
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div>
               <h3 className="text-lg font-bold tracking-tight mb-3">Muhammad Ahmed</h3>
-              <p className="text-sm text-gray-400">Creative Developer</p>
+              <p className="text-sm text-gray-400">BS Data Science, KFUEIT</p>
               <p className="text-sm text-gray-400 mt-2">Gulshan-e-Ravi, RYK, Punjab, Pakistan</p>
             </div>
 
