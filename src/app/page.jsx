@@ -678,8 +678,8 @@ export default function Page() {
   };
 
   return (
-    <div id="home" className="min-h-screen w-full">
-      <section className="mx-auto max-w-7xl px-6 md:px-20 pt-28 md:pt-32 pb-20 min-h-screen flex items-center">
+    <div className="min-h-screen w-full">
+      <section id="home" className="mx-auto max-w-7xl px-6 md:px-20 pt-28 md:pt-32 pb-20 min-h-screen flex items-center">
         <div className="grid gap-10 md:grid-cols-2 items-center w-full">
           <div>
             <h1 className="text-5xl md:text-6xl font-bold leading-tight">
