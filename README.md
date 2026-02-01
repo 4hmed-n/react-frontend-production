@@ -46,6 +46,26 @@ A modern, interactive portfolio website built with **React 18** and **Vite**, fe
 
 ---
 
+## 🔄 Recent Updates (February 2026)
+
+### Physics Engine Overhaul ⭐
+- **Rock-Solid Balls**: Replaced soft bubble physics with billiard-style rigid body physics
+- **Increased Ball Radius**: Expanded from 30px to 45px for better SVG icon visibility
+- **Collision System**: Added ball-to-ball collision detection with separation forces
+- **Absolute Containment**: Implemented hard boundary constraints preventing any ball escape
+- **Buffer Zones**: 5px container edge buffer + 2px inter-ball spacing
+
+### Resume Enhancements ⭐
+- **Web Profile Picture**: Added personal profile photo to web resume at `/resume`
+- **Smart PDF Hiding**: Profile picture automatically hidden when downloading PDF
+- **Cyan Border Frame**: Professional circular frame with matching cyan accent
+
+### Profile Picture Update ⭐
+- **New PFP Uploaded**: Updated portfolio profile picture across all sections
+- **Consistent Display**: Shows on hero section and web resume
+
+---
+
 ## ✨ Features
 
 <table>
@@ -60,11 +80,14 @@ A modern, interactive portfolio website built with **React 18** and **Vite**, fe
   - Smooth deletion animation (50ms)
   - Sky-blue blinking cursor
 
-- **Physics-Based Skills**
-  - Zero-gravity floating bubbles
-  - Magnetic pulse interaction (double-click)
-  - 100px invisible boundary walls
-  - Smooth collision detection
+- **Rock-Solid Physics-Based Skills** ⭐ *NEW*
+  - Zero-gravity billiard ball physics
+  - Balls with 45px radius for icon visibility
+  - Ball-to-ball collision detection & separation
+  - Absolute boundary containment (no escape)
+  - 2px inter-ball buffer + 5px container buffer
+  - Drag & throw interactions
+  - Real-time collision impulses
 
 </td>
 <td width="50%">
@@ -76,6 +99,12 @@ A modern, interactive portfolio website built with **React 18** and **Vite**, fe
   - Auto-updating content
   - One-click PDF download
   - Capitalized field descriptions
+
+- **Web Resume with Profile Picture** ⭐ *NEW*
+  - Profile picture displays on web `/resume` page
+  - Auto-hidden from PDF downloads
+  - Cyan-bordered circular frame
+  - Fallback emoji if image missing
 
 - **Smart Navigation**
   - Dynamic header button states
