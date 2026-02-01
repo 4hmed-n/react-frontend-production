@@ -629,25 +629,34 @@ export default function Page() {
     const handleScroll = () => {
       setShowScrollTop(window.scrollY > 300);
       
-      // Determine current section by checking which is closest to viewport center
+      // Determine current section by checking scroll position within section bounds
       const sections = ['home', 'about', 'skills', 'projects', 'contact'];
-      let closestSection = 'home';
-      let closestDistance = Infinity;
-      
+      const scrollPosition = window.scrollY + window.innerHeight * 0.35;
+      let activeSection = 'home';
+
       for (const sectionId of sections) {
         const element = document.getElementById(sectionId);
         if (element) {
           const rect = element.getBoundingClientRect();
-          const distance = Math.abs(rect.top);
-          if (distance < closestDistance) {
-            closestDistance = distance;
-            closestSection = sectionId;
+          const elementTop = rect.top + window.scrollY;
+          const elementBottom = elementTop + rect.height;
+
+          if (scrollPosition >= elementTop && scrollPosition < elementBottom) {
+            activeSection = sectionId;
+            break;
           }
         }
       }
-      
-      setCurrentSection(closestSection);
-      currentSectionRef.current = closestSection;
+
+      // Ensure contact section is active when near the bottom
+      const pageBottom = window.scrollY + window.innerHeight;
+      const docHeight = document.documentElement.scrollHeight;
+      if (pageBottom >= docHeight - 8) {
+        activeSection = 'contact';
+      }
+
+      setCurrentSection(activeSection);
+      currentSectionRef.current = activeSection;
     };
     
     handleScroll(); // Call once on mount
