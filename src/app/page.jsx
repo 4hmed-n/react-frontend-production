@@ -642,19 +642,17 @@ export default function Page() {
           
           if (scrollPosition >= elementTop && scrollPosition < elementBottom) {
             setCurrentSection(sectionId);
+            setShowScrollExplore(sectionId !== 'contact');
             break;
           }
         }
       }
-      
-      // Show arrow on all sections except the last one (contact)
-      setShowScrollExplore(currentSection !== 'contact');
     };
     
     handleScroll(); // Call once on mount
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [currentSection]);
+  }, []);
 
   const scrollToNextSection = () => {
     const sections = ['home', 'about', 'skills', 'projects', 'contact'];
