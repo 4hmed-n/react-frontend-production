@@ -58,7 +58,7 @@ export default function Layout({ children }) {
 
   const handleDownloadPDF = async () => {
     // Get all resume content
-    const resumeElement = document.querySelector('div.max-w-5xl.mx-auto.bg-white');
+    const resumeElement = document.querySelector('[data-resume-root]');
     if (!resumeElement) return;
 
     const canvas = await html2canvas(resumeElement, {

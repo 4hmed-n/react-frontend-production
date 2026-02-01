@@ -124,7 +124,7 @@ export default function Resume() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 py-8 resume-page">
       {/* Resume Container */}
-      <div className="mx-auto bg-white shadow-2xl resume-container max-w-[900px]" ref={resumeRef}>
+      <div className="mx-auto bg-white shadow-2xl resume-container max-w-[900px]" ref={resumeRef} data-resume-root>
         <div className="flex">
           {/* Left Sidebar */}
           <div className="w-80 bg-[#0f2230] text-white p-8 border-r-4 border-cyan-400">
