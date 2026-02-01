@@ -305,13 +305,17 @@ function PhysicsBubbleContainer({ containerRef }) {
     const mouse = Mouse.create(canvas);
     mouseRef.current = mouse;
     
-    // Mouse constraint for throwing balls
+    // Mouse constraint for throwing balls - HIGH responsiveness
     const mouseConstraint = MouseConstraint.create(engine, {
       mouse: mouse,
       constraint: {
-        stiffness: 0.9,
-        damping: 0.3,
+        stiffness: 1,
+        damping: 0,
+        angularStiffness: 0,
         render: { visible: false }
+      },
+      collisionFilter: {
+        mask: collisionGroup
       }
     });
 
@@ -320,17 +324,17 @@ function PhysicsBubbleContainer({ containerRef }) {
       canvas.style.cursor = 'grabbing';
       const body = event.body;
       if (body) {
-        // Store original position for boundary checking
         body.isBeingDragged = true;
+        setHoveredBubble(body.label);
       }
     });
 
     Events.on(mouseConstraint, 'enddrag', (event) => {
-      canvas.style.cursor = 'grab';
       const body = event.body;
       if (body) {
         body.isBeingDragged = false;
       }
+      canvas.style.cursor = 'pointer';
     });
 
     // Constrain bubble positions to prevent wall tunneling
@@ -367,16 +371,28 @@ function PhysicsBubbleContainer({ containerRef }) {
 
     World.add(engine.world, mouseConstraint);
 
-    // Hover detection using Query.point on actual bubble bodies
-    Events.on(engine, 'afterUpdate', () => {
-      if (mouse.position.x && mouse.position.y) {
-        const hoveredBodies = Query.point(bubbles, mouse.position);
-        if (hoveredBodies.length > 0) {
-          setHoveredBubble(hoveredBodies[0].label);
-        } else {
-          setHoveredBubble(null);
-        }
+    // INSTANT hover detection using mousemove event
+    canvas.addEventListener('mousemove', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = width / rect.width;
+      const scaleY = height / rect.height;
+      const mousePos = {
+        x: (e.clientX - rect.left) * scaleX,
+        y: (e.clientY - rect.top) * scaleY
+      };
+      
+      const hoveredBodies = Query.point(bubbles, mousePos);
+      if (hoveredBodies.length > 0) {
+        setHoveredBubble(hoveredBodies[0].label);
+        canvas.style.cursor = 'pointer';
+      } else {
+        setHoveredBubble(null);
+        canvas.style.cursor = 'grab';
       }
+    });
+
+    canvas.addEventListener('mouseleave', () => {
+      setHoveredBubble(null);
     });
 
     // Update positions for React rendering - NO DEFORMATION for solid balls
