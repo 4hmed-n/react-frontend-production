@@ -201,9 +201,9 @@ function PhysicsBubbleContainer({ containerRef }) {
     // Matter.js modules
     const { Engine, Runner, World, Bodies, Mouse, MouseConstraint, Events, Body, Query, Composite, Vector } = Matter;
 
-    // Create engine with gravity for billiard ball physics
+    // Create engine with ZERO gravity - top-down billiard table view
     const engine = Engine.create({
-      gravity: { x: 0, y: 1.0 },
+      gravity: { x: 0, y: 0 },
       enableSleeping: false
     });
     
@@ -245,8 +245,8 @@ function PhysicsBubbleContainer({ containerRef }) {
     
     const wallOptions = {
       isStatic: true,
-      restitution: 0.9,
-      friction: 0.01,
+      restitution: 0.95,
+      friction: 0.001,
       frictionStatic: 0,
       density: 0.001,
       collisionFilter: { category: collisionGroup, mask: collisionGroup }
@@ -282,11 +282,11 @@ function PhysicsBubbleContainer({ containerRef }) {
 
       const bubble = Bodies.circle(x, y, bubbleRadius, {
         isStatic: false,
-        restitution: 0.6,
-        friction: 0.005,
-        frictionStatic: 0.001,
-        frictionAir: 0.02,
-        density: 0.003,
+        restitution: 0.95,
+        friction: 0.001,
+        frictionStatic: 0,
+        frictionAir: 0.01,
+        density: 0.005,
         inertia: Infinity,
         label: skill,
         collisionFilter: { category: collisionGroup, mask: collisionGroup },
@@ -379,7 +379,7 @@ function PhysicsBubbleContainer({ containerRef }) {
       }
     });
 
-    // Update positions AND deformations for React rendering
+    // Update positions for React rendering - NO DEFORMATION for solid balls
     const updateLoop = () => {
       const newStates = {};
       const newDeformations = {};
@@ -387,34 +387,6 @@ function PhysicsBubbleContainer({ containerRef }) {
       MainSkills.forEach(skill => {
         const body = bodiesRef.current[skill];
         if (body) {
-          // Calculate velocity magnitude for deformation intensity
-          const speedX = Math.abs(body.velocity.x);
-          const speedY = Math.abs(body.velocity.y);
-          const totalSpeed = Math.sqrt(speedX * speedX + speedY * speedY);
-          
-          // SUBTLE JIGGLE - Minimal deformation for natural feel
-          let scaleX = 1;
-          let scaleY = 1;
-          
-          // If moving horizontally more than vertically, compress vertically (SUBTLE)
-          if (speedX > speedY && speedX > 2) {
-            const compressionAmount = Math.min(speedX / 20, 0.15); // Reduced from 0.35 to 0.15
-            scaleX = 1 + compressionAmount * 0.3; // Reduced from 0.5 to 0.3
-            scaleY = 1 - compressionAmount * 0.7; // Reduced multiplier
-          }
-          // If moving vertically more than horizontally, compress horizontally (SUBTLE)
-          else if (speedY > speedX && speedY > 2) {
-            const compressionAmount = Math.min(speedY / 20, 0.15); // Reduced from 0.35 to 0.15
-            scaleY = 1 + compressionAmount * 0.3; // Reduced from 0.5 to 0.3
-            scaleX = 1 - compressionAmount * 0.7; // Reduced multiplier
-          }
-          // Very gentle idle squash/bounce
-          else if (totalSpeed < 2) {
-            const idleBounce = Math.sin(Date.now() / 300) * 0.02; // Reduced from 0.05 to 0.02
-            scaleX = 1 + idleBounce * 0.15; // Reduced from 0.3 to 0.15
-            scaleY = 1 - idleBounce * 0.15; // Reduced from 0.3 to 0.15
-          }
-          
           newStates[skill] = {
             x: body.position.x - bubbleRadius,
             y: body.position.y - bubbleRadius,
@@ -423,7 +395,8 @@ function PhysicsBubbleContainer({ containerRef }) {
             velocityY: body.velocity.y
           };
           
-          newDeformations[skill] = { scaleX, scaleY };
+          // No deformation - solid billiard balls
+          newDeformations[skill] = { scaleX: 1, scaleY: 1 };
         }
       });
       
@@ -431,18 +404,8 @@ function PhysicsBubbleContainer({ containerRef }) {
       setDeformations(newDeformations);
     };
 
-    // Apply Brownian motion (gentle floating) + Anti-overlap force
+    // Anti-overlap force: detect overlapping bubbles and push apart
     Events.on(engine, 'beforeUpdate', () => {
-      bubbles.forEach(bubble => {
-        // Very small random forces for floating effect
-        const forceMagnitude = 0.00005;
-        Body.applyForce(bubble, bubble.position, {
-          x: (Math.random() - 0.5) * forceMagnitude,
-          y: (Math.random() - 0.5) * forceMagnitude
-        });
-      });
-
-      // Anti-overlap force: detect overlapping bubbles and push apart
       for (let i = 0; i < bubbles.length; i++) {
         for (let j = i + 1; j < bubbles.length; j++) {
           const b1 = bubbles[i];
