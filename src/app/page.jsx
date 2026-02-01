@@ -203,7 +203,7 @@ function PhysicsBubbleContainer({ containerRef }) {
 
     // Create engine with gravity for billiard ball physics
     const engine = Engine.create({
-      gravity: { x: 0, y: 0.5 },
+      gravity: { x: 0, y: 1.0 },
       enableSleeping: false
     });
     
@@ -282,11 +282,11 @@ function PhysicsBubbleContainer({ containerRef }) {
 
       const bubble = Bodies.circle(x, y, bubbleRadius, {
         isStatic: false,
-        restitution: 0.85,
-        friction: 0.001,
-        frictionStatic: 0,
-        frictionAir: 0.01,
-        density: 0.002,
+        restitution: 0.6,
+        friction: 0.005,
+        frictionStatic: 0.001,
+        frictionAir: 0.02,
+        density: 0.003,
         inertia: Infinity,
         label: skill,
         collisionFilter: { category: collisionGroup, mask: collisionGroup },
@@ -305,11 +305,12 @@ function PhysicsBubbleContainer({ containerRef }) {
     const mouse = Mouse.create(canvas);
     mouseRef.current = mouse;
     
-    // HIGH STIFFNESS for solid pushing interaction
+    // Mouse constraint for throwing balls
     const mouseConstraint = MouseConstraint.create(engine, {
       mouse: mouse,
       constraint: {
-        stiffness: 0.8, // High stiffness - acts like solid pushing
+        stiffness: 0.9,
+        damping: 0.3,
         render: { visible: false }
       }
     });
