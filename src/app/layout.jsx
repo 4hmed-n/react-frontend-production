@@ -52,6 +52,7 @@ function SidebarIcon({ href, icon, label, showTooltip = true, isClickable = true
 
 export default function Layout({ children }) {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
   const isResumePage = location.pathname === '/resume';
 
@@ -148,8 +149,8 @@ export default function Layout({ children }) {
           ? 'bg-slate-900/50 backdrop-blur-xl border border-white/15 shadow-2xl shadow-black/40' 
           : 'bg-slate-900/40 backdrop-blur-lg border border-white/10'
       }`} style={{ zIndex: 100 }}>
-        <div className="px-8 md:px-12 py-4 flex items-center justify-between">
-          <Link to="/" className="text-base md:text-lg font-bold tracking-tighter uppercase font-display hover:text-sky-400 transition-colors duration-300">
+        <div className="px-4 md:px-12 py-4 flex items-center justify-between">
+          <Link to="/" className="text-sm md:text-lg font-bold tracking-tighter uppercase font-display hover:text-sky-400 transition-colors duration-300">
             Muhammad Ahmed
           </Link>
           <div className="hidden md:flex flex-1 items-center justify-center gap-10 text-xs uppercase tracking-widest text-gray-400 font-display">
@@ -158,10 +159,23 @@ export default function Layout({ children }) {
             <a className="hover:text-sky-400 transition-colors duration-300" href="#contact">Contact</a>
             <a className="hover:text-sky-400 transition-colors duration-300" href="#about">About</a>
           </div>
+          <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="md:hidden text-gray-300 hover:text-white transition-colors p-2"
+            aria-label="Toggle menu"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              {isMobileMenuOpen ? (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              ) : (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              )}
+            </svg>
+          </button>
           {isResumePage ? (
             <button
               onClick={handleDownloadPDF}
-              className="ml-auto md:ml-10 inline-flex items-center rounded-full bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border border-yellow-400/40 px-5 py-2 text-xs uppercase tracking-widest text-yellow-200 hover:from-yellow-500/30 hover:to-orange-500/30 hover:border-yellow-400/70 hover:text-yellow-300 transition-all duration-300 hover:shadow-lg hover:shadow-yellow-500/25"
+              className="hidden md:inline-flex ml-auto md:ml-10 items-center rounded-full bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border border-yellow-400/40 px-5 py-2 text-xs uppercase tracking-widest text-yellow-200 hover:from-yellow-500/30 hover:to-orange-500/30 hover:border-yellow-400/70 hover:text-yellow-300 transition-all duration-300 hover:shadow-lg hover:shadow-yellow-500/25"
             >
               <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
@@ -171,12 +185,42 @@ export default function Layout({ children }) {
           ) : (
             <Link
               to="/resume"
-              className="ml-auto md:ml-10 inline-flex items-center rounded-full bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border border-blue-400/40 px-5 py-2 text-xs uppercase tracking-widest text-gray-200 hover:from-blue-500/30 hover:to-cyan-500/30 hover:border-blue-400/70 hover:text-sky-400 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/25"
+              className="hidden md:inline-flex ml-auto md:ml-10 items-center rounded-full bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border border-blue-400/40 px-5 py-2 text-xs uppercase tracking-widest text-gray-200 hover:from-blue-500/30 hover:to-cyan-500/30 hover:border-blue-400/70 hover:text-sky-400 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/25"
             >
               Resume
             </Link>
           )}
         </div>
+        {isMobileMenuOpen && (
+          <div className="md:hidden px-4 pb-4 pt-2 space-y-3 border-t border-white/10">
+            <a onClick={() => setIsMobileMenuOpen(false)} className="block text-sm uppercase tracking-widest text-gray-400 hover:text-sky-400 transition-colors py-2" href="#skills">Skills</a>
+            <a onClick={() => setIsMobileMenuOpen(false)} className="block text-sm uppercase tracking-widest text-gray-400 hover:text-sky-400 transition-colors py-2" href="#projects">Projects</a>
+            <a onClick={() => setIsMobileMenuOpen(false)} className="block text-sm uppercase tracking-widest text-gray-400 hover:text-sky-400 transition-colors py-2" href="#contact">Contact</a>
+            <a onClick={() => setIsMobileMenuOpen(false)} className="block text-sm uppercase tracking-widest text-gray-400 hover:text-sky-400 transition-colors py-2" href="#about">About</a>
+            {isResumePage ? (
+              <button
+                onClick={() => {
+                  handleDownloadPDF();
+                  setIsMobileMenuOpen(false);
+                }}
+                className="w-full text-left inline-flex items-center rounded-full bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border border-yellow-400/40 px-5 py-2 text-xs uppercase tracking-widest text-yellow-200"
+              >
+                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+                Download PDF
+              </button>
+            ) : (
+              <Link
+                to="/resume"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="block text-center rounded-full bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border border-blue-400/40 px-5 py-2 text-xs uppercase tracking-widest text-gray-200"
+              >
+                Resume
+              </Link>
+            )}
+          </div>
+        )}
       </nav>
       <main className="relative" style={{ zIndex: 10 }}>{children}</main>
     </div>
