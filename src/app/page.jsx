@@ -621,8 +621,8 @@ function PhysicsBubbleContainer({ containerRef }) {
 export default function Page() {
   const [pfpHovered, setPfpHovered] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
-  const [showScrollExplore, setShowScrollExplore] = useState(true);
   const [currentSection, setCurrentSection] = useState('home');
+  const currentSectionRef = useRef('home');
   const techStackContainerRef = useRef(null);
 
   useEffect(() => {
@@ -647,6 +647,7 @@ export default function Page() {
       }
       
       setCurrentSection(closestSection);
+      currentSectionRef.current = closestSection;
     };
     
     handleScroll(); // Call once on mount
@@ -656,7 +657,7 @@ export default function Page() {
 
   const scrollToNextSection = () => {
     const sections = ['home', 'about', 'skills', 'projects', 'contact'];
-    const currentIndex = sections.indexOf(currentSection);
+    const currentIndex = sections.indexOf(currentSectionRef.current);
     if (currentIndex < sections.length - 1) {
       const nextSection = sections[currentIndex + 1];
       document.getElementById(nextSection)?.scrollIntoView({ behavior: 'smooth' });
