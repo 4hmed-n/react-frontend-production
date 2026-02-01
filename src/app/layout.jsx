@@ -1,8 +1,10 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import './globals.css';
 import ParticleBackground from './ParticleBackground';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
 function SidebarIcon({ href, icon, label, showTooltip = true, isClickable = true }) {
   const [isHovered, setIsHovered] = useState(false);
@@ -50,6 +52,39 @@ function SidebarIcon({ href, icon, label, showTooltip = true, isClickable = true
 
 export default function Layout({ children }) {
   const [isScrolled, setIsScrolled] = useState(false);
+  const location = useLocation();
+  const isResumePage = location.pathname === '/resume';
+
+  const handleDownloadPDF = async () => {
+    // Get all resume content
+    const resumeElement = document.querySelector('div.max-w-5xl.mx-auto.bg-white');
+    if (!resumeElement) return;
+
+    const canvas = await html2canvas(resumeElement, {
+      scale: 2,
+      useCORS: true,
+      logging: false,
+      backgroundColor: '#ffffff'
+    });
+    
+    const imgData = canvas.toDataURL('image/png');
+    const pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: 'a4'
+    });
+    
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = pdf.internal.pageSize.getHeight();
+    const imgWidth = canvas.width;
+    const imgHeight = canvas.height;
+    const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
+    const imgX = (pdfWidth - imgWidth * ratio) / 2;
+    const imgY = 0;
+    
+    pdf.addImage(imgData, 'PNG', imgX, imgY, imgWidth * ratio, imgHeight * ratio);
+    pdf.save('Muhammad_Ahmed_Resume.pdf');
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -123,12 +158,24 @@ export default function Layout({ children }) {
             <a className="hover:text-sky-400 transition-colors duration-300" href="#contact">Contact</a>
             <a className="hover:text-sky-400 transition-colors duration-300" href="#about">About</a>
           </div>
-          <Link
-            to="/resume"
-            className="ml-auto md:ml-10 inline-flex items-center rounded-full bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border border-blue-400/40 px-5 py-2 text-xs uppercase tracking-widest text-gray-200 hover:from-blue-500/30 hover:to-cyan-500/30 hover:border-blue-400/70 hover:text-sky-400 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/25"
-          >
-            Resume
-          </Link>
+          {isResumePage ? (
+            <button
+              onClick={handleDownloadPDF}
+              className="ml-auto md:ml-10 inline-flex items-center rounded-full bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border border-yellow-400/40 px-5 py-2 text-xs uppercase tracking-widest text-yellow-200 hover:from-yellow-500/30 hover:to-orange-500/30 hover:border-yellow-400/70 hover:text-yellow-300 transition-all duration-300 hover:shadow-lg hover:shadow-yellow-500/25"
+            >
+              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+              Download PDF
+            </button>
+          ) : (
+            <Link
+              to="/resume"
+              className="ml-auto md:ml-10 inline-flex items-center rounded-full bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border border-blue-400/40 px-5 py-2 text-xs uppercase tracking-widest text-gray-200 hover:from-blue-500/30 hover:to-cyan-500/30 hover:border-blue-400/70 hover:text-sky-400 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/25"
+            >
+              Resume
+            </Link>
+          )}
         </div>
       </nav>
       <main className="relative" style={{ zIndex: 10 }}>{children}</main>
