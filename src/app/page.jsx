@@ -308,12 +308,38 @@ function PhysicsBubbleContainer({ containerRef }) {
     Render.run(render);
     runnerRef.current = runner;
 
-    // ABSOLUTE boundary constraint - prevents any ball escape
+    // ABSOLUTE boundary constraint - prevents any ball escape with buffer
     Events.on(engine, 'beforeUpdate', () => {
+      // First, check ball-to-ball collisions and separate overlapping balls
+      for (let i = 0; i < balls.length; i++) {
+        for (let j = i + 1; j < balls.length; j++) {
+          const body1 = balls[i].body;
+          const body2 = balls[j].body;
+          
+          const dx = body2.position.x - body1.position.x;
+          const dy = body2.position.y - body1.position.y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          const minDistance = ballRadius * 2 + 2; // Two radii + 2px buffer
+          
+          // If balls are overlapping or too close, separate them
+          if (distance < minDistance && distance > 0) {
+            const overlap = minDistance - distance;
+            const separationForce = 0.002 * overlap; // Gentle separation force
+            const nx = dx / distance;
+            const ny = dy / distance;
+            
+            // Apply separation impulses
+            Body.applyForce(body1, body1.position, { x: -nx * separationForce, y: -ny * separationForce });
+            Body.applyForce(body2, body2.position, { x: nx * separationForce, y: ny * separationForce });
+          }
+        }
+      }
+      
+      // Then, enforce boundary constraints with proper clamping
       balls.forEach(({ body }) => {
-        const margin = ballRadius + 5;
+        const margin = ballRadius + 5; // Buffer zone from edges
         
-        // Hard clamp to prevent any escape
+        // Hard clamp to prevent any escape or touching boundaries
         if (body.position.x - margin < 0) {
           body.position.x = margin;
           body.velocity.x = Math.max(0, body.velocity.x);
