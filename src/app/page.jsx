@@ -182,7 +182,7 @@ function PhysicsBubbleContainer({ containerRef }) {
   const bodiesRef = useRef({});
   const ballRefsRef = useRef([]);
   const [hoveredBubble, setHoveredBubble] = useState(null);
-  const ballRadius = 30; // Define ballRadius here so it's available in return
+  const ballRadius = 45; // Increased for better icon fit
 
   useEffect(() => {
     if (!containerRef.current) return;
