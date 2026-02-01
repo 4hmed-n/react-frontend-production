@@ -39,7 +39,7 @@ export default function Resume() {
   const personalInfo = {
     name: 'Muhammad Ahmed',
     email: 'ahmednuman3044@gmail.com',
-    phone: '+92 444 5050',
+    phone: '+92-333-8678444',
     location: 'Gulshan-e-Ravi, RYK, Punjab, Pakistan',
     github: 'github.com/4hmed-n'
   };

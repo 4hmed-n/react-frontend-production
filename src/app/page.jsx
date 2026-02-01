@@ -696,12 +696,15 @@ export default function Page() {
           </div>
         </div>
         {showScrollExplore && (
-          <div className="absolute bottom-20 left-1/2 -translate-x-1/2 text-xs uppercase tracking-widest text-gray-500 flex flex-col items-center gap-2 transition-opacity duration-300">
-            <span>Scroll to explore</span>
-            <svg className="w-6 h-6 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <button
+            onClick={() => document.getElementById('about').scrollIntoView({ behavior: 'smooth' })}
+            className="absolute bottom-20 left-1/2 -translate-x-1/2 text-xs uppercase tracking-widest text-gray-500 flex flex-col items-center gap-2 transition-opacity duration-300 hover:text-blue-400 group"
+          >
+            <span className="group-hover:text-blue-400 transition-colors">Scroll to explore</span>
+            <svg className="w-6 h-6 animate-bounce group-hover:text-blue-400 transition-colors cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
             </svg>
-          </div>
+          </button>
         )}
       </section>
 
