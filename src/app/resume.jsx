@@ -99,8 +99,15 @@ export default function Resume() {
           <div className="w-80 bg-gradient-to-b from-slate-800 via-slate-900 to-slate-950 text-white p-8">
             {/* Profile */}
             <div className="mb-8">
-              <div className="w-32 h-32 mx-auto bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center text-5xl font-bold text-white shadow-xl">
-                👨‍💼
+              <div className="w-32 h-32 mx-auto rounded-full flex items-center justify-center overflow-hidden shadow-xl border-4 border-cyan-400">
+                <img 
+                  src="/images/profile.jpg" 
+                  alt="Muhammad Ahmed" 
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"%3E%3Ccircle cx="50" cy="50" r="50" fill="%23334155"/%3E%3Ctext x="50" y="60" font-size="50" text-anchor="middle" fill="%23fff"%3E👨‍💼%3C/text%3E%3C/svg%3E';
+                  }}
+                />
               </div>
             </div>
 
