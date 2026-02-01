@@ -80,11 +80,29 @@ export default function Resume() {
       company: 'Freelance / Contract',
       period: '2021 - Present',
       description: [
-        'Architected Scalable Full-Stack Applications using React, FastAPI, and PostgreSQL',
-        'Implemented AI/ML Models for Predictive Analytics and Automation',
-        'Led DevOps Infrastructure with Docker, Firebase, and CI/CD Pipelines',
-        'Delivered Production-Grade Solutions with Cross-Functional Collaboration'
+        'Architected scalable full-stack applications using React, FastAPI, and PostgreSQL',
+        'Implemented AI/ML models for predictive analytics and automation workflows',
+        'Led DevOps infrastructure with Docker, Firebase, and CI/CD pipelines',
+        'Delivered production-grade solutions with cross-functional collaboration'
       ]
+    }
+  ];
+
+  const projects = [
+    {
+      name: 'Nebula Studio',
+      type: 'Brand Experience',
+      description: 'Motion-driven landing experience with immersive UI and polished interaction design.'
+    },
+    {
+      name: 'Orbit Commerce',
+      type: 'E-commerce Platform',
+      description: 'High-conversion storefront with responsive UX and scalable architecture.'
+    },
+    {
+      name: 'Lumen Labs',
+      type: 'Product Showcase',
+      description: 'Product-led storytelling with dynamic visuals and modern design system.'
     }
   ];
 
@@ -104,21 +122,21 @@ export default function Resume() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 py-8 resume-page">
       {/* Resume Container */}
-      <div className="max-w-5xl mx-auto bg-white shadow-2xl" ref={resumeRef}>
+      <div className="mx-auto bg-white shadow-2xl resume-container max-w-[900px]" ref={resumeRef}>
         <div className="flex">
           {/* Left Sidebar */}
-          <div className="w-80 bg-gradient-to-b from-slate-800 via-slate-900 to-slate-950 text-white p-8">
+          <div className="w-80 bg-[#0f2230] text-white p-8 border-r-4 border-cyan-400">
             {/* Profile */}
             <div className="mb-8" data-hide-in-pdf>
-              <div className="w-32 h-32 mx-auto rounded-full flex items-center justify-center overflow-hidden shadow-xl border-4 border-cyan-400">
+              <div className="w-24 h-24 rounded-full overflow-hidden shadow-lg border-4 border-cyan-300">
                 <img 
                   src="/images/profile.jpg" 
                   alt="Muhammad Ahmed" 
                   className="w-full h-full object-cover"
                   onError={(e) => {
-                    e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"%3E%3Ccircle cx="50" cy="50" r="50" fill="%23334155"/%3E%3Ctext x="50" y="60" font-size="50" text-anchor="middle" fill="%23fff"%3E👨‍💼%3C/text%3E%3C/svg%3E';
+                    e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"%3E%3Ccircle cx="50" cy="50" r="50" fill="%2321313d"/%3E%3Ctext x="50" y="60" font-size="50" text-anchor="middle" fill="%23fff"%3E👨‍💼%3C/text%3E%3C/svg%3E';
                   }}
                 />
               </div>
@@ -126,24 +144,24 @@ export default function Resume() {
 
             {/* Contact */}
             <div className="mb-8">
-              <h3 className="text-sm uppercase tracking-widest font-bold mb-4 text-cyan-400">
+              <h3 className="text-xs uppercase tracking-[0.2em] font-semibold mb-4 text-cyan-300">
                 Contact
               </h3>
-              <div className="space-y-3 text-xs">
+              <div className="space-y-3 text-xs text-slate-200">
                 <div className="flex items-start gap-2">
-                  <span className="text-cyan-400">📧</span>
+                  <span className="text-cyan-300">📧</span>
                   <span className="break-all">{personalInfo.email}</span>
                 </div>
                 <div className="flex items-start gap-2">
-                  <span className="text-cyan-400">📱</span>
+                  <span className="text-cyan-300">📱</span>
                   <span>{personalInfo.phone}</span>
                 </div>
                 <div className="flex items-start gap-2">
-                  <span className="text-cyan-400">📍</span>
+                  <span className="text-cyan-300">📍</span>
                   <span>{personalInfo.location}</span>
                 </div>
                 <div className="flex items-start gap-2">
-                  <span className="text-cyan-400">🔗</span>
+                  <span className="text-cyan-300">🔗</span>
                   <span className="break-all">{personalInfo.github}</span>
                 </div>
               </div>
@@ -151,12 +169,12 @@ export default function Resume() {
 
             {/* Hard Skills */}
             <div className="mb-8">
-              <h3 className="text-sm uppercase tracking-widest font-bold mb-4 text-cyan-400">
+              <h3 className="text-xs uppercase tracking-[0.2em] font-semibold mb-4 text-cyan-300">
                 Hard Skills
               </h3>
               <div className="space-y-2">
                 {hardSkills.map((skill, idx) => (
-                  <div key={idx} className="text-xs py-1.5 px-3 bg-slate-700/50 rounded-md border border-slate-600">
+                  <div key={idx} className="text-xs py-1.5 px-3 bg-white/5 rounded-md border border-white/10">
                     {skill}
                   </div>
                 ))}
@@ -165,13 +183,13 @@ export default function Resume() {
 
             {/* Soft Skills */}
             <div className="mb-8">
-              <h3 className="text-sm uppercase tracking-widest font-bold mb-4 text-cyan-400">
+              <h3 className="text-xs uppercase tracking-[0.2em] font-semibold mb-4 text-cyan-300">
                 Soft Skills
               </h3>
               <div className="space-y-2">
                 {softSkills.map((skill, idx) => (
                   <div key={idx} className="flex items-center gap-2 text-xs">
-                    <div className="w-2 h-2 bg-cyan-400 rounded-full"></div>
+                    <div className="w-2 h-2 bg-cyan-300 rounded-full"></div>
                     <span>{skill}</span>
                   </div>
                 ))}
@@ -180,7 +198,7 @@ export default function Resume() {
 
             {/* Languages */}
             <div className="mb-8">
-              <h3 className="text-sm uppercase tracking-widest font-bold mb-4 text-cyan-400">
+              <h3 className="text-xs uppercase tracking-[0.2em] font-semibold mb-4 text-cyan-300">
                 Languages
               </h3>
               <div className="space-y-3">
@@ -202,19 +220,19 @@ export default function Resume() {
               <p className="text-lg text-cyan-600 font-semibold">
                 Full-Stack AI Engineer | Data Scientist
               </p>
-              <p className="text-sm text-gray-600 mt-2 leading-relaxed">
-                Bridging The Gap Between Intelligent Systems and Elegant User Experiences. Passionate About Creating Scalable Solutions with Cutting-Edge AI and Intuitive Interfaces.
+              <p className="text-sm text-gray-600 mt-3 leading-relaxed">
+                Bridging the gap between intelligent systems and elegant user experiences. I architect scalable full-stack solutions powered by machine learning, transforming complex data into intuitive, production-ready applications that drive real-world impact.
               </p>
-              <div className="flex gap-4 text-sm text-gray-600 mt-4">
-                <span>📍 Gulshan-e-Ravi, RYK, Punjab, Pakistan</span>
+              <div className="flex flex-wrap gap-4 text-sm text-gray-600 mt-4">
+                <span>📍 {personalInfo.location}</span>
                 <span>💼 3+ Years Experience</span>
               </div>
             </div>
 
             {/* Work Experience */}
             <div className="mb-8">
-              <h2 className="text-xl font-bold text-slate-900 mb-4 border-b-2 border-cyan-500 pb-2">
-                💼 WORK EXPERIENCE
+              <h2 className="text-lg font-bold text-slate-900 mb-4 border-b-2 border-cyan-500 pb-2">
+                WORK EXPERIENCE
               </h2>
               <div className="space-y-6">
                 {workExperience.map((job, idx) => (
@@ -241,10 +259,30 @@ export default function Resume() {
               </div>
             </div>
 
+            {/* Projects */}
+            <div className="mb-8">
+              <h2 className="text-lg font-bold text-slate-900 mb-4 border-b-2 border-cyan-500 pb-2">
+                PROJECTS
+              </h2>
+              <div className="space-y-4">
+                {projects.map((project, idx) => (
+                  <div key={idx}>
+                    <div className="flex justify-between items-start mb-1">
+                      <div>
+                        <h3 className="text-base font-bold text-slate-800">{project.name}</h3>
+                        <p className="text-xs text-cyan-600 font-semibold">{project.type}</p>
+                      </div>
+                    </div>
+                    <p className="text-xs text-gray-700">{project.description}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
             {/* Education */}
             <div className="mb-8">
-              <h2 className="text-xl font-bold text-slate-900 mb-4 border-b-2 border-cyan-500 pb-2">
-                🎓 EDUCATION
+              <h2 className="text-lg font-bold text-slate-900 mb-4 border-b-2 border-cyan-500 pb-2">
+                EDUCATION
               </h2>
               <div className="space-y-4">
                 {education.map((edu, idx) => (
@@ -259,8 +297,8 @@ export default function Resume() {
 
             {/* Certificates */}
             <div className="mb-8">
-              <h2 className="text-xl font-bold text-slate-900 mb-4 border-b-2 border-cyan-500 pb-2">
-                📜 CERTIFICATES
+              <h2 className="text-lg font-bold text-slate-900 mb-4 border-b-2 border-cyan-500 pb-2">
+                CERTIFICATES
               </h2>
               <ul className="space-y-2">
                 {certificates.map((cert, idx) => (
@@ -274,6 +312,14 @@ export default function Resume() {
           </div>
         </div>
       </div>
+
+      <style>{`
+        @media print {
+          body { background: #ffffff !important; }
+          .resume-page { background: #ffffff !important; padding: 0 !important; }
+          .resume-container { box-shadow: none !important; max-width: 210mm !important; margin: 0 auto !important; }
+        }
+      `}</style>
     </div>
   );
 }
