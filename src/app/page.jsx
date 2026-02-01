@@ -664,7 +664,7 @@ export default function Page() {
                   'NLP Specialist',
                   'Systems Architect'
                 ]}
-                typingSpeed={25}
+                typingSpeed={30}
                 deletingSpeed={50}
                 delayBetweenStrings={2000}
                 cursorColor="#38bdf8"
