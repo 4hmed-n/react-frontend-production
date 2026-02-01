@@ -182,6 +182,7 @@ function PhysicsBubbleContainer({ containerRef }) {
   const bodiesRef = useRef({});
   const ballRefsRef = useRef([]);
   const [hoveredBubble, setHoveredBubble] = useState(null);
+  const ballRadius = 30; // Define ballRadius here so it's available in return
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -236,7 +237,6 @@ function PhysicsBubbleContainer({ containerRef }) {
     renderRef.current = render;
 
     // Ball physics - rock solid bouncy balls with high restitution
-    const ballRadius = 30;
     const wallOptions = { 
       isStatic: true, 
       render: { visible: false },
