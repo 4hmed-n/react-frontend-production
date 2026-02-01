@@ -201,16 +201,16 @@ function PhysicsBubbleContainer({ containerRef }) {
     // Matter.js modules
     const { Engine, Runner, World, Bodies, Mouse, MouseConstraint, Events, Body, Query, Composite, Vector } = Matter;
 
-    // Create engine with sleeping to eliminate jitter
+    // Create engine with gravity for billiard ball physics
     const engine = Engine.create({
-      gravity: { x: 0, y: 0 },
-      enableSleeping: true // Enable sleeping to stop jitter when settled
+      gravity: { x: 0, y: 0.5 },
+      enableSleeping: false
     });
     
-    // HIGH precision iterations to prevent overlap and sticking
-    engine.positionIterations = 20;
-    engine.velocityIterations = 20;
-    engine.constraintIterations = 10;
+    // Billiard ball physics - high precision for solid collisions
+    engine.positionIterations = 10;
+    engine.velocityIterations = 10;
+    engine.constraintIterations = 5;
     
     // Set resolver slop to prevent sinking
     if (engine.solver) {
@@ -245,8 +245,8 @@ function PhysicsBubbleContainer({ containerRef }) {
     
     const wallOptions = {
       isStatic: true,
-      restitution: 0.8,
-      friction: 0,
+      restitution: 0.9,
+      friction: 0.01,
       frictionStatic: 0,
       density: 0.001,
       collisionFilter: { category: collisionGroup, mask: collisionGroup }
@@ -282,15 +282,16 @@ function PhysicsBubbleContainer({ containerRef }) {
 
       const bubble = Bodies.circle(x, y, bubbleRadius, {
         isStatic: false,
-        restitution: 0.8, // Stable bounce without excessive jiggle
-        friction: 0, // Zero friction - slide cleanly
-        frictionStatic: 0, // No static friction
-        frictionAir: 0.06, // Damping for settling
-        density: 0.01,
+        restitution: 0.85,
+        friction: 0.001,
+        frictionStatic: 0,
+        frictionAir: 0.01,
+        density: 0.002,
+        inertia: Infinity,
         label: skill,
         collisionFilter: { category: collisionGroup, mask: collisionGroup },
-        sleepThreshold: 0.01,
-        originalRadius: 41 // Store for shockwave calculations
+        sleepThreshold: Infinity,
+        originalRadius: 41
       });
 
       bodiesRef.current[skill] = bubble;
