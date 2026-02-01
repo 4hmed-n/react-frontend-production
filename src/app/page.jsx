@@ -592,6 +592,11 @@ export default function Page() {
                   src="/images/profile.jpg" 
                   alt="Muhammad Ahmed" 
                   className="w-full h-full object-cover rounded-full"
+                  width="256"
+                  height="256"
+                  loading="eager"
+                  decoding="async"
+                  fetchpriority="high"
                   onError={(e) => {
                     e.target.style.display = 'none';
                   }}
