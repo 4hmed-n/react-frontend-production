@@ -178,48 +178,35 @@ function PhysicsBubbleContainer({ containerRef }) {
   const canvasRef = useRef(null);
   const engineRef = useRef(null);
   const runnerRef = useRef(null);
+  const renderRef = useRef(null);
   const bodiesRef = useRef({});
-  const mouseRef = useRef(null);
-  const [bubbleStates, setBubbleStates] = useState({});
+  const ballRefsRef = useRef([]);
   const [hoveredBubble, setHoveredBubble] = useState(null);
-  const [deformations, setDeformations] = useState({});
-  const [shockwave, setShockwave] = useState(null); // {x, y, radius}
-  const shockwaveRef = useRef(null);
-  const shockwaveFnRef = useRef(null);
 
   useEffect(() => {
-    if (!containerRef.current || !sceneRef.current) return;
+    if (!containerRef.current) return;
 
-    const containerRect = containerRef.current.getBoundingClientRect();
-    const width = containerRect.width;
-    const height = 600;
+    const width = containerRef.current.clientWidth;
+    const height = containerRef.current.clientHeight;
 
-    // Calculate header position for dynamic wall sync
-    const headerElement = document.querySelector('nav');
-    const headerHeight = headerElement ? headerElement.offsetHeight + 16 : 80;
+    if (width === 0 || height === 0) return;
 
     // Matter.js modules
-    const { Engine, Runner, World, Bodies, Mouse, MouseConstraint, Events, Body, Query, Composite, Vector } = Matter;
+    const { Engine, Render, World, Bodies, Mouse, MouseConstraint, Runner, Events, Body } = Matter;
 
-    // Create engine with ZERO gravity - top-down billiard table view
-    const engine = Engine.create({
-      gravity: { x: 0, y: 0 },
-      enableSleeping: false
-    });
-    
-    // Billiard ball physics - high precision for solid collisions
+    // Create engine with ZERO gravity - rock solid billiard table physics
+    const engine = Engine.create();
+    engine.world.gravity.y = 0;
+    engine.world.gravity.x = 0;
+
+    // Rock solid ball physics - high precision
     engine.positionIterations = 10;
     engine.velocityIterations = 10;
     engine.constraintIterations = 5;
-    
-    // Set resolver slop to prevent sinking
-    if (engine.solver) {
-      engine.solver.slop = 0.01;
-    }
-    
+
     engineRef.current = engine;
 
-    // Create visible canvas for interaction layer
+    // Create canvas for rendering
     const canvas = document.createElement('canvas');
     canvas.width = width;
     canvas.height = height;
@@ -228,177 +215,158 @@ function PhysicsBubbleContainer({ containerRef }) {
     canvas.style.left = '0';
     canvas.style.width = '100%';
     canvas.style.height = '100%';
-    canvas.style.opacity = '0';
     canvas.style.cursor = 'grab';
     canvas.style.pointerEvents = 'auto';
-    canvas.style.zIndex = '10';
-    sceneRef.current.appendChild(canvas);
+    containerRef.current.appendChild(canvas);
     canvasRef.current = canvas;
 
-    // Collision group for all bodies to be on same layer
-    const collisionGroup = Matter.Events ? 0x0001 : 1;
+    // Create render (not visible, used for physics only)
+    const render = Render.create({
+      element: containerRef.current,
+      canvas: canvas,
+      engine: engine,
+      options: {
+        width,
+        height,
+        background: 'transparent',
+        wireframes: false,
+        showAngleIndicator: false,
+      }
+    });
+    renderRef.current = render;
 
-    // Create 100px THICK INVISIBLE BOUNDARY WALLS for stable containment
-    const wallThickness = 100;
-    const padding = 48;
-    const topWallY = Math.max(headerHeight, padding);
-    
-    const wallOptions = {
-      isStatic: true,
-      restitution: 0.95,
-      friction: 0.001,
+    // Ball physics - rock solid bouncy balls with high restitution
+    const ballRadius = 30;
+    const wallOptions = { 
+      isStatic: true, 
+      render: { visible: false },
+      restitution: 0.9,
+      friction: 0.005,
       frictionStatic: 0,
-      density: 0.001,
-      collisionFilter: { category: collisionGroup, mask: collisionGroup }
+      density: 0.001
     };
 
-    // Create four 100px thick invisible boundary walls
+    // Create ABSOLUTE boundary walls - THICK and IMMOVABLE
     const walls = [
-      Bodies.rectangle(width / 2, topWallY - 50, width + 200, wallThickness, { 
-        ...wallOptions, 
-        label: 'topWall' 
-      }),
-      Bodies.rectangle(width / 2, height + 50, width + 200, wallThickness, { 
-        ...wallOptions, 
-        label: 'bottomWall' 
-      }),
-      Bodies.rectangle(padding - 50, height / 2, wallThickness, height + 200, { 
-        ...wallOptions, 
-        label: 'leftWall' 
-      }),
-      Bodies.rectangle(width - padding + 50, height / 2, wallThickness, height + 200, { 
-        ...wallOptions, 
-        label: 'rightWall' 
-      })
+      Bodies.rectangle(width / 2, -50, width + 200, 100, { ...wallOptions, label: 'topWall' }),
+      Bodies.rectangle(width / 2, height + 50, width + 200, 100, { ...wallOptions, label: 'bottomWall' }),
+      Bodies.rectangle(width + 50, height / 2, 100, height + 200, { ...wallOptions, label: 'rightWall' }),
+      Bodies.rectangle(-50, height / 2, 100, height + 200, { ...wallOptions, label: 'leftWall' })
     ];
 
-    // Create DYNAMIC STABLE BUBBLES (45% smaller, perfect circles, no deformation)
-    const bubbleRadius = 25; // 29 * 0.85 = 24.65 ≈ 25 (15% reduction from current)
-    const bubbles = MainSkills.map((skill, index) => {
-      const angle = (index / MainSkills.length) * Math.PI * 2;
-      const radius = 100 + Math.random() * 120;
-      const x = width / 2 + Math.cos(angle) * radius;
-      const y = height / 2 + Math.sin(angle) * radius;
+    World.add(engine.world, walls);
 
-      const bubble = Bodies.circle(x, y, bubbleRadius, {
-        isStatic: false,
-        restitution: 0.95,
-        friction: 0.001,
-        frictionStatic: 0,
-        frictionAir: 0.01,
-        density: 0.005,
-        inertia: Infinity,
-        label: skill,
-        collisionFilter: { category: collisionGroup, mask: collisionGroup },
-        sleepThreshold: Infinity,
-        originalRadius: 41
+    // Create rock solid balls for main skills
+    const balls = MainSkills.map((skill, index) => {
+      // Safe spawn area with padding
+      const padding = ballRadius + 20;
+      const safeWidth = width - padding * 2;
+      const safeHeight = height - padding * 2;
+      
+      const x = Math.random() * safeWidth + padding;
+      const y = Math.random() * safeHeight + padding;
+
+      const body = Bodies.circle(x, y, ballRadius, {
+        restitution: 0.9,
+        friction: 0.005,
+        frictionAir: 0.02,
+        density: 0.04,
+        render: { visible: false },
+        label: skill
       });
 
-      bodiesRef.current[skill] = bubble;
-      return bubble;
+      // Initial velocity for movement
+      Body.setVelocity(body, {
+        x: (Math.random() - 0.5) * 5,
+        y: (Math.random() - 0.5) * 5
+      });
+
+      bodiesRef.current[skill] = body;
+      return { body, index };
     });
 
-    // Add everything to world
-    World.add(engine.world, [...walls, ...bubbles]);
+    World.add(engine.world, balls.map(b => b.body));
 
-    // Create mouse for interaction
+    // Mouse control
     const mouse = Mouse.create(canvas);
-    mouseRef.current = mouse;
-    
-    // Mouse constraint for throwing balls - HIGH responsiveness
+    mouse.element.removeEventListener("mousewheel", mouse.mousewheel);
+    mouse.element.removeEventListener("DOMMouseScroll", mouse.mousewheel);
+
     const mouseConstraint = MouseConstraint.create(engine, {
       mouse: mouse,
       constraint: {
-        stiffness: 1,
-        damping: 0,
-        angularStiffness: 0,
+        stiffness: 0.2,
         render: { visible: false }
-      },
-      collisionFilter: {
-        mask: collisionGroup
       }
-    });
-
-    // Add constraint bounds to prevent bubbles from escaping through walls
-    Events.on(mouseConstraint, 'startdrag', (event) => {
-      canvas.style.cursor = 'grabbing';
-      const body = event.body;
-      if (body) {
-        body.isBeingDragged = true;
-        setHoveredBubble(body.label);
-      }
-    });
-
-    Events.on(mouseConstraint, 'enddrag', (event) => {
-      const body = event.body;
-      if (body) {
-        body.isBeingDragged = false;
-      }
-      canvas.style.cursor = 'pointer';
-    });
-
-    // Constrain bubble positions to prevent wall tunneling
-    Events.on(engine, 'beforeUpdate', () => {
-      bubbles.forEach(bubble => {
-        const margin = bubbleRadius + 2; // Add 2px buffer for tight confinement
-        // Hard boundary clamp - ensures bubbles NEVER cross borders
-        if (bubble.position.x - margin < padding) {
-          bubble.position.x = padding + margin;
-          bubble.velocity.x = Math.max(0, bubble.velocity.x);
-        }
-        if (bubble.position.x + margin > width - padding) {
-          bubble.position.x = width - padding - margin;
-          bubble.velocity.x = Math.min(0, bubble.velocity.x);
-        }
-        if (bubble.position.y - margin < topWallY) {
-          bubble.position.y = topWallY + margin;
-          bubble.velocity.y = Math.max(0, bubble.velocity.y);
-        }
-        if (bubble.position.y + margin > height - padding) {
-          bubble.position.y = height - padding - margin;
-          bubble.velocity.y = Math.min(0, bubble.velocity.y);
-        }
-
-        // Max velocity cap to prevent tunneling
-        const speed = Math.sqrt(bubble.velocity.x ** 2 + bubble.velocity.y ** 2);
-        if (speed > 20) {
-          const scale = 20 / speed;
-          bubble.velocity.x *= scale;
-          bubble.velocity.y *= scale;
-        }
-      });
     });
 
     World.add(engine.world, mouseConstraint);
 
-    // INSTANT hover detection using mousemove event + sync Matter mouse
+    // Run physics engine
+    const runner = Runner.create();
+    Runner.run(runner, engine);
+    Render.run(render);
+    runnerRef.current = runner;
+
+    // ABSOLUTE boundary constraint - prevents any ball escape
+    Events.on(engine, 'beforeUpdate', () => {
+      balls.forEach(({ body }) => {
+        const margin = ballRadius + 5;
+        
+        // Hard clamp to prevent any escape
+        if (body.position.x - margin < 0) {
+          body.position.x = margin;
+          body.velocity.x = Math.max(0, body.velocity.x);
+        }
+        if (body.position.x + margin > width) {
+          body.position.x = width - margin;
+          body.velocity.x = Math.min(0, body.velocity.x);
+        }
+        if (body.position.y - margin < 0) {
+          body.position.y = margin;
+          body.velocity.y = Math.max(0, body.velocity.y);
+        }
+        if (body.position.y + margin > height) {
+          body.position.y = height - margin;
+          body.velocity.y = Math.min(0, body.velocity.y);
+        }
+      });
+    });
+
+    // Sync loop to update React ball positions
+    let animationFrameId;
+    const updateLoop = () => {
+      balls.forEach(({ body, index }) => {
+        if (ballRefsRef.current[index]) {
+          const ballEl = ballRefsRef.current[index];
+          ballEl.style.transform = `translate(${body.position.x - ballRadius}px, ${body.position.y - ballRadius}px)`;
+        }
+      });
+      animationFrameId = requestAnimationFrame(updateLoop);
+    };
+    updateLoop();
+
+    // Mouse interaction for hovering
     const handleMouseMove = (e) => {
       const rect = canvas.getBoundingClientRect();
-      const scaleX = width / rect.width;
-      const scaleY = height / rect.height;
-      const mousePos = {
-        x: (e.clientX - rect.left) * scaleX,
-        y: (e.clientY - rect.top) * scaleY
-      };
+      const mouseX = e.clientX - rect.left;
+      const mouseY = e.clientY - rect.top;
 
-      // Sync Matter mouse for accurate picking
-      mouse.position.x = mousePos.x;
-      mouse.position.y = mousePos.y;
-      mouse.absolute.x = mousePos.x;
-      mouse.absolute.y = mousePos.y;
-      mouse.offset.x = rect.left;
-      mouse.offset.y = rect.top;
-      mouse.scale.x = scaleX;
-      mouse.scale.y = scaleY;
+      let hovered = null;
+      balls.forEach(({ body }) => {
+        const dx = mouseX - body.position.x;
+        const dy = mouseY - body.position.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        if (distance < ballRadius + 5) {
+          hovered = body.label;
+          canvas.style.cursor = 'pointer';
+        }
+      });
 
-      const hoveredBodies = Query.point(bubbles, mousePos);
-      if (hoveredBodies.length > 0) {
-        setHoveredBubble(hoveredBodies[0].label);
-        canvas.style.cursor = 'pointer';
-      } else {
-        setHoveredBubble(null);
+      if (!hovered) {
         canvas.style.cursor = 'grab';
       }
+      setHoveredBubble(hovered);
     };
 
     const handleMouseLeave = () => {
@@ -409,233 +377,74 @@ function PhysicsBubbleContainer({ containerRef }) {
     canvas.addEventListener('mousemove', handleMouseMove);
     canvas.addEventListener('mouseleave', handleMouseLeave);
 
-    // Update positions for React rendering - NO DEFORMATION for solid balls
-    const updateLoop = () => {
-      const newStates = {};
-      const newDeformations = {};
+    const handleCanvasResize = () => {
+      if (!renderRef.current || !containerRef.current) return;
+      const newWidth = containerRef.current.clientWidth;
+      const newHeight = containerRef.current.clientHeight;
       
-      MainSkills.forEach(skill => {
-        const body = bodiesRef.current[skill];
-        if (body) {
-          newStates[skill] = {
-            x: body.position.x - bubbleRadius,
-            y: body.position.y - bubbleRadius,
-            angle: body.angle,
-            velocityX: body.velocity.x,
-            velocityY: body.velocity.y
-          };
-          
-          // No deformation - solid billiard balls
-          newDeformations[skill] = { scaleX: 1, scaleY: 1 };
-        }
-      });
-      
-      setBubbleStates(newStates);
-      setDeformations(newDeformations);
-    };
-
-    // Anti-overlap force: detect overlapping bubbles and push apart
-    Events.on(engine, 'beforeUpdate', () => {
-      for (let i = 0; i < bubbles.length; i++) {
-        for (let j = i + 1; j < bubbles.length; j++) {
-          const b1 = bubbles[i];
-          const b2 = bubbles[j];
-          const dx = b2.position.x - b1.position.x;
-          const dy = b2.position.y - b1.position.y;
-          const distance = Math.sqrt(dx * dx + dy * dy);
-          const minDistance = bubbleRadius * 2 + 4; // Two radii + 4px buffer for visual spacing
-
-          // If overlapping or too close, push apart
-          if (distance < minDistance) {
-            const overlap = minDistance - distance;
-            const separationForce = 0.0015 * overlap; // Increased from 0.0008 for stronger separation
-            const nx = distance > 0 ? dx / distance : 1;
-            const ny = distance > 0 ? dy / distance : 0;
-
-            // Apply equal and opposite forces
-            Body.applyForce(b1, b1.position, { x: -nx * separationForce, y: -ny * separationForce });
-            Body.applyForce(b2, b2.position, { x: nx * separationForce, y: ny * separationForce });
-          }
-        }
+      const render = renderRef.current;
+      if (render.canvas) {
+        render.canvas.width = newWidth;
+        render.canvas.height = newHeight;
       }
-
-      updateLoop();
-    });
-
-    // Start CONTINUOUS ENGINE RUNNER
-    const runner = Runner.create();
-    runnerRef.current = runner;
-    Runner.run(runner, engine);
-
-    console.log('Physics engine initialized:', {
-      positionIterations: engine.positionIterations,
-      velocityIterations: engine.velocityIterations,
-      bubbleCount: bubbles.length,
-      wallCount: walls.length
-    });
-
-    // SHOCKWAVE / MAGNETIC PULSE EFFECT
-    const createShockwave = (epicenterX, epicenterY) => {
-      console.log('Pulse fired!', { mouseX: epicenterX, mouseY: epicenterY });
-      setShockwave({ x: epicenterX, y: epicenterY, radius: 0, createdAt: Date.now() });
-
-      const bodies = Composite.allBodies(engine.world).filter(body => !body.isStatic);
-      console.log('Targeting', bodies.length, 'dynamic bodies');
-      
-      bodies.forEach((bubble) => {
-        const delta = Vector.sub(bubble.position, { x: epicenterX, y: epicenterY });
-        const distance = Vector.magnitude(delta) || 1;
-        const forceMagnitude = (1 / distance) * 50;
-        const force = Vector.mult(Vector.normalise(delta), forceMagnitude);
-        Body.applyForce(bubble, bubble.position, force);
-      });
     };
 
-    shockwaveFnRef.current = createShockwave;
-
-    // Direct dblclick listener on canvas
-    const handleDblClick = (event) => {
-      const rect = canvas.getBoundingClientRect();
-      const mouseX = event.clientX - rect.left;
-      const mouseY = event.clientY - rect.top;
-      console.log('Double-click detected:', { mouseX, mouseY, rectTop: rect.top, rectLeft: rect.left });
-      createShockwave(mouseX, mouseY);
-    };
-
-    canvas.addEventListener('dblclick', handleDblClick);
+    window.addEventListener('resize', handleCanvasResize);
 
     // Cleanup
     return () => {
+      window.removeEventListener('resize', handleCanvasResize);
+      Render.stop(render);
       Runner.stop(runner);
-      World.clear(engine.world, false);
+      cancelAnimationFrame(animationFrameId);
+      World.clear(engine.world);
       Engine.clear(engine);
-      if (canvas && canvas.parentNode) {
-        canvas.parentNode.removeChild(canvas);
-      }
-      Events.off(engine);
-      Events.off(mouseConstraint);
-      canvas.removeEventListener('dblclick', handleDblClick);
       canvas.removeEventListener('mousemove', handleMouseMove);
       canvas.removeEventListener('mouseleave', handleMouseLeave);
-      shockwaveFnRef.current = null;
+      if (render.canvas && render.canvas.parentNode) {
+        render.canvas.parentNode.removeChild(render.canvas);
+      }
     };
   }, [containerRef]);
 
   return (
     <>
-      <div ref={sceneRef} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'auto', cursor: 'grab' }} />
-      {MainSkills.map((skill) => {
-        const state = bubbleStates[skill];
-        const deform = deformations[skill] || { scaleX: 1, scaleY: 1 };
-        if (!state) return null;
-
-        const isHovered = hoveredBubble === skill;
-        const speed = Math.sqrt(state.velocityX ** 2 + state.velocityY ** 2);
-        const isMoving = speed > 0.5;
-
-        return (
-          <div
-            key={skill}
-            className="absolute pointer-events-none select-none"
+      {MainSkills.map((skill, index) => (
+        <div
+          key={skill}
+          ref={el => ballRefsRef.current[index] = el}
+          className="absolute pointer-events-none"
+          style={{
+            width: `${ballRadius * 2}px`,
+            height: `${ballRadius * 2}px`,
+            willChange: 'transform'
+          }}
+        >
+          <div 
+            className={`w-full h-full rounded-full flex items-center justify-center transition-all duration-150 ${
+              hoveredBubble === skill 
+                ? 'shadow-2xl shadow-blue-500/60 scale-110' 
+                : 'shadow-lg shadow-blue-500/30'
+            }`}
             style={{
-              left: `${state.x}px`,
-              top: `${state.y}px`,
-              transform: `rotate(${state.angle}rad)`,
-              transition: 'none'
+              background: 'radial-gradient(circle at 30% 30%, rgba(96, 165, 250, 0.3), rgba(59, 130, 246, 0.1))',
+              border: hoveredBubble === skill ? '2px solid rgba(96, 165, 250, 0.8)' : '2px solid rgba(96, 165, 250, 0.4)',
+              backdropFilter: 'blur(10px)'
             }}
           >
-            <div 
-              className={`relative flex items-center justify-center w-24 h-24 rounded-full bg-gradient-to-br from-blue-500/10 to-purple-500/10 border-2 backdrop-blur-sm transition-all duration-75 select-none ${
-                isHovered 
-                  ? 'border-blue-400/70 shadow-2xl shadow-blue-500/50' 
-                  : isMoving 
-                    ? 'border-cyan-400/50 shadow-lg shadow-cyan-500/30'
-                    : 'border-blue-400/30 shadow-lg shadow-blue-500/20'
-              }`}
-              style={{
-                transform: `scale(${deform.scaleX}, ${deform.scaleY})`,
-                transformOrigin: 'center'
-              }}
-            >
-              <div className="pointer-events-none select-none">
-                {TechIcons[skill]()}
-              </div>
+            <div className="pointer-events-none">
+              {TechIcons[skill]()}
             </div>
-            {isHovered && (
-              <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 whitespace-nowrap">
-                <span className="text-xs font-medium text-blue-300 bg-slate-900/90 px-3 py-1 rounded-full border border-blue-400/30 backdrop-blur-sm">
-                  {skill}
-                </span>
-              </div>
-            )}
           </div>
-        );
-      })}
-      
-      {/* SHOCKWAVE RIPPLE VISUALIZATION */}
-      {shockwave && (
-        <div
-          ref={shockwaveRef}
-          style={{
-            position: 'absolute',
-            left: `${shockwave.x}px`,
-            top: `${shockwave.y}px`,
-            width: '0px',
-            height: '0px',
-            border: '2px solid #38bdf8',
-            borderRadius: '50%',
-            pointerEvents: 'none',
-            animation: 'shockwave-expand 0.5s ease-out forwards',
-            boxShadow: '0 0 20px rgba(56, 189, 248, 0.6)'
-          }}
-        />
-      )}
-      
-      <style>{`
-        @keyframes shockwave-expand {
-          0% {
-            width: 0px;
-            height: 0px;
-            opacity: 1;
-            left: ${shockwave?.x}px;
-            top: ${shockwave?.y}px;
-            box-shadow: 0 0 20px rgba(56, 189, 248, 0.8);
-          }
-          100% {
-            width: 400px;
-            height: 400px;
-            opacity: 0;
-            left: calc(${shockwave?.x}px - 200px);
-            top: calc(${shockwave?.y}px - 200px);
-            box-shadow: 0 0 0px rgba(56, 189, 248, 0);
-          }
-        }
-
-        @keyframes whirlpool-spin {
-          0% {
-            transform: rotate(0deg) scale(1);
-          }
-          50% {
-            transform: rotate(180deg) scale(1.05);
-          }
-          100% {
-            transform: rotate(360deg) scale(1);
-          }
-        }
-
-        .whirlpool-effect {
-          background: conic-gradient(
-            from 0deg,
-            rgba(56, 189, 248, 0.15),
-            rgba(168, 85, 247, 0.2),
-            rgba(59, 130, 246, 0.25),
-            rgba(56, 189, 248, 0.15)
-          );
-          animation: whirlpool-spin 6s linear infinite;
-          filter: blur(6px);
-          mix-blend-mode: screen;
-        }
-      `}</style>
+          {hoveredBubble === skill && (
+            <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 whitespace-nowrap z-50">
+              <span className="text-xs font-medium text-blue-300 bg-slate-900/90 px-3 py-1 rounded-full border border-blue-400/30 backdrop-blur-sm">
+                {skill}
+              </span>
+            </div>
+          )}
+        </div>
+      ))}
     </>
   );
 }
