@@ -613,6 +613,31 @@ function PhysicsBubbleContainer({ containerRef }) {
             box-shadow: 0 0 0px rgba(56, 189, 248, 0);
           }
         }
+
+        @keyframes whirlpool-spin {
+          0% {
+            transform: rotate(0deg) scale(1);
+          }
+          50% {
+            transform: rotate(180deg) scale(1.05);
+          }
+          100% {
+            transform: rotate(360deg) scale(1);
+          }
+        }
+
+        .whirlpool-effect {
+          background: conic-gradient(
+            from 0deg,
+            rgba(56, 189, 248, 0.15),
+            rgba(168, 85, 247, 0.2),
+            rgba(59, 130, 246, 0.25),
+            rgba(56, 189, 248, 0.15)
+          );
+          animation: whirlpool-spin 6s linear infinite;
+          filter: blur(6px);
+          mix-blend-mode: screen;
+        }
       `}</style>
     </>
   );
@@ -728,8 +753,9 @@ export default function Page() {
               <div 
                 onMouseEnter={() => setPfpHovered(true)}
                 onMouseLeave={() => setPfpHovered(false)}
-                className={`relative w-52 h-52 md:w-64 md:h-64 rounded-full border border-white/10 bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-xl flex items-center justify-center transition-all duration-300 ${pfpHovered ? 'border-blue-400/50 shadow-lg shadow-blue-500/20' : ''}`}
+                className={`relative w-52 h-52 md:w-64 md:h-64 rounded-full overflow-hidden border border-white/10 bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-xl flex items-center justify-center transition-all duration-300 ${pfpHovered ? 'border-blue-400/50 shadow-lg shadow-blue-500/20' : ''}`}
               >
+                <div className={`absolute inset-0 rounded-full whirlpool-effect transition-opacity duration-500 ${pfpHovered ? 'opacity-100' : 'opacity-70'}`} />
                 <div className="text-6xl text-gray-600">👤</div>
               </div>
             </div>
