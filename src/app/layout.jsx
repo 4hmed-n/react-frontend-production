@@ -163,7 +163,7 @@ export default function Layout({ children }) {
         </div>
       )}
 
-      <nav className={`sticky top-4 left-0 right-0 mx-auto max-w-5xl z-50 rounded-2xl transition-all duration-300 ${
+      <nav className={`sticky top-4 left-0 right-0 mx-auto max-w-5xl z-50 rounded-full transition-all duration-300 ${
         isScrolled 
           ? 'bg-slate-900/50 backdrop-blur-xl border border-white/15 shadow-2xl shadow-black/40' 
           : 'bg-slate-900/40 backdrop-blur-lg border border-white/10'
