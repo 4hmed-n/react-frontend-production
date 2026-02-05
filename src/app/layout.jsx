@@ -208,7 +208,7 @@ export default function Layout({ children }) {
                 )}
               </div>
 
-              <div className="flex-1 text-center">
+              <div className="flex-1 text-center md:flex-none md:text-left md:mr-8">
                 <Link to="/" className="text-sm md:text-lg font-bold tracking-tighter uppercase font-display">
                   Muhammad Ahmed
                 </Link>
