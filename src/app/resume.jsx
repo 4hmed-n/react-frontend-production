@@ -146,13 +146,7 @@ export default function Resume() {
       const availableWidth = resumeViewportRef.current.clientWidth;
       const horizontalGutter = 40;
 
-      const headerEl = document.querySelector('[data-header-shell]');
-      const headerWidth = headerEl?.clientWidth
-        ? headerEl.clientWidth
-        : Math.min(headerMaxWidth, availableWidth - horizontalGutter);
-
-      const roundInset = 24;
-      const targetResumeWidth = Math.max(0, headerWidth - roundInset * 2);
+      const targetResumeWidth = Math.max(0, availableWidth - horizontalGutter);
       const widthScale = targetResumeWidth / baseWidth;
       setResumeScale(widthScale);
     };
