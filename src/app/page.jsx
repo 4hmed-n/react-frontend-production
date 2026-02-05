@@ -229,13 +229,15 @@ function PhysicsBubbleContainer({ containerRef }) {
   const bodiesRef = useRef({});
   const ballRefsRef = useRef([]);
   const [hoveredBubble, setHoveredBubble] = useState(null);
-  const ballRadius = 45; // Increased for better icon fit
+  const [ballRadius, setBallRadius] = useState(45); // Increased for better icon fit
 
   useEffect(() => {
     if (!containerRef.current) return;
 
     const width = containerRef.current.clientWidth;
     const height = containerRef.current.clientHeight;
+    const radius = width < 520 ? 32 : 45;
+    setBallRadius((prev) => (prev === radius ? prev : radius));
 
     if (width === 0 || height === 0) return;
 
@@ -306,14 +308,14 @@ function PhysicsBubbleContainer({ containerRef }) {
     // Create rock solid balls for main skills
     const balls = MainSkills.map((skill, index) => {
       // Safe spawn area with padding
-      const padding = ballRadius + 20;
+      const padding = radius + 20;
       const safeWidth = width - padding * 2;
       const safeHeight = height - padding * 2;
       
       const x = Math.random() * safeWidth + padding;
       const y = Math.random() * safeHeight + padding;
 
-      const body = Bodies.circle(x, y, ballRadius, {
+      const body = Bodies.circle(x, y, radius, {
         restitution: 0.98,
         friction: 0,
         frictionAir: 0.002,
@@ -366,7 +368,7 @@ function PhysicsBubbleContainer({ containerRef }) {
           const dx = body2.position.x - body1.position.x;
           const dy = body2.position.y - body1.position.y;
           const distance = Math.sqrt(dx * dx + dy * dy);
-          const minDistance = ballRadius * 2 + 4; // Billiard-tight buffer
+          const minDistance = radius * 2 + 4; // Billiard-tight buffer
           
           // If balls are overlapping or too close, separate them
           if (distance < minDistance && distance > 0) {
@@ -392,7 +394,7 @@ function PhysicsBubbleContainer({ containerRef }) {
       
       // Then, enforce boundary constraints with proper clamping
       balls.forEach(({ body }) => {
-        const margin = ballRadius; // Keep bubble boundary inside container
+        const margin = radius; // Keep bubble boundary inside container
         
         // Hard clamp to prevent any escape or touching boundaries
         if (body.position.x - margin < 0) {
@@ -420,7 +422,7 @@ function PhysicsBubbleContainer({ containerRef }) {
       balls.forEach(({ body, index }) => {
         if (ballRefsRef.current[index]) {
           const ballEl = ballRefsRef.current[index];
-          ballEl.style.transform = `translate(${body.position.x - ballRadius}px, ${body.position.y - ballRadius}px)`;
+          ballEl.style.transform = `translate(${body.position.x - radius}px, ${body.position.y - radius}px)`;
         }
       });
       animationFrameId = requestAnimationFrame(updateLoop);
@@ -438,7 +440,7 @@ function PhysicsBubbleContainer({ containerRef }) {
         const dx = mouseX - body.position.x;
         const dy = mouseY - body.position.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
-        if (distance < ballRadius) {
+        if (distance < radius) {
           hovered = body.label;
           canvas.style.cursor = 'pointer';
         }
