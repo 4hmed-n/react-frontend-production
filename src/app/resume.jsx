@@ -122,7 +122,11 @@ export default function Resume() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 py-8 px-4 sm:px-6 resume-page">
+    <div
+      className={`min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 py-8 px-4 sm:px-6 resume-page ${
+        isDownloading ? 'py-0 px-0 sm:px-0 bg-white' : ''
+      }`}
+    >
       {/* Resume Container */}
       <div className="mx-auto w-full bg-white shadow-2xl resume-container max-w-[900px]" ref={resumeRef} data-resume-root>
         <div className="flex flex-col md:flex-row">
