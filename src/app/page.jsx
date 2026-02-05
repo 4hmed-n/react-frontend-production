@@ -392,7 +392,7 @@ function PhysicsBubbleContainer({ containerRef }) {
       
       // Then, enforce boundary constraints with proper clamping
       balls.forEach(({ body }) => {
-        const margin = ballRadius + 5; // Buffer zone from edges
+        const margin = ballRadius; // Keep bubble boundary inside container
         
         // Hard clamp to prevent any escape or touching boundaries
         if (body.position.x - margin < 0) {
