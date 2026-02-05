@@ -700,7 +700,7 @@ export default function Page() {
           {/* Left Side - Main Tech Stack with Matter.js Physics */}
           <div
             ref={techStackContainerRef}
-            className="rounded-3xl border border-white/10 bg-gradient-to-br from-slate-800/50 to-slate-900/80 backdrop-blur-xl p-8 relative overflow-hidden h-full"
+            className="rounded-3xl border border-white/10 bg-gradient-to-br from-slate-800/50 to-slate-900/80 backdrop-blur-xl p-4 sm:p-6 md:p-8 relative overflow-hidden h-[360px] sm:h-[420px] md:h-full"
           >
             <PhysicsBubbleContainer containerRef={techStackContainerRef} />
           </div>
