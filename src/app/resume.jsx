@@ -216,16 +216,56 @@ export default function Resume() {
           <div className="flex-1 p-6 sm:p-8 md:p-10">
             {/* Header */}
             <div className="mb-8 border-b-4 border-slate-800 pb-6">
-              <h1 className="text-4xl font-bold text-slate-900 mb-2">{personalInfo.name}</h1>
-              <p className="text-lg text-cyan-600 font-semibold">
-                Full-Stack AI Engineer | Data Scientist
-              </p>
-              <p className="text-sm text-gray-600 mt-3 leading-relaxed">
-                Bridging the gap between intelligent systems and elegant user experiences. I architect scalable full-stack solutions powered by machine learning, transforming complex data into intuitive, production-ready applications that drive real-world impact.
-              </p>
-              <div className="flex flex-wrap gap-4 text-sm text-gray-600 mt-4">
-                <span>📍 {personalInfo.location}</span>
-                <span>💼 3+ Years Experience</span>
+              <div className="flex items-start gap-4 md:block">
+                {/* Mobile left-side icons */}
+                <div className="flex flex-col gap-2 md:hidden">
+                  <a
+                    href={`mailto:${personalInfo.email}`}
+                    className="h-9 w-9 rounded-full border border-cyan-500/40 bg-cyan-500/10 text-cyan-600 flex items-center justify-center text-sm"
+                    aria-label="Gmail"
+                  >
+                    ✉️
+                  </a>
+                  <a
+                    href="https://github.com/4hmed-n"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="h-9 w-9 rounded-full border border-slate-200/60 bg-slate-100 text-slate-700 flex items-center justify-center text-xs font-semibold"
+                    aria-label="GitHub"
+                  >
+                    GH
+                  </a>
+                  <a
+                    href="https://www.docker.com/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="h-9 w-9 rounded-full border border-blue-400/50 bg-blue-500/10 text-blue-600 flex items-center justify-center text-sm"
+                    aria-label="Docker"
+                  >
+                    🐳
+                  </a>
+                  <a
+                    href="#"
+                    className="h-9 w-9 rounded-full border border-blue-500/40 bg-blue-500/10 text-blue-700 flex items-center justify-center text-xs font-bold"
+                    aria-label="LinkedIn"
+                  >
+                    in
+                  </a>
+                </div>
+
+                <div className="flex-1 text-center md:text-left">
+                  <h1 className="text-4xl font-bold text-slate-900 mb-2">{personalInfo.name}</h1>
+                  <p className="text-lg text-cyan-600 font-semibold">
+                    Full-Stack AI Engineer | Data Scientist
+                  </p>
+                  <p className="text-sm text-gray-600 mt-3 leading-relaxed">
+                    Bridging the gap between intelligent systems and elegant user experiences. I architect scalable full-stack solutions powered by machine learning, transforming complex data into intuitive, production-ready applications that drive real-world impact.
+                  </p>
+                  <div className="flex flex-wrap justify-center md:justify-start gap-4 text-sm text-gray-600 mt-4">
+                    <span>📍 {personalInfo.location}</span>
+                    <span>💼 3+ Years Experience</span>
+                  </div>
+                </div>
               </div>
             </div>
 
