@@ -165,7 +165,7 @@ export default function Layout({ children }) {
 
       <nav className="sticky top-4 left-0 right-0 mx-auto z-50 transition-all duration-300" style={{ zIndex: 100 }}>
         {isResumePage ? (
-          <div className={`mx-auto w-full max-w-[900px] ${isScrolled 
+          <div className={`mx-auto w-full max-w-[920px] ${isScrolled 
               ? 'bg-slate-900/50 backdrop-blur-xl border border-white/15 shadow-2xl shadow-black/40' 
               : 'bg-slate-900/40 backdrop-blur-lg border border-white/10'
             } rounded-full`}
@@ -187,7 +187,7 @@ export default function Layout({ children }) {
           </div>
         ) : (
           <>
-            <div className={`mx-auto w-full max-w-[900px] ${isScrolled 
+            <div className={`mx-auto w-full max-w-[920px] ${isScrolled 
                 ? 'bg-slate-900/50 backdrop-blur-xl border border-white/15 shadow-2xl shadow-black/40' 
                 : 'bg-slate-900/40 backdrop-blur-lg border border-white/10'
               } rounded-full`}
