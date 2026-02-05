@@ -152,22 +152,15 @@ const TechIcons = {
       <text x="24" y="28" textAnchor="middle" fontSize="11" fill="#f5a9f2" fontWeight="700">DL</text>
     </svg>
   ),
-  'AI & Machine Learning': () => (
+  'AI': () => (
     <svg className="w-12 h-12" viewBox="0 0 48 48" fill="none">
-      <circle cx="24" cy="24" r="18" stroke="#ec4899" strokeWidth="2" />
-      <text x="24" y="28" textAnchor="middle" fontSize="9" fill="#f9a8d4" fontWeight="700">AI/ML</text>
+      <text x="24" y="28" textAnchor="middle" fontSize="13" fill="#f9a8d4" fontWeight="700">AI</text>
     </svg>
   ),
   'DevOps': () => (
     <svg className="w-12 h-12" viewBox="0 0 48 48" fill="none">
       <circle cx="24" cy="24" r="18" stroke="#38bdf8" strokeWidth="2" />
       <text x="24" y="28" textAnchor="middle" fontSize="9" fill="#7dd3fc" fontWeight="700">DEV</text>
-    </svg>
-  ),
-  'CSS3': () => (
-    <svg className="w-12 h-12" viewBox="0 0 48 48" fill="none">
-      <circle cx="24" cy="24" r="18" stroke="#60a5fa" strokeWidth="2" />
-      <text x="24" y="28" textAnchor="middle" fontSize="11" fill="#93c5fd" fontWeight="700">CSS3</text>
     </svg>
   ),
   'SQL': () => (
@@ -229,11 +222,10 @@ const MainSkills = [
   'Computer Vision',
   'NLP',
   'Deep Learning',
-  'AI & Machine Learning',
+  'AI',
   'DevOps',
   'Python',
   'JavaScript',
-  'CSS3',
   'FastAPI',
   'SQL',
   'MongoDB',
@@ -390,18 +382,26 @@ function PhysicsBubbleContainer({ containerRef }) {
           const dx = body2.position.x - body1.position.x;
           const dy = body2.position.y - body1.position.y;
           const distance = Math.sqrt(dx * dx + dy * dy);
-          const minDistance = ballRadius * 2 + 2; // Two radii + 2px buffer
+          const minDistance = ballRadius * 2 + 8; // Stronger buffer to prevent overlap
           
           // If balls are overlapping or too close, separate them
           if (distance < minDistance && distance > 0) {
             const overlap = minDistance - distance;
-            const separationForce = 0.002 * overlap; // Gentle separation force
             const nx = dx / distance;
             const ny = dy / distance;
-            
-            // Apply separation impulses
-            Body.applyForce(body1, body1.position, { x: -nx * separationForce, y: -ny * separationForce });
-            Body.applyForce(body2, body2.position, { x: nx * separationForce, y: ny * separationForce });
+            const correction = overlap / 2;
+
+            Body.setPosition(body1, {
+              x: body1.position.x - nx * correction,
+              y: body1.position.y - ny * correction
+            });
+            Body.setPosition(body2, {
+              x: body2.position.x + nx * correction,
+              y: body2.position.y + ny * correction
+            });
+
+            Body.setVelocity(body1, { x: body1.velocity.x * 0.9, y: body1.velocity.y * 0.9 });
+            Body.setVelocity(body2, { x: body2.velocity.x * 0.9, y: body2.velocity.y * 0.9 });
           }
         }
       }
