@@ -236,7 +236,9 @@ function PhysicsBubbleContainer({ containerRef }) {
 
     const width = containerRef.current.clientWidth;
     const height = containerRef.current.clientHeight;
-    const radius = width < 520 ? 32 : 45;
+    const minSide = Math.min(width, height);
+    const autoRadius = Math.floor(minSide / (Math.sqrt(MainSkills.length) * 1.8));
+    const radius = Math.min(45, Math.max(22, autoRadius));
     setBallRadius((prev) => (prev === radius ? prev : radius));
 
     if (width === 0 || height === 0) return;
@@ -757,7 +759,7 @@ export default function Page() {
           {/* Left Side - Main Tech Stack with Matter.js Physics */}
           <div
             ref={techStackContainerRef}
-            className="order-1 rounded-3xl border border-white/10 bg-gradient-to-br from-slate-800/50 to-slate-900/80 backdrop-blur-xl p-4 sm:p-6 md:p-8 relative overflow-hidden h-[360px] sm:h-[420px] md:h-full"
+            className="order-1 rounded-3xl border border-white/10 bg-gradient-to-br from-slate-800/50 to-slate-900/80 backdrop-blur-xl p-4 sm:p-6 md:p-8 relative overflow-hidden h-[520px] sm:h-[580px] md:h-full"
           >
             <PhysicsBubbleContainer containerRef={techStackContainerRef} />
           </div>
