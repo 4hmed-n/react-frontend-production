@@ -1,13 +1,16 @@
 'use client';
 
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
 export default function Resume() {
   const resumeRef = useRef();
+  const resumeViewportRef = useRef(null);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [resumeScale, setResumeScale] = useState(1);
+  const [scaledHeight, setScaledHeight] = useState(null);
 
   const handleDownloadPDF = async () => {
     setIsDownloading(true);
@@ -133,6 +136,30 @@ export default function Resume() {
     'Cloud Architecture and DevOps'
   ];
 
+  useEffect(() => {
+    if (isDownloading) return;
+
+    const updateScale = () => {
+      if (!resumeViewportRef.current || !resumeRef.current) return;
+
+      const baseWidth = 980;
+      const baseHeight = resumeRef.current.scrollHeight;
+      const availableWidth = resumeViewportRef.current.clientWidth;
+      const availableHeight = Math.max(480, window.innerHeight - 160);
+
+      const widthScale = Math.min(1, availableWidth / baseWidth);
+      const heightScale = Math.min(1, availableHeight / baseHeight);
+      const scale = Math.min(widthScale, heightScale);
+
+      setResumeScale(scale);
+      setScaledHeight(baseHeight * scale);
+    };
+
+    updateScale();
+    window.addEventListener('resize', updateScale);
+    return () => window.removeEventListener('resize', updateScale);
+  }, [isDownloading]);
+
   return (
     <div
       className={`min-h-screen bg-transparent py-8 px-4 sm:px-6 resume-page ${
@@ -140,12 +167,18 @@ export default function Resume() {
       }`}
     >
       {/* Resume Container */}
-        <div className="resume-scroll overflow-x-auto">
+        <div className="resume-scroll">
           <div
-            className="mx-auto bg-white/95 shadow-2xl resume-container w-[980px] backdrop-blur-[2px]"
-            ref={resumeRef}
-            data-resume-root
+            ref={resumeViewportRef}
+            className="flex justify-center"
+            style={!isDownloading && scaledHeight ? { height: `${scaledHeight}px` } : undefined}
           >
+            <div
+              className="mx-auto bg-white/95 shadow-2xl resume-container w-[980px] backdrop-blur-[2px]"
+              ref={resumeRef}
+              data-resume-root
+              style={!isDownloading ? { transform: `scale(${resumeScale})`, transformOrigin: 'top center' } : undefined}
+            >
             <div className="flex flex-row resume-layout">
           {/* Left Sidebar */}
           <div className="flex-none w-[300px] bg-[#0f2230] text-white p-6 sm:p-8 border-r-4 border-cyan-400 resume-sidebar">
@@ -369,6 +402,7 @@ export default function Resume() {
                   </li>
                 ))}
               </ul>
+            </div>
             </div>
           </div>
         </div>

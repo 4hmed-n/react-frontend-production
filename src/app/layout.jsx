@@ -163,29 +163,36 @@ export default function Layout({ children }) {
         </div>
       )}
 
-      <nav className={`sticky top-4 left-0 right-0 mx-auto max-w-5xl z-50 rounded-full transition-all duration-300 ${
-        isScrolled 
-          ? 'bg-slate-900/50 backdrop-blur-xl border border-white/15 shadow-2xl shadow-black/40' 
-          : 'bg-slate-900/40 backdrop-blur-lg border border-white/10'
-      }`} style={{ zIndex: 100 }}>
+      <nav className="sticky top-4 left-0 right-0 mx-auto max-w-5xl z-50 transition-all duration-300" style={{ zIndex: 100 }}>
         {isResumePage ? (
-          <div className="px-4 md:px-12 py-4 flex items-center justify-between">
-            <Link to="/" className="text-sm md:text-lg font-bold tracking-tighter uppercase font-display">
-              Muhammad Ahmed
-            </Link>
-            <button
-              onClick={handleDownloadPDF}
-              className="inline-flex items-center rounded-full bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border border-yellow-400/40 px-4 md:px-5 py-2 text-[10px] md:text-xs uppercase tracking-widest text-yellow-200 hover:from-yellow-500/30 hover:to-orange-500/30 hover:border-yellow-400/70 hover:text-yellow-300 transition-all duration-300"
-            >
-              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-              </svg>
-              Download PDF
-            </button>
+          <div className={`${isScrolled 
+              ? 'bg-slate-900/50 backdrop-blur-xl border border-white/15 shadow-2xl shadow-black/40' 
+              : 'bg-slate-900/40 backdrop-blur-lg border border-white/10'
+            } rounded-full`}
+          >
+            <div className="px-4 md:px-12 py-4 flex items-center justify-between">
+              <Link to="/" className="text-sm md:text-lg font-bold tracking-tighter uppercase font-display">
+                Muhammad Ahmed
+              </Link>
+              <button
+                onClick={handleDownloadPDF}
+                className="inline-flex items-center rounded-full bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border border-yellow-400/40 px-4 md:px-5 py-2 text-[10px] md:text-xs uppercase tracking-widest text-yellow-200 hover:from-yellow-500/30 hover:to-orange-500/30 hover:border-yellow-400/70 hover:text-yellow-300 transition-all duration-300"
+              >
+                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+                Download PDF
+              </button>
+            </div>
           </div>
         ) : (
           <>
-            <div className="px-4 md:px-12 py-4 flex items-center">
+            <div className={`${isScrolled 
+                ? 'bg-slate-900/50 backdrop-blur-xl border border-white/15 shadow-2xl shadow-black/40' 
+                : 'bg-slate-900/40 backdrop-blur-lg border border-white/10'
+              } rounded-full`}
+            >
+              <div className="px-4 md:px-12 py-4 flex items-center">
               {/* Mobile left social icon */}
               <div className="md:hidden relative">
                 <button
@@ -241,9 +248,10 @@ export default function Layout({ children }) {
               >
                 Resume
               </Link>
+              </div>
             </div>
             {isMobileMenuOpen && (
-              <div className="md:hidden px-4 pb-4 pt-2 space-y-3 border-t border-white/10">
+              <div className="md:hidden mt-3 px-4 pb-4 pt-3 space-y-3 rounded-2xl border border-white/10 bg-slate-900/60 backdrop-blur-xl">
                 <a onClick={() => setIsMobileMenuOpen(false)} className="block text-sm uppercase tracking-widest text-gray-400 hover:text-sky-400 transition-colors py-2" href="#skills">Skills</a>
                 <a onClick={() => setIsMobileMenuOpen(false)} className="block text-sm uppercase tracking-widest text-gray-400 hover:text-sky-400 transition-colors py-2" href="#projects">Projects</a>
                 <a onClick={() => setIsMobileMenuOpen(false)} className="block text-sm uppercase tracking-widest text-gray-400 hover:text-sky-400 transition-colors py-2" href="#contact">Contact</a>
