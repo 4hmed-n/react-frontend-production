@@ -158,18 +158,9 @@ const MainSkills = [
   'TypeScript',
   'React',
   'Node.js',
-  'Express.js',
   'MongoDB',
-  'SQL',
-  'Data Science',
-  'ML/AI',
-  'REST API',
-  'FastAPI',
   'Docker',
-  'Git',
-  'Tailwind',
-  'Firebase',
-  'Postman',
+  'ML/AI'
 ];
 
 // Physics-based Bubble Component using Matter.js with Soft-Body Deformation
