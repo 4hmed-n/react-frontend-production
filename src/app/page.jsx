@@ -131,6 +131,32 @@ const TechIcons = {
   'Data Science': () => (
     <div className="text-purple-400 font-bold text-xl">DS</div>
   ),
+  'Computer Vision': () => (
+    <div className="text-indigo-300 font-bold text-lg">CV</div>
+  ),
+  'NLP': () => (
+    <div className="text-emerald-300 font-bold text-lg">NLP</div>
+  ),
+  'Deep Learning': () => (
+    <div className="text-fuchsia-300 font-bold text-sm">DL</div>
+  ),
+  'AI & Machine Learning': () => (
+    <div className="text-pink-400 font-bold text-sm">AI/ML</div>
+  ),
+  'DevOps': () => (
+    <div className="text-sky-300 font-bold text-sm">DevOps</div>
+  ),
+  'CSS3': () => (
+    <div className="text-blue-300 font-bold text-lg">CSS</div>
+  ),
+  'n8n': () => (
+    <div className="text-orange-400 font-bold text-lg">n8n</div>
+  ),
+  'tailwind css': () => (
+    <svg className="w-12 h-12" viewBox="0 0 24 24" fill="#06B6D4">
+      <path d="M12.001,4.8c-3.2,0-5.2,1.6-6,4.8c1.2-1.6,2.6-2.2,4.2-1.8c0.913,0.228,1.565,0.89,2.288,1.624 C13.666,10.618,15.027,12,18.001,12c3.2,0,5.2-1.6,6-4.8c-1.2,1.6-2.6,2.2-4.2,1.8c-0.913-0.228-1.565-0.89-2.288-1.624 C16.337,6.182,14.976,4.8,12.001,4.8z M6.001,12c-3.2,0-5.2,1.6-6,4.8c1.2-1.6,2.6-2.2,4.2-1.8c0.913,0.228,1.565,0.89,2.288,1.624 c1.177,1.194,2.538,2.576,5.512,2.576c3.2,0,5.2-1.6,6-4.8c-1.2,1.6-2.6,2.2-4.2,1.8c-0.913-0.228-1.565-0.89-2.288-1.624 C10.337,13.382,8.976,12,6.001,12z"/>
+    </svg>
+  ),
   'ML/AI': () => (
     <div className="text-pink-400 font-bold text-xl">AI</div>
   ),
@@ -153,14 +179,21 @@ const TechIcons = {
 };
 
 const MainSkills = [
+  'Data Science',
+  'Computer Vision',
+  'NLP',
+  'Deep Learning',
+  'AI & Machine Learning',
+  'DevOps',
   'Python',
   'JavaScript',
-  'TypeScript',
-  'React',
-  'Node.js',
-  'MongoDB',
-  'Docker',
-  'ML/AI'
+  'CSS3',
+  'FastAPI',
+  'SQL',
+  'Firebase',
+  'Postman',
+  'n8n',
+  'tailwind css'
 ];
 
 // Physics-based Bubble Component using Matter.js with Soft-Body Deformation
