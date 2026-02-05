@@ -129,45 +129,28 @@ const TechIcons = {
     <div className="text-cyan-400 font-bold text-2xl">SQL</div>
   ),
   'Data Science': () => (
-    <svg className="w-12 h-12" viewBox="0 0 48 48" fill="none">
-      <circle cx="24" cy="24" r="18" stroke="#a855f7" strokeWidth="2" />
-      <text x="24" y="28" textAnchor="middle" fontSize="12" fill="#c084fc" fontWeight="700">DS</text>
-    </svg>
+    <div className="text-purple-400 font-bold text-xl">DS</div>
   ),
   'Computer Vision': () => (
-    <svg className="w-12 h-12" viewBox="0 0 48 48" fill="none">
-      <circle cx="24" cy="24" r="18" stroke="#6366f1" strokeWidth="2" />
-      <text x="24" y="28" textAnchor="middle" fontSize="12" fill="#a5b4fc" fontWeight="700">CV</text>
-    </svg>
+    <div className="text-indigo-300 font-bold text-lg">CV</div>
   ),
   'NLP': () => (
-    <svg className="w-12 h-12" viewBox="0 0 48 48" fill="none">
-      <circle cx="24" cy="24" r="18" stroke="#10b981" strokeWidth="2" />
-      <text x="24" y="28" textAnchor="middle" fontSize="11" fill="#6ee7b7" fontWeight="700">NLP</text>
-    </svg>
+    <div className="text-emerald-300 font-bold text-lg">NLP</div>
   ),
   'Deep Learning': () => (
-    <svg className="w-12 h-12" viewBox="0 0 48 48" fill="none">
-      <circle cx="24" cy="24" r="18" stroke="#d946ef" strokeWidth="2" />
-      <text x="24" y="28" textAnchor="middle" fontSize="11" fill="#f5a9f2" fontWeight="700">DL</text>
-    </svg>
+    <div className="text-fuchsia-300 font-bold text-sm">DL</div>
   ),
   'AI': () => (
-    <svg className="w-12 h-12" viewBox="0 0 48 48" fill="none">
-      <text x="24" y="28" textAnchor="middle" fontSize="13" fill="#f9a8d4" fontWeight="700">AI</text>
-    </svg>
+    <div className="text-pink-400 font-bold text-xl">AI</div>
   ),
   'DevOps': () => (
-    <svg className="w-12 h-12" viewBox="0 0 48 48" fill="none">
-      <circle cx="24" cy="24" r="18" stroke="#38bdf8" strokeWidth="2" />
-      <text x="24" y="28" textAnchor="middle" fontSize="9" fill="#7dd3fc" fontWeight="700">DEV</text>
+    <svg className="w-12 h-12" viewBox="0 0 24 24" fill="none" stroke="#7dd3fc" strokeWidth="1.6">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 9.5a2.5 2.5 0 100 5 2.5 2.5 0 000-5z" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M19.4 15a7.98 7.98 0 00.1-2 7.98 7.98 0 00-.1-2l2.1-1.6-2-3.4-2.5 1a8.1 8.1 0 00-3.4-2l-.4-2.7h-4l-.4 2.7a8.1 8.1 0 00-3.4 2l-2.5-1-2 3.4 2.1 1.6a7.98 7.98 0 00-.1 2 7.98 7.98 0 00.1 2l-2.1 1.6 2 3.4 2.5-1a8.1 8.1 0 003.4 2l.4 2.7h4l.4-2.7a8.1 8.1 0 003.4-2l2.5 1 2-3.4-2.1-1.6z" />
     </svg>
   ),
   'SQL': () => (
-    <svg className="w-12 h-12" viewBox="0 0 48 48" fill="none">
-      <circle cx="24" cy="24" r="18" stroke="#22c55e" strokeWidth="2" />
-      <text x="24" y="28" textAnchor="middle" fontSize="11" fill="#86efac" fontWeight="700">SQL</text>
-    </svg>
+    <div className="text-cyan-400 font-bold text-2xl">SQL</div>
   ),
   'FastAPI': () => (
     <svg className="w-12 h-12" viewBox="0 0 48 48" fill="none">
@@ -186,10 +169,10 @@ const TechIcons = {
     </svg>
   ),
   'n8n': () => (
-    <svg className="w-12 h-12" viewBox="0 0 48 48" fill="none">
-      <circle cx="24" cy="24" r="18" stroke="#fb923c" strokeWidth="2" />
-      <text x="24" y="28" textAnchor="middle" fontSize="12" fill="#fdba74" fontWeight="700">n8n</text>
-    </svg>
+    <div className="text-orange-400 font-bold text-lg">n8n</div>
+  ),
+  'MLOps': () => (
+    <div className="text-sky-400 font-bold text-sm">MLOps</div>
   ),
   'tailwind css': () => (
     <svg className="w-12 h-12" viewBox="0 0 24 24" fill="#06B6D4">
@@ -224,6 +207,7 @@ const MainSkills = [
   'Deep Learning',
   'AI',
   'DevOps',
+  'MLOps',
   'Python',
   'JavaScript',
   'FastAPI',
