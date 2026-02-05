@@ -122,12 +122,12 @@ export default function Resume() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 py-8 resume-page">
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 py-8 px-4 sm:px-6 resume-page">
       {/* Resume Container */}
-      <div className="mx-auto bg-white shadow-2xl resume-container max-w-[900px]" ref={resumeRef} data-resume-root>
-        <div className="flex">
+      <div className="mx-auto w-full bg-white shadow-2xl resume-container max-w-[900px]" ref={resumeRef} data-resume-root>
+        <div className="flex flex-col md:flex-row">
           {/* Left Sidebar */}
-          <div className="w-80 bg-[#0f2230] text-white p-8 border-r-4 border-cyan-400">
+          <div className="w-full md:w-80 bg-[#0f2230] text-white p-6 sm:p-8 border-r-4 border-cyan-400">
             {/* Profile */}
             <div className="mb-8" data-hide-in-pdf>
               <div className="w-24 h-24 rounded-full overflow-hidden shadow-lg border-4 border-cyan-300">
@@ -213,7 +213,7 @@ export default function Resume() {
           </div>
 
           {/* Right Content */}
-          <div className="flex-1 p-10">
+          <div className="flex-1 p-6 sm:p-8 md:p-10">
             {/* Header */}
             <div className="mb-8 border-b-4 border-slate-800 pb-6">
               <h1 className="text-4xl font-bold text-slate-900 mb-2">{personalInfo.name}</h1>
