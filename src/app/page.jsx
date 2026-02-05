@@ -751,17 +751,17 @@ export default function Page() {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8 md:auto-rows-[600px]">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:auto-rows-[600px]">
           {/* Left Side - Main Tech Stack with Matter.js Physics */}
           <div
             ref={techStackContainerRef}
-            className="rounded-3xl border border-white/10 bg-gradient-to-br from-slate-800/50 to-slate-900/80 backdrop-blur-xl p-4 sm:p-6 md:p-8 relative overflow-hidden h-[360px] sm:h-[420px] md:h-full"
+            className="order-1 rounded-3xl border border-white/10 bg-gradient-to-br from-slate-800/50 to-slate-900/80 backdrop-blur-xl p-4 sm:p-6 md:p-8 relative overflow-hidden h-[360px] sm:h-[420px] md:h-full"
           >
             <PhysicsBubbleContainer containerRef={techStackContainerRef} />
           </div>
 
           {/* Right Side - Skills Block */}
-          <div className="flex flex-col h-full">
+          <div className="order-2 flex flex-col h-full">
             <div className="rounded-3xl border border-white/10 bg-gradient-to-br from-slate-800/50 to-slate-900/80 backdrop-blur-xl overflow-hidden flex-1 flex flex-col">
             <div className="flex items-center gap-2 border-b border-white/10 px-4 py-3">
               <div className="flex gap-2">
