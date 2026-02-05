@@ -142,9 +142,14 @@ export default function Resume() {
       if (!resumeViewportRef.current || !resumeRef.current) return;
 
       const baseWidth = 880;
+      const headerMaxWidth = 920;
+      const headerToResumeRatio = baseWidth / headerMaxWidth;
       const availableWidth = resumeViewportRef.current.clientWidth;
       const horizontalGutter = 40;
-      const widthScale = Math.min(1, (availableWidth - horizontalGutter) / baseWidth);
+
+      const headerWidth = Math.min(headerMaxWidth, availableWidth - horizontalGutter);
+      const targetResumeWidth = headerWidth * headerToResumeRatio;
+      const widthScale = Math.min(1, targetResumeWidth / baseWidth);
       setResumeScale(widthScale);
     };
 
