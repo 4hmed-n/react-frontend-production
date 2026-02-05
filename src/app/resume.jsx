@@ -151,7 +151,9 @@ export default function Resume() {
         ? headerEl.clientWidth
         : Math.min(headerMaxWidth, availableWidth - horizontalGutter);
 
-      const widthScale = headerWidth / baseWidth;
+      const roundInset = 24;
+      const targetResumeWidth = Math.max(0, headerWidth - roundInset * 2);
+      const widthScale = targetResumeWidth / baseWidth;
       setResumeScale(widthScale);
     };
 
