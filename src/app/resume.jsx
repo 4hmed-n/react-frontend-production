@@ -16,8 +16,8 @@ export default function Resume() {
     // Clone resume and force desktop layout for PDF capture
     const clone = element.cloneNode(true);
     clone.classList.add('resume-print');
-    clone.style.width = '900px';
-    clone.style.maxWidth = '900px';
+    clone.style.width = '980px';
+    clone.style.maxWidth = '980px';
     clone.style.position = 'fixed';
     clone.style.left = '-9999px';
     clone.style.top = '0';
@@ -28,9 +28,11 @@ export default function Resume() {
     const profilePic = clone.querySelector('[data-hide-in-pdf]');
     if (profilePic) profilePic.style.display = 'none';
 
+    const resumeElement = clone;
+
     try {
-      const rect = clone.getBoundingClientRect();
-      const canvas = await html2canvas(clone, {
+      const rect = resumeElement.getBoundingClientRect();
+      const canvas = await html2canvas(resumeElement, {
         scale: 2,
         useCORS: true,
         logging: false,
@@ -42,24 +44,37 @@ export default function Resume() {
         scrollX: 0,
         scrollY: 0
       });
-      
+
       const imgData = canvas.toDataURL('image/png');
       const pdf = new jsPDF({
         orientation: 'portrait',
         unit: 'mm',
         format: 'a4'
       });
-      
+
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = pdf.internal.pageSize.getHeight();
       const imgWidth = canvas.width;
       const imgHeight = canvas.height;
-      const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
-      const imgX = (pdfWidth - imgWidth * ratio) / 2;
-      const imgY = 0;
-      
-      pdf.addImage(imgData, 'PNG', imgX, imgY, imgWidth * ratio, imgHeight * ratio);
+      const ratio = pdfWidth / imgWidth;
+      const imgHeightScaled = imgHeight * ratio;
+
+      let heightLeft = imgHeightScaled;
+      let position = 0;
+
+      pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeightScaled);
+      heightLeft -= pdfHeight;
+
+      while (heightLeft > 0) {
+        position = heightLeft - imgHeightScaled;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeightScaled);
+        heightLeft -= pdfHeight;
+      }
+
       pdf.save('Muhammad_Ahmed_Resume.pdf');
+    } catch (error) {
+      console.error('PDF download failed:', error);
     } finally {
       if (clone && clone.parentNode) {
         clone.parentNode.removeChild(clone);
@@ -149,13 +164,13 @@ export default function Resume() {
       {/* Resume Container */}
         <div className="resume-scroll overflow-x-auto">
           <div
-            className="mx-auto bg-white shadow-2xl resume-container w-[900px]"
+            className="mx-auto bg-white shadow-2xl resume-container w-[980px]"
             ref={resumeRef}
             data-resume-root
           >
             <div className="flex flex-row resume-layout">
           {/* Left Sidebar */}
-          <div className="w-full md:w-80 bg-[#0f2230] text-white p-6 sm:p-8 border-r-4 border-cyan-400 resume-sidebar">
+          <div className="flex-none w-[300px] bg-[#0f2230] text-white p-6 sm:p-8 border-r-4 border-cyan-400 resume-sidebar">
             {/* Profile */}
             <div className="mb-8" data-hide-in-pdf>
               <div className="w-24 h-24 rounded-full overflow-hidden shadow-lg border-4 border-cyan-300">
@@ -241,7 +256,7 @@ export default function Resume() {
           </div>
 
           {/* Right Content */}
-          <div className="flex-1 p-6 sm:p-8 md:p-10">
+          <div className="flex-1 min-w-0 p-6 sm:p-8 md:p-10">
             {/* Header */}
             <div className="mb-8 border-b-4 border-slate-800 pb-6">
               <div className="flex items-start gap-4 md:block">
@@ -392,9 +407,9 @@ export default function Resume() {
         .resume-print {
           background: #ffffff !important;
         }
-        .resume-print .resume-container {
-          width: 900px !important;
-          max-width: 900px !important;
+          .resume-print .resume-container {
+          width: 980px !important;
+          max-width: 980px !important;
           margin: 0 auto !important;
           box-shadow: none !important;
         }

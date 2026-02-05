@@ -62,30 +62,69 @@ export default function Layout({ children }) {
     const resumeElement = document.querySelector('[data-resume-root]');
     if (!resumeElement) return;
 
-    const canvas = await html2canvas(resumeElement, {
-      scale: 2,
-      useCORS: true,
-      logging: false,
-      backgroundColor: '#ffffff'
-    });
-    
-    const imgData = canvas.toDataURL('image/png');
-    const pdf = new jsPDF({
-      orientation: 'portrait',
-      unit: 'mm',
-      format: 'a4'
-    });
-    
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = pdf.internal.pageSize.getHeight();
-    const imgWidth = canvas.width;
-    const imgHeight = canvas.height;
-    const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
-    const imgX = (pdfWidth - imgWidth * ratio) / 2;
-    const imgY = 0;
-    
-    pdf.addImage(imgData, 'PNG', imgX, imgY, imgWidth * ratio, imgHeight * ratio);
-    pdf.save('Muhammad_Ahmed_Resume.pdf');
+    // Clone resume and force desktop layout for PDF capture
+    const clone = resumeElement.cloneNode(true);
+    clone.classList.add('resume-print');
+    clone.style.width = '980px';
+    clone.style.maxWidth = '980px';
+    clone.style.position = 'fixed';
+    clone.style.left = '-9999px';
+    clone.style.top = '0';
+    clone.style.boxShadow = 'none';
+    document.body.appendChild(clone);
+
+    // Hide profile picture in clone for PDF
+    const profilePic = clone.querySelector('[data-hide-in-pdf]');
+    if (profilePic) profilePic.style.display = 'none';
+
+    try {
+      const rect = clone.getBoundingClientRect();
+      const canvas = await html2canvas(clone, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        backgroundColor: '#ffffff',
+        width: rect.width,
+        height: rect.height,
+        windowWidth: rect.width,
+        windowHeight: rect.height,
+        scrollX: 0,
+        scrollY: 0
+      });
+
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4'
+      });
+
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+      const imgWidth = canvas.width;
+      const imgHeight = canvas.height;
+      const ratio = pdfWidth / imgWidth;
+      const imgHeightScaled = imgHeight * ratio;
+
+      let heightLeft = imgHeightScaled;
+      let position = 0;
+
+      pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeightScaled);
+      heightLeft -= pdfHeight;
+
+      while (heightLeft > 0) {
+        position = heightLeft - imgHeightScaled;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeightScaled);
+        heightLeft -= pdfHeight;
+      }
+
+      pdf.save('Muhammad_Ahmed_Resume.pdf');
+    } finally {
+      if (clone && clone.parentNode) {
+        clone.parentNode.removeChild(clone);
+      }
+    }
   };
 
   useEffect(() => {
