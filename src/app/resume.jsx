@@ -147,8 +147,13 @@ export default function Resume() {
       }`}
     >
       {/* Resume Container */}
-      <div className="mx-auto w-full bg-white shadow-2xl resume-container max-w-[900px]" ref={resumeRef} data-resume-root>
-        <div className="flex flex-col md:flex-row resume-layout">
+        <div className="resume-scroll overflow-x-auto">
+          <div
+            className="mx-auto bg-white shadow-2xl resume-container w-[900px]"
+            ref={resumeRef}
+            data-resume-root
+          >
+            <div className="flex flex-row resume-layout">
           {/* Left Sidebar */}
           <div className="w-full md:w-80 bg-[#0f2230] text-white p-6 sm:p-8 border-r-4 border-cyan-400 resume-sidebar">
             {/* Profile */}
@@ -374,6 +379,7 @@ export default function Resume() {
             </div>
           </div>
         </div>
+      </div>
       </div>
 
       <style>{`
