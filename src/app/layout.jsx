@@ -208,9 +208,14 @@ export default function Layout({ children }) {
                 )}
               </div>
 
-              <div className="flex-1 text-center md:flex-none md:text-left md:mr-8">
+              <div className="flex-1 flex justify-center md:flex-none md:text-left md:mr-8">
                 <Link to="/" className="text-sm md:text-lg font-bold tracking-tighter uppercase font-display">
-                  Muhammad Ahmed
+                  <span className="md:hidden inline-flex items-center px-4 py-2 rounded-full bg-white/5 border border-white/10 text-white/90 shadow-sm shadow-black/30">
+                    Muhammad Ahmed
+                  </span>
+                  <span className="hidden md:inline">
+                    Muhammad Ahmed
+                  </span>
                 </Link>
               </div>
 
