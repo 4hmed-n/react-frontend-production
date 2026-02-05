@@ -143,9 +143,8 @@ export default function Resume() {
 
       const baseWidth = 900;
       const availableWidth = resumeViewportRef.current.clientWidth;
-      const widthScale = Math.min(1, (availableWidth - 16) / baseWidth);
-      const minScale = 0.85;
-      setResumeScale(Math.max(widthScale, minScale));
+      const widthScale = Math.min(1, (availableWidth - 32) / baseWidth);
+      setResumeScale(widthScale);
     };
 
     updateScale();
@@ -160,10 +159,10 @@ export default function Resume() {
       }`}
     >
       {/* Resume Container */}
-        <div className="resume-scroll w-full overflow-x-auto">
+        <div className="resume-scroll w-full overflow-x-auto px-3 sm:px-4 pb-6">
           <div
             ref={resumeViewportRef}
-            className="flex justify-center w-full"
+            className="flex justify-center w-full items-start"
           >
             <div
               className="mx-auto bg-white shadow-2xl resume-container w-[900px]"
