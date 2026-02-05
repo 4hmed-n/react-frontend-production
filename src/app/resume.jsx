@@ -135,14 +135,14 @@ export default function Resume() {
 
   return (
     <div
-      className={`min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 py-8 px-4 sm:px-6 resume-page ${
+      className={`min-h-screen bg-transparent py-8 px-4 sm:px-6 resume-page ${
         isDownloading ? 'py-0 px-0 sm:px-0 bg-white resume-print' : ''
       }`}
     >
       {/* Resume Container */}
         <div className="resume-scroll overflow-x-auto">
           <div
-            className="mx-auto bg-white shadow-2xl resume-container w-[980px]"
+            className="mx-auto bg-white/95 shadow-2xl resume-container w-[980px] backdrop-blur-[2px]"
             ref={resumeRef}
             data-resume-root
           >
@@ -390,6 +390,7 @@ export default function Resume() {
           max-width: 980px !important;
           margin: 0 auto !important;
           box-shadow: none !important;
+            background: #ffffff !important;
         }
         .resume-print .resume-layout {
           flex-direction: row !important;
