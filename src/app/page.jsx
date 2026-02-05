@@ -138,7 +138,7 @@ const TechIcons = {
     <div className="text-emerald-300 font-bold text-lg">NLP</div>
   ),
   'Deep Learning': () => (
-    <div className="text-fuchsia-300 font-bold text-sm">DL</div>
+    <div className="text-fuchsia-300 font-bold text-lg">DL</div>
   ),
   'AI': () => (
     <div className="text-pink-400 font-bold text-xl">AI</div>
