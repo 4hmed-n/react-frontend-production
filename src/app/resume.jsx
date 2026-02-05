@@ -147,7 +147,7 @@ export default function Resume() {
       const horizontalGutter = 40;
 
       const targetResumeWidth = Math.max(0, availableWidth - horizontalGutter);
-      const widthScale = targetResumeWidth / baseWidth;
+      const widthScale = Math.min(1, targetResumeWidth / baseWidth);
       setResumeScale(widthScale);
     };
 
