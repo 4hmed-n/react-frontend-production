@@ -141,7 +141,7 @@ export default function Resume() {
     const updateScale = () => {
       if (!resumeViewportRef.current || !resumeRef.current) return;
 
-      const baseWidth = 880;
+      const baseWidth = 850;
       const headerMaxWidth = 920;
       const availableWidth = resumeViewportRef.current.clientWidth;
       const horizontalGutter = 40;
@@ -169,7 +169,7 @@ export default function Resume() {
             className="flex justify-center w-full items-start"
           >
             <div
-              className="mx-auto bg-white shadow-2xl resume-container w-[880px]"
+              className="mx-auto bg-white shadow-2xl resume-container w-[850px]"
               ref={resumeRef}
               data-resume-root
               style={!isDownloading ? { transform: `scale(${resumeScale})`, transformOrigin: 'top center' } : undefined}
