@@ -8,7 +8,6 @@ import jsPDF from 'jspdf';
 export default function Resume() {
   const resumeRef = useRef();
   const resumeViewportRef = useRef(null);
-  const ratioRef = useRef(850 / 1440);
   const [isDownloading, setIsDownloading] = useState(false);
   const [resumeScale, setResumeScale] = useState(1);
 
@@ -143,14 +142,16 @@ export default function Resume() {
       if (!resumeViewportRef.current || !resumeRef.current) return;
 
       const baseWidth = 850;
+      const headerBaseWidth = 920;
       const availableWidth = resumeViewportRef.current.clientWidth;
       const horizontalGutter = 40;
 
-      if (window.innerWidth >= 1024) {
-        ratioRef.current = baseWidth / window.innerWidth;
-      }
+      const headerEl = document.querySelector('[data-header-shell]');
+      const headerWidth = headerEl?.clientWidth
+        ? headerEl.clientWidth
+        : Math.max(0, availableWidth - horizontalGutter);
 
-      const targetResumeWidth = Math.max(0, (window.innerWidth * ratioRef.current) - horizontalGutter);
+      const targetResumeWidth = headerWidth * (baseWidth / headerBaseWidth);
       const widthScale = Math.min(1, targetResumeWidth / baseWidth);
       setResumeScale(widthScale);
     };
