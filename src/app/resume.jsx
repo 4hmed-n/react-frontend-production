@@ -143,7 +143,8 @@ export default function Resume() {
 
       const baseWidth = 880;
       const availableWidth = resumeViewportRef.current.clientWidth;
-      const widthScale = Math.min(1, (availableWidth - 32) / baseWidth);
+      const horizontalGutter = 40;
+      const widthScale = Math.min(1, (availableWidth - horizontalGutter) / baseWidth);
       setResumeScale(widthScale);
     };
 
