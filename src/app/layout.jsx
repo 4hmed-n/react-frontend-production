@@ -73,10 +73,6 @@ export default function Layout({ children }) {
     clone.style.boxShadow = 'none';
     document.body.appendChild(clone);
 
-    // Hide profile picture in clone for PDF
-    const profilePic = clone.querySelector('[data-hide-in-pdf]');
-    if (profilePic) profilePic.style.display = 'none';
-
     try {
       const rect = clone.getBoundingClientRect();
       const canvas = await html2canvas(clone, {
@@ -95,29 +91,11 @@ export default function Layout({ children }) {
       const imgData = canvas.toDataURL('image/png');
       const pdf = new jsPDF({
         orientation: 'portrait',
-        unit: 'mm',
-        format: 'a4'
+        unit: 'px',
+        format: [rect.width, rect.height]
       });
 
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = pdf.internal.pageSize.getHeight();
-      const imgWidth = canvas.width;
-      const imgHeight = canvas.height;
-      const ratio = pdfWidth / imgWidth;
-      const imgHeightScaled = imgHeight * ratio;
-
-      let heightLeft = imgHeightScaled;
-      let position = 0;
-
-      pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeightScaled);
-      heightLeft -= pdfHeight;
-
-      while (heightLeft > 0) {
-        position = heightLeft - imgHeightScaled;
-        pdf.addPage();
-        pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeightScaled);
-        heightLeft -= pdfHeight;
-      }
+      pdf.addImage(imgData, 'PNG', 0, 0, rect.width, rect.height);
 
       pdf.save('Muhammad_Ahmed_Resume.pdf');
     } finally {
