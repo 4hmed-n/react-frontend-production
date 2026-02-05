@@ -507,6 +507,9 @@ function PhysicsBubbleContainer({ containerRef }) {
     };
   }, [containerRef, containerSize.width, containerSize.height]);
 
+  const isCompact = containerSize.width > 0 && containerSize.width < 768;
+  const iconScale = ballRadius / 45;
+
   return (
     <>
       {MainSkills.map((skill, index) => (
@@ -532,11 +535,14 @@ function PhysicsBubbleContainer({ containerRef }) {
               backdropFilter: 'blur(10px)'
             }}
           >
-            <div className="pointer-events-none">
+            <div
+              className="pointer-events-none"
+              style={{ transform: `scale(${iconScale})`, transformOrigin: 'center' }}
+            >
               {TechIcons[skill]()}
             </div>
           </div>
-          {hoveredBubble === skill && (
+          {(hoveredBubble === skill || isCompact) && (
             <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 whitespace-nowrap z-50">
               <span className="text-xs font-medium text-blue-300 bg-slate-900/90 px-3 py-1 rounded-full border border-blue-400/30 backdrop-blur-sm">
                 {skill}
