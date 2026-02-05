@@ -10,7 +10,6 @@ export default function Resume() {
   const resumeViewportRef = useRef(null);
   const [isDownloading, setIsDownloading] = useState(false);
   const [resumeScale, setResumeScale] = useState(1);
-  const [scaledHeight, setScaledHeight] = useState(null);
 
   const handleDownloadPDF = async () => {
     setIsDownloading(true);
@@ -142,17 +141,10 @@ export default function Resume() {
     const updateScale = () => {
       if (!resumeViewportRef.current || !resumeRef.current) return;
 
-      const baseWidth = 980;
-      const baseHeight = resumeRef.current.scrollHeight;
+      const baseWidth = 900;
       const availableWidth = resumeViewportRef.current.clientWidth;
-      const availableHeight = Math.max(480, window.innerHeight - 160);
-
       const widthScale = Math.min(1, availableWidth / baseWidth);
-      const heightScale = Math.min(1, availableHeight / baseHeight);
-      const scale = Math.min(widthScale, heightScale);
-
-      setResumeScale(scale);
-      setScaledHeight(baseHeight * scale);
+      setResumeScale(widthScale);
     };
 
     updateScale();
@@ -171,10 +163,9 @@ export default function Resume() {
           <div
             ref={resumeViewportRef}
             className="flex justify-center"
-            style={!isDownloading && scaledHeight ? { height: `${scaledHeight}px` } : undefined}
           >
             <div
-              className="mx-auto bg-white/95 shadow-2xl resume-container w-[980px] backdrop-blur-[2px]"
+              className="mx-auto bg-white shadow-2xl resume-container w-[900px] max-w-[92vw]"
               ref={resumeRef}
               data-resume-root
               style={!isDownloading ? { transform: `scale(${resumeScale})`, transformOrigin: 'top center' } : undefined}
@@ -420,8 +411,8 @@ export default function Resume() {
           background: #ffffff !important;
         }
           .resume-print .resume-container {
-          width: 980px !important;
-          max-width: 980px !important;
+            width: 980px !important;
+            max-width: 980px !important;
           margin: 0 auto !important;
           box-shadow: none !important;
             background: #ffffff !important;
