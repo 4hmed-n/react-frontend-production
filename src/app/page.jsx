@@ -242,15 +242,15 @@ function PhysicsBubbleContainer({ containerRef }) {
     // Matter.js modules
     const { Engine, Render, World, Bodies, Mouse, MouseConstraint, Runner, Events, Body } = Matter;
 
-    // Create engine with ZERO gravity - rock solid billiard table physics
+    // Create engine with ZERO gravity - billiard table physics
     const engine = Engine.create();
     engine.world.gravity.y = 0;
     engine.world.gravity.x = 0;
 
     // Rock solid ball physics - high precision
-    engine.positionIterations = 10;
-    engine.velocityIterations = 10;
-    engine.constraintIterations = 5;
+    engine.positionIterations = 12;
+    engine.velocityIterations = 12;
+    engine.constraintIterations = 6;
 
     engineRef.current = engine;
 
@@ -287,8 +287,8 @@ function PhysicsBubbleContainer({ containerRef }) {
     const wallOptions = { 
       isStatic: true, 
       render: { visible: false },
-      restitution: 0.9,
-      friction: 0.005,
+      restitution: 0.98,
+      friction: 0,
       frictionStatic: 0,
       density: 0.001
     };
@@ -314,18 +314,18 @@ function PhysicsBubbleContainer({ containerRef }) {
       const y = Math.random() * safeHeight + padding;
 
       const body = Bodies.circle(x, y, ballRadius, {
-        restitution: 0.9,
-        friction: 0.005,
-        frictionAir: 0.02,
-        density: 0.04,
+        restitution: 0.98,
+        friction: 0,
+        frictionAir: 0.002,
+        density: 0.03,
         render: { visible: false },
         label: skill
       });
 
       // Initial velocity for movement
       Body.setVelocity(body, {
-        x: (Math.random() - 0.5) * 5,
-        y: (Math.random() - 0.5) * 5
+        x: (Math.random() - 0.5) * 4,
+        y: (Math.random() - 0.5) * 4
       });
 
       bodiesRef.current[skill] = body;
@@ -366,7 +366,7 @@ function PhysicsBubbleContainer({ containerRef }) {
           const dx = body2.position.x - body1.position.x;
           const dy = body2.position.y - body1.position.y;
           const distance = Math.sqrt(dx * dx + dy * dy);
-          const minDistance = ballRadius * 2 + 8; // Stronger buffer to prevent overlap
+          const minDistance = ballRadius * 2 + 4; // Billiard-tight buffer
           
           // If balls are overlapping or too close, separate them
           if (distance < minDistance && distance > 0) {
@@ -384,8 +384,8 @@ function PhysicsBubbleContainer({ containerRef }) {
               y: body2.position.y + ny * correction
             });
 
-            Body.setVelocity(body1, { x: body1.velocity.x * 0.9, y: body1.velocity.y * 0.9 });
-            Body.setVelocity(body2, { x: body2.velocity.x * 0.9, y: body2.velocity.y * 0.9 });
+            Body.setVelocity(body1, { x: body1.velocity.x * 0.97, y: body1.velocity.y * 0.97 });
+            Body.setVelocity(body2, { x: body2.velocity.x * 0.97, y: body2.velocity.y * 0.97 });
           }
         }
       }
