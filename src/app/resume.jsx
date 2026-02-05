@@ -127,7 +127,7 @@ export default function Resume() {
       <div className="mx-auto w-full bg-white shadow-2xl resume-container max-w-[900px]" ref={resumeRef} data-resume-root>
         <div className="flex flex-col md:flex-row">
           {/* Left Sidebar */}
-          <div className="w-full md:w-80 bg-[#0f2230] text-white p-6 sm:p-8 border-r-4 border-cyan-400">
+          <div className="w-full md:w-80 bg-[#0f2230] text-white p-6 sm:p-8 border-r-4 border-cyan-400 resume-sidebar">
             {/* Profile */}
             <div className="mb-8" data-hide-in-pdf>
               <div className="w-24 h-24 rounded-full overflow-hidden shadow-lg border-4 border-cyan-300">
@@ -358,6 +358,7 @@ export default function Resume() {
           body { background: #ffffff !important; }
           .resume-page { background: #ffffff !important; padding: 0 !important; }
           .resume-container { box-shadow: none !important; max-width: 210mm !important; margin: 0 auto !important; }
+          .resume-sidebar { border-right: none !important; }
         }
       `}</style>
     </div>
