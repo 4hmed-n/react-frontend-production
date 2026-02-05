@@ -12,14 +12,25 @@ export default function Resume() {
   const handleDownloadPDF = async () => {
     setIsDownloading(true);
     const element = resumeRef.current;
-    
-    // Temporarily hide profile picture for PDF
-    const profilePic = element.querySelector('[data-hide-in-pdf]');
+
+    // Clone resume and force desktop layout for PDF capture
+    const clone = element.cloneNode(true);
+    clone.classList.add('resume-print');
+    clone.style.width = '900px';
+    clone.style.maxWidth = '900px';
+    clone.style.position = 'fixed';
+    clone.style.left = '-9999px';
+    clone.style.top = '0';
+    clone.style.boxShadow = 'none';
+    document.body.appendChild(clone);
+
+    // Hide profile picture in clone for PDF
+    const profilePic = clone.querySelector('[data-hide-in-pdf]');
     if (profilePic) profilePic.style.display = 'none';
-    
+
     try {
-      const rect = element.getBoundingClientRect();
-      const canvas = await html2canvas(element, {
+      const rect = clone.getBoundingClientRect();
+      const canvas = await html2canvas(clone, {
         scale: 2,
         useCORS: true,
         logging: false,
@@ -29,7 +40,7 @@ export default function Resume() {
         windowWidth: rect.width,
         windowHeight: rect.height,
         scrollX: 0,
-        scrollY: -window.scrollY
+        scrollY: 0
       });
       
       const imgData = canvas.toDataURL('image/png');
@@ -50,8 +61,9 @@ export default function Resume() {
       pdf.addImage(imgData, 'PNG', imgX, imgY, imgWidth * ratio, imgHeight * ratio);
       pdf.save('Muhammad_Ahmed_Resume.pdf');
     } finally {
-      // Show profile picture again
-      if (profilePic) profilePic.style.display = 'block';
+      if (clone && clone.parentNode) {
+        clone.parentNode.removeChild(clone);
+      }
       setIsDownloading(false);
     }
   };
