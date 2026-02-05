@@ -230,18 +230,33 @@ function PhysicsBubbleContainer({ containerRef }) {
   const ballRefsRef = useRef([]);
   const [hoveredBubble, setHoveredBubble] = useState(null);
   const [ballRadius, setBallRadius] = useState(45); // Increased for better icon fit
+  const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
 
   useEffect(() => {
     if (!containerRef.current) return;
 
-    const width = containerRef.current.clientWidth;
-    const height = containerRef.current.clientHeight;
-    const minSide = Math.min(width, height);
-    const autoRadius = Math.floor(minSide / (Math.sqrt(MainSkills.length) * 1.8));
-    const radius = Math.min(45, Math.max(22, autoRadius));
-    setBallRadius((prev) => (prev === radius ? prev : radius));
+    const resizeObserver = new ResizeObserver((entries) => {
+      const entry = entries[0];
+      if (!entry) return;
+      const { width, height } = entry.contentRect;
+      setContainerSize({ width, height });
+    });
 
+    resizeObserver.observe(containerRef.current);
+    return () => resizeObserver.disconnect();
+  }, [containerRef]);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    const width = containerSize.width || containerRef.current.clientWidth;
+    const height = containerSize.height || containerRef.current.clientHeight;
     if (width === 0 || height === 0) return;
+
+    const minSide = Math.min(width, height);
+    const autoRadius = Math.floor(minSide / (Math.sqrt(MainSkills.length) * 2.2));
+    const radius = Math.min(45, Math.max(18, autoRadius));
+    setBallRadius((prev) => (prev === radius ? prev : radius));
 
     // Matter.js modules
     const { Engine, Render, World, Bodies, Mouse, MouseConstraint, Runner, Events, Body } = Matter;
@@ -310,9 +325,9 @@ function PhysicsBubbleContainer({ containerRef }) {
     // Create rock solid balls for main skills
     const balls = MainSkills.map((skill, index) => {
       // Safe spawn area with padding
-      const padding = radius + 20;
-      const safeWidth = width - padding * 2;
-      const safeHeight = height - padding * 2;
+      const padding = radius + 16;
+      const safeWidth = Math.max(1, width - padding * 2);
+      const safeHeight = Math.max(1, height - padding * 2);
       
       const x = Math.random() * safeWidth + padding;
       const y = Math.random() * safeHeight + padding;
@@ -490,7 +505,7 @@ function PhysicsBubbleContainer({ containerRef }) {
         render.canvas.parentNode.removeChild(render.canvas);
       }
     };
-  }, [containerRef]);
+  }, [containerRef, containerSize.width, containerSize.height]);
 
   return (
     <>
@@ -759,7 +774,7 @@ export default function Page() {
           {/* Left Side - Main Tech Stack with Matter.js Physics */}
           <div
             ref={techStackContainerRef}
-            className="order-1 rounded-3xl border border-white/10 bg-gradient-to-br from-slate-800/50 to-slate-900/80 backdrop-blur-xl p-4 sm:p-6 md:p-8 relative overflow-hidden h-[520px] sm:h-[580px] md:h-full"
+            className="order-1 rounded-3xl border border-white/10 bg-gradient-to-br from-slate-800/50 to-slate-900/80 backdrop-blur-xl p-4 sm:p-6 md:p-8 relative overflow-hidden h-[620px] sm:h-[700px] md:h-full"
           >
             <PhysicsBubbleContainer containerRef={techStackContainerRef} />
           </div>
