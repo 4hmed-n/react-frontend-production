@@ -18,11 +18,18 @@ export default function Resume() {
     if (profilePic) profilePic.style.display = 'none';
     
     try {
+      const rect = element.getBoundingClientRect();
       const canvas = await html2canvas(element, {
         scale: 2,
         useCORS: true,
         logging: false,
-        backgroundColor: '#ffffff'
+        backgroundColor: '#ffffff',
+        width: rect.width,
+        height: rect.height,
+        windowWidth: rect.width,
+        windowHeight: rect.height,
+        scrollX: 0,
+        scrollY: -window.scrollY
       });
       
       const imgData = canvas.toDataURL('image/png');
@@ -124,12 +131,12 @@ export default function Resume() {
   return (
     <div
       className={`min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 py-8 px-4 sm:px-6 resume-page ${
-        isDownloading ? 'py-0 px-0 sm:px-0 bg-white' : ''
+        isDownloading ? 'py-0 px-0 sm:px-0 bg-white resume-print' : ''
       }`}
     >
       {/* Resume Container */}
       <div className="mx-auto w-full bg-white shadow-2xl resume-container max-w-[900px]" ref={resumeRef} data-resume-root>
-        <div className="flex flex-col md:flex-row">
+        <div className="flex flex-col md:flex-row resume-layout">
           {/* Left Sidebar */}
           <div className="w-full md:w-80 bg-[#0f2230] text-white p-6 sm:p-8 border-r-4 border-cyan-400 resume-sidebar">
             {/* Profile */}
@@ -363,6 +370,18 @@ export default function Resume() {
           .resume-page { background: #ffffff !important; padding: 0 !important; }
           .resume-container { box-shadow: none !important; max-width: 210mm !important; margin: 0 auto !important; }
           .resume-sidebar { border-right: none !important; }
+        }
+        .resume-print {
+          background: #ffffff !important;
+        }
+        .resume-print .resume-container {
+          width: 900px !important;
+          max-width: 900px !important;
+          margin: 0 auto !important;
+          box-shadow: none !important;
+        }
+        .resume-print .resume-layout {
+          flex-direction: row !important;
         }
       `}</style>
     </div>
