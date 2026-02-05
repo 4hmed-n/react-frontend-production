@@ -129,28 +129,74 @@ const TechIcons = {
     <div className="text-cyan-400 font-bold text-2xl">SQL</div>
   ),
   'Data Science': () => (
-    <div className="text-purple-400 font-bold text-xl">DS</div>
+    <svg className="w-12 h-12" viewBox="0 0 48 48" fill="none">
+      <circle cx="24" cy="24" r="18" stroke="#a855f7" strokeWidth="2" />
+      <text x="24" y="28" textAnchor="middle" fontSize="12" fill="#c084fc" fontWeight="700">DS</text>
+    </svg>
   ),
   'Computer Vision': () => (
-    <div className="text-indigo-300 font-bold text-lg">CV</div>
+    <svg className="w-12 h-12" viewBox="0 0 48 48" fill="none">
+      <circle cx="24" cy="24" r="18" stroke="#6366f1" strokeWidth="2" />
+      <text x="24" y="28" textAnchor="middle" fontSize="12" fill="#a5b4fc" fontWeight="700">CV</text>
+    </svg>
   ),
   'NLP': () => (
-    <div className="text-emerald-300 font-bold text-lg">NLP</div>
+    <svg className="w-12 h-12" viewBox="0 0 48 48" fill="none">
+      <circle cx="24" cy="24" r="18" stroke="#10b981" strokeWidth="2" />
+      <text x="24" y="28" textAnchor="middle" fontSize="11" fill="#6ee7b7" fontWeight="700">NLP</text>
+    </svg>
   ),
   'Deep Learning': () => (
-    <div className="text-fuchsia-300 font-bold text-sm">DL</div>
+    <svg className="w-12 h-12" viewBox="0 0 48 48" fill="none">
+      <circle cx="24" cy="24" r="18" stroke="#d946ef" strokeWidth="2" />
+      <text x="24" y="28" textAnchor="middle" fontSize="11" fill="#f5a9f2" fontWeight="700">DL</text>
+    </svg>
   ),
   'AI & Machine Learning': () => (
-    <div className="text-pink-400 font-bold text-sm">AI/ML</div>
+    <svg className="w-12 h-12" viewBox="0 0 48 48" fill="none">
+      <circle cx="24" cy="24" r="18" stroke="#ec4899" strokeWidth="2" />
+      <text x="24" y="28" textAnchor="middle" fontSize="9" fill="#f9a8d4" fontWeight="700">AI/ML</text>
+    </svg>
   ),
   'DevOps': () => (
-    <div className="text-sky-300 font-bold text-sm">DevOps</div>
+    <svg className="w-12 h-12" viewBox="0 0 48 48" fill="none">
+      <circle cx="24" cy="24" r="18" stroke="#38bdf8" strokeWidth="2" />
+      <text x="24" y="28" textAnchor="middle" fontSize="9" fill="#7dd3fc" fontWeight="700">DEV</text>
+    </svg>
   ),
   'CSS3': () => (
-    <div className="text-blue-300 font-bold text-lg">CSS</div>
+    <svg className="w-12 h-12" viewBox="0 0 48 48" fill="none">
+      <circle cx="24" cy="24" r="18" stroke="#60a5fa" strokeWidth="2" />
+      <text x="24" y="28" textAnchor="middle" fontSize="11" fill="#93c5fd" fontWeight="700">CSS3</text>
+    </svg>
+  ),
+  'SQL': () => (
+    <svg className="w-12 h-12" viewBox="0 0 48 48" fill="none">
+      <circle cx="24" cy="24" r="18" stroke="#22c55e" strokeWidth="2" />
+      <text x="24" y="28" textAnchor="middle" fontSize="11" fill="#86efac" fontWeight="700">SQL</text>
+    </svg>
+  ),
+  'FastAPI': () => (
+    <svg className="w-12 h-12" viewBox="0 0 48 48" fill="none">
+      <circle cx="24" cy="24" r="18" stroke="#14b8a6" strokeWidth="2" />
+      <text x="24" y="28" textAnchor="middle" fontSize="9" fill="#5eead4" fontWeight="700">API</text>
+    </svg>
+  ),
+  'Firebase': () => (
+    <svg className="w-12 h-12" viewBox="0 0 24 24" fill="#FFCA28">
+      <path d="M3.89 15.672L6.255.461A.542.542 0 017.27.288l2.543 4.771zm16.794 3.692l-2.25-14.03a.54.54 0 00-.919-.295L3.316 19.365l7.856 4.427a1.621 1.621 0 001.588 0zM14.3 7.147l-1.82-3.482a.542.542 0 00-.96 0L3.53 17.984z"/>
+    </svg>
+  ),
+  'Postman': () => (
+    <svg className="w-12 h-12" viewBox="0 0 24 24" fill="#FF6C37">
+      <path d="M13.527.099C6.955-.744.942 3.9.099 10.473c-.843 6.572 3.8 12.584 10.373 13.428 6.573.843 12.587-3.801 13.428-10.374C24.744 6.955 20.101.943 13.527.099zm2.471 7.485a.855.855 0 00-.593.25l-4.453 4.453-.307-.307-.643-.643c4.389-4.376 5.18-4.418 5.996-3.753zm-4.863 4.861l4.44-4.44a.62.62 0 11.847.903l-4.699 4.125-.588-.588zm.33.694l-1.1.238a.06.06 0 01-.067-.032.06.06 0 01.01-.073l.645-.645.512.512zm-2.803-.459l1.172-1.172.879.878-1.979.426a.074.074 0 01-.085-.039.072.072 0 01.013-.093zm-3.646 6.058a.076.076 0 01-.069-.083.077.077 0 01.022-.046h.002l.946-.946 1.222 1.222-2.123-.147zm2.425-1.256a.228.228 0 000-.337l-1.135-1.138c-.093-.094-.102-.23-.02-.338l.717-.717 1.77 1.77-.332.76zM8.5 18.777l5.258-1.128a.558.558 0 00.347-.215l3.238-3.238c.26-.26.693-.26.953 0a.674.674 0 010 .952L13.238 20.2c-.094.094-.215.156-.347.173l-5.934.923a.613.613 0 01-.693-.465.613.613 0 01.236-.679z"/>
+    </svg>
   ),
   'n8n': () => (
-    <div className="text-orange-400 font-bold text-lg">n8n</div>
+    <svg className="w-12 h-12" viewBox="0 0 48 48" fill="none">
+      <circle cx="24" cy="24" r="18" stroke="#fb923c" strokeWidth="2" />
+      <text x="24" y="28" textAnchor="middle" fontSize="12" fill="#fdba74" fontWeight="700">n8n</text>
+    </svg>
   ),
   'tailwind css': () => (
     <svg className="w-12 h-12" viewBox="0 0 24 24" fill="#06B6D4">
@@ -190,6 +236,7 @@ const MainSkills = [
   'CSS3',
   'FastAPI',
   'SQL',
+  'MongoDB',
   'Firebase',
   'Postman',
   'n8n',
@@ -407,7 +454,7 @@ function PhysicsBubbleContainer({ containerRef }) {
         const dx = mouseX - body.position.x;
         const dy = mouseY - body.position.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
-        if (distance < ballRadius + 5) {
+        if (distance < ballRadius) {
           hovered = body.label;
           canvas.style.cursor = 'pointer';
         }
