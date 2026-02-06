@@ -423,7 +423,7 @@ export default function Resume() {
 .resume-print .resume-layout {
   flex-direction: row !important;
 }
-      `}</style>
+`}</style>
     </div>
   );
 }
