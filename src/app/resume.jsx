@@ -143,10 +143,9 @@ export default function Resume() {
       if (!resumeViewportRef.current || !resumeRef.current) return;
 
       const baseWidth = 850;
-      const availableWidth = resumeViewportRef.current.clientWidth;
-      const widthScale = availableWidth / baseWidth;
-      setResumeScale(widthScale);
-      setViewportHeight(`${resumeRef.current.scrollHeight * widthScale}px`);
+      const scale = Math.min(window.innerWidth / baseWidth, 1);
+      setResumeScale(scale);
+      setViewportHeight(`${resumeRef.current.scrollHeight * scale}px`);
     };
 
     updateScale();
@@ -171,7 +170,7 @@ export default function Resume() {
             className="mx-auto bg-white shadow-2xl resume-container w-[850px]"
             ref={resumeRef}
             data-resume-root
-            style={!isDownloading ? { transform: `scale(${resumeScale})`, transformOrigin: 'top center' } : undefined}
+            style={!isDownloading ? { transform: `scale(${resumeScale})`, transformOrigin: 'top left' } : undefined}
           >
             <div className="flex flex-row resume-layout">
           {/* Left Sidebar */}
