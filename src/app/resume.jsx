@@ -6,8 +6,8 @@ import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
 export default function Resume() {
+  const containerRef = useRef(null);
   const resumeRef = useRef();
-  const resumeViewportRef = useRef(null);
   const [isDownloading, setIsDownloading] = useState(false);
   const [resumeScale, setResumeScale] = useState(1);
   const [viewportHeight, setViewportHeight] = useState('auto');
@@ -140,10 +140,11 @@ export default function Resume() {
     if (isDownloading) return;
 
     const updateScale = () => {
-      if (!resumeViewportRef.current || !resumeRef.current) return;
+      if (!containerRef.current || !resumeRef.current) return;
 
+      const parentWidth = containerRef.current.offsetWidth;
       const baseWidth = 850;
-      const scale = Math.min((window.innerWidth - 40) / baseWidth, 1);
+      const scale = Math.min((parentWidth - 20) / baseWidth, 1);
       setResumeScale(scale);
       setViewportHeight(`${resumeRef.current.scrollHeight * scale}px`);
     };
@@ -155,23 +156,31 @@ export default function Resume() {
 
   return (
     <div
-      className={`min-h-screen bg-transparent py-8 px-4 sm:px-6 resume-page ${
+      ref={containerRef}
+      className={`resume-section-wrapper min-h-screen bg-transparent resume-page ${
         isDownloading ? 'py-0 px-0 sm:px-0 bg-white resume-print' : ''
       }`}
+      style={{
+        width: '100%',
+        minHeight: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        overflowX: 'hidden',
+        padding: '40px 0'
+      }}
     >
-      {/* Resume Container */}
+      <div
+        className="resume-viewport"
+        style={!isDownloading ? { height: viewportHeight, overflow: 'hidden' } : undefined}
+      >
         <div
-          ref={resumeViewportRef}
-          className="resume-viewport w-full overflow-hidden pb-6"
-          style={!isDownloading ? { height: viewportHeight } : undefined}
+          id="resume-scaler"
+          className="mx-auto bg-white shadow-2xl resume-container w-[850px]"
+          ref={resumeRef}
+          data-resume-root
+          style={!isDownloading ? { transform: `scale(${resumeScale})`, transformOrigin: 'top center' } : undefined}
         >
-          <div
-            id="resume-scaler"
-            className="mx-auto bg-white shadow-2xl resume-container w-[850px]"
-            ref={resumeRef}
-            data-resume-root
-            style={!isDownloading ? { transform: `scale(${resumeScale})`, transformOrigin: 'top center' } : undefined}
-          >
             <div className="flex flex-row resume-layout">
           {/* Left Sidebar */}
           <div className="flex-none w-[300px] bg-[#0f2230] text-white p-6 sm:p-8 border-r-4 border-cyan-400 resume-sidebar">
