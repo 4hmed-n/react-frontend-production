@@ -404,25 +404,25 @@ export default function Resume() {
       </div>
 
       <style>{`
-        @media print {
-          body { background: #ffffff !important; }
-          .resume-page { background: #ffffff !important; padding: 0 !important; }
-          .resume-container { box-shadow: none !important; max-width: 210mm !important; margin: 0 auto !important; }
-          .resume-sidebar { border-right: none !important; }
-        }
-        .resume-print {
-          background: #ffffff !important;
-        }
-          .resume-print .resume-container {
-            width: 980px !important;
-            max-width: 980px !important;
-          margin: 0 auto !important;
-          box-shadow: none !important;
-            background: #ffffff !important;
-        }
-        .resume-print .resume-layout {
-          flex-direction: row !important;
-        }
+@media print {
+  body { background: #ffffff !important; }
+  .resume-page { background: #ffffff !important; padding: 0 !important; }
+  .resume-container { box-shadow: none !important; max-width: 210mm !important; margin: 0 auto !important; }
+  .resume-sidebar { border-right: none !important; }
+}
+.resume-print {
+  background: #ffffff !important;
+}
+.resume-print .resume-container {
+  width: 980px !important;
+  max-width: 980px !important;
+  margin: 0 auto !important;
+  box-shadow: none !important;
+  background: #ffffff !important;
+}
+.resume-print .resume-layout {
+  flex-direction: row !important;
+}
       `}</style>
     </div>
   );
