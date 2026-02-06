@@ -143,7 +143,7 @@ export default function Resume() {
       if (!resumeViewportRef.current || !resumeRef.current) return;
 
       const baseWidth = 850;
-      const scale = Math.min(window.innerWidth / baseWidth, 1);
+      const scale = Math.min((window.innerWidth - 40) / baseWidth, 1);
       setResumeScale(scale);
       setViewportHeight(`${resumeRef.current.scrollHeight * scale}px`);
     };
