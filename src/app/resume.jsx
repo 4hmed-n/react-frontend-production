@@ -162,7 +162,7 @@ export default function Resume() {
       {/* Resume Container */}
         <div
           ref={resumeViewportRef}
-          className="resume-viewport w-[90vw] max-w-[850px] mx-auto overflow-hidden pb-6"
+          className="resume-viewport w-full overflow-hidden pb-6"
           style={!isDownloading ? { height: viewportHeight } : undefined}
         >
           <div
