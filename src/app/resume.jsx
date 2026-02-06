@@ -10,6 +10,7 @@ export default function Resume() {
   const resumeViewportRef = useRef(null);
   const [isDownloading, setIsDownloading] = useState(false);
   const [resumeScale, setResumeScale] = useState(1);
+  const [viewportHeight, setViewportHeight] = useState('auto');
 
   const handleDownloadPDF = async () => {
     setIsDownloading(true);
@@ -143,8 +144,9 @@ export default function Resume() {
 
       const baseWidth = 850;
       const availableWidth = resumeViewportRef.current.clientWidth;
-      const widthScale = Math.min(1, availableWidth / baseWidth);
+      const widthScale = availableWidth / baseWidth;
       setResumeScale(widthScale);
+      setViewportHeight(`${resumeRef.current.scrollHeight * widthScale}px`);
     };
 
     updateScale();
@@ -159,23 +161,24 @@ export default function Resume() {
       }`}
     >
       {/* Resume Container */}
-        <div className="resume-scroll w-[90vw] max-w-[850px] mx-auto overflow-x-hidden pb-6">
+        <div
+          ref={resumeViewportRef}
+          className="resume-viewport w-[90vw] max-w-[850px] mx-auto overflow-hidden pb-6"
+          style={!isDownloading ? { height: viewportHeight } : undefined}
+        >
           <div
-            ref={resumeViewportRef}
-            className="flex justify-center w-full items-start"
+            id="resume-scaler"
+            className="mx-auto bg-white shadow-2xl resume-container w-[850px]"
+            ref={resumeRef}
+            data-resume-root
+            style={!isDownloading ? { transform: `scale(${resumeScale})`, transformOrigin: 'top center' } : undefined}
           >
-            <div
-              className="mx-auto bg-white shadow-2xl resume-container w-full"
-              ref={resumeRef}
-              data-resume-root
-              style={!isDownloading ? { transform: `scale(${resumeScale})`, transformOrigin: 'top center' } : undefined}
-            >
             <div className="flex flex-row resume-layout">
           {/* Left Sidebar */}
-          <div className="flex-none w-[30%] bg-[#0f2230] text-white border-r-4 border-cyan-400 resume-sidebar">
+          <div className="flex-none w-[300px] bg-[#0f2230] text-white p-6 sm:p-8 border-r-4 border-cyan-400 resume-sidebar">
             {/* Profile */}
             <div className="mb-8" data-hide-in-pdf>
-              <div className="resume-avatar rounded-full overflow-hidden shadow-lg border-4 border-cyan-300">
+              <div className="w-24 h-24 rounded-full overflow-hidden shadow-lg border-4 border-cyan-300">
                 <img 
                   src="/images/profile.jpg" 
                   alt="Muhammad Ahmed" 
@@ -258,7 +261,7 @@ export default function Resume() {
           </div>
 
           {/* Right Content */}
-          <div className="flex-none w-[70%] min-w-0 resume-main">
+          <div className="flex-1 min-w-0 p-6 sm:p-8 md:p-10">
             {/* Header */}
             <div className="mb-8 border-b-4 border-slate-800 pb-6">
               <div className="flex items-start gap-4 md:block">
@@ -419,38 +422,6 @@ export default function Resume() {
         }
         .resume-print .resume-layout {
           flex-direction: row !important;
-        }
-        .resume-container {
-          font-size: clamp(10px, 1.2vw, 16px);
-          overflow: hidden;
-        }
-        .resume-layout {
-          flex-wrap: nowrap !important;
-          overflow: hidden;
-        }
-        .resume-sidebar,
-        .resume-main {
-          padding: 1.6em !important;
-        }
-        .resume-container h1 {
-          font-size: clamp(20px, 2.6vw, 36px) !important;
-        }
-        .resume-container h2 {
-          font-size: clamp(14px, 1.9vw, 20px) !important;
-        }
-        .resume-container h3 {
-          font-size: clamp(12px, 1.5vw, 16px) !important;
-        }
-        .resume-container p,
-        .resume-container span,
-        .resume-container li,
-        .resume-container a {
-          font-size: clamp(10px, 1.2vw, 16px) !important;
-        }
-        .resume-avatar {
-          width: 28%;
-          max-width: 96px;
-          aspect-ratio: 1 / 1;
         }
       `}</style>
     </div>
