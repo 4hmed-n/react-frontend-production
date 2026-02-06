@@ -170,7 +170,7 @@ export default function Resume() {
             className="mx-auto bg-white shadow-2xl resume-container w-[850px]"
             ref={resumeRef}
             data-resume-root
-            style={!isDownloading ? { transform: `scale(${resumeScale})`, transformOrigin: 'top left' } : undefined}
+            style={!isDownloading ? { transform: `scale(${resumeScale})`, transformOrigin: 'top center' } : undefined}
           >
             <div className="flex flex-row resume-layout">
           {/* Left Sidebar */}
