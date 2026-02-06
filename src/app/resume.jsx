@@ -410,12 +410,21 @@ export default function Resume() {
         </div>
       </div>
 
-      <style>{`
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
 @media print {
   body { background: #ffffff !important; }
   .resume-page { background: #ffffff !important; padding: 0 !important; }
-  .resume-container { box-shadow: none !important; max-width: 210mm !important; margin: 0 auto !important; }
+  .resume-container {
+    box-shadow: none !important;
+    width: 210mm !important;
+    max-width: 210mm !important;
+    height: 297mm !important;
+    margin: 0 auto !important;
+  }
   .resume-sidebar { border-right: none !important; }
+  .resume-container .md\\:hidden { display: none !important; }
 }
 .resume-print {
   background: #ffffff !important;
@@ -430,7 +439,9 @@ export default function Resume() {
 .resume-print .resume-layout {
   flex-direction: row !important;
 }
-`}</style>
+`
+        }}
+      />
     </div>
   );
 }
