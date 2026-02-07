@@ -234,21 +234,6 @@ function PhysicsBubbleContainer({ containerRef }) {
 
   useEffect(() => {
     if (!containerRef.current) return;
-
-    const resizeObserver = new ResizeObserver((entries) => {
-      const entry = entries[0];
-      if (!entry) return;
-      const { width, height } = entry.contentRect;
-      setContainerSize({ width, height });
-    });
-
-    resizeObserver.observe(containerRef.current);
-    return () => resizeObserver.disconnect();
-  }, [containerRef]);
-
-  useEffect(() => {
-    if (!containerRef.current) return;
-
     const width = containerSize.width || containerRef.current.clientWidth;
     const height = containerSize.height || containerRef.current.clientHeight;
     if (width === 0 || height === 0) return;
@@ -258,10 +243,8 @@ function PhysicsBubbleContainer({ containerRef }) {
     const radius = Math.min(45, Math.max(18, autoRadius));
     setBallRadius((prev) => (prev === radius ? prev : radius));
 
-    // Matter.js modules
     const { Engine, Render, World, Bodies, Mouse, MouseConstraint, Runner, Events, Body } = Matter;
 
-    // Create engine with ZERO gravity - billiard table physics
     const engine = Engine.create();
     engine.world.gravity.y = 0;
     engine.world.gravity.x = 0;
@@ -499,15 +482,12 @@ function PhysicsBubbleContainer({ containerRef }) {
       cancelAnimationFrame(animationFrameId);
       World.clear(engine.world);
       Engine.clear(engine);
-      canvas.removeEventListener('mousemove', handleMouseMove);
-      canvas.removeEventListener('mouseleave', handleMouseLeave);
       if (render.canvas && render.canvas.parentNode) {
         render.canvas.parentNode.removeChild(render.canvas);
       }
     };
   }, [containerRef, containerSize.width, containerSize.height]);
 
-  const isCompact = containerSize.width > 0 && containerSize.width < 768;
   const iconScale = ballRadius / 45;
 
   return (
@@ -516,11 +496,14 @@ function PhysicsBubbleContainer({ containerRef }) {
         <div
           key={skill}
           ref={el => ballRefsRef.current[index] = el}
-          className="absolute pointer-events-none"
+          className="absolute pointer-events-auto"
+          onMouseEnter={() => setHoveredBubble(skill)}
+          onMouseLeave={() => setHoveredBubble(null)}
           style={{
             width: `${ballRadius * 2}px`,
             height: `${ballRadius * 2}px`,
-            willChange: 'transform'
+            willChange: 'transform',
+            pointerEvents: 'all'
           }}
         >
           <div 
@@ -542,13 +525,15 @@ function PhysicsBubbleContainer({ containerRef }) {
               {TechIcons[skill]()}
             </div>
           </div>
-          {(hoveredBubble === skill || isCompact) && (
-            <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 whitespace-nowrap z-50">
-              <span className="text-xs font-medium text-blue-300 bg-slate-900/90 px-3 py-1 rounded-full border border-blue-400/30 backdrop-blur-sm">
-                {skill}
-              </span>
-            </div>
-          )}
+          <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 whitespace-nowrap z-50">
+            <span
+              className={`text-xs font-medium text-blue-300 bg-slate-900/90 px-3 py-1 rounded-full border border-blue-400/30 backdrop-blur-sm transition-opacity duration-200 ${
+                hoveredBubble === skill ? 'opacity-100' : 'opacity-0'
+              }`}
+            >
+              {skill}
+            </span>
+          </div>
         </div>
       ))}
     </>
