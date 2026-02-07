@@ -2,56 +2,98 @@
 import { useState, useEffect, useRef } from 'react';
 import Matter from 'matter-js';
 
+const LOADING_QUOTES = [
+  "Building something extraordinary.",
+  "Code is poetry written in logic.",
+  "Turning caffeine into applications.",
+  "Engineering the future, one commit at a time.",
+  "Where data meets design.",
+  "Architecting intelligent solutions.",
+  "Pixels, parameters, and persistence.",
+  "Loading brilliance... please wait.",
+  "From neurons to neural networks.",
+  "Crafting experiences that matter.",
+  "Innovation starts with curiosity.",
+  "Deploying imagination to production.",
+  "Elegance in every function call.",
+  "Bridging ideas and implementation.",
+];
+
 function LoadingScreen() {
   const [progress, setProgress] = useState(0);
+  const [quote] = useState(() => LOADING_QUOTES[Math.floor(Math.random() * LOADING_QUOTES.length)]);
+  const [quoteVisible, setQuoteVisible] = useState(false);
 
   useEffect(() => {
     const start = Date.now();
-    const duration = 2400;
+    const duration = 4000;
     const tick = () => {
       const elapsed = Date.now() - start;
       const pct = Math.min(100, (elapsed / duration) * 100);
-      const eased = 100 * (1 - Math.pow(1 - pct / 100, 3));
+      // Two-phase easing: fast start, slow middle, fast finish
+      let eased;
+      if (pct < 50) {
+        eased = 2 * Math.pow(pct / 100, 2) * 100;
+      } else {
+        eased = 100 - 2 * Math.pow(1 - pct / 100, 2) * 100;
+      }
       setProgress(eased);
       if (pct < 100) requestAnimationFrame(tick);
     };
     requestAnimationFrame(tick);
+    // Fade in quote after a short delay
+    const quoteTimer = setTimeout(() => setQuoteVisible(true), 400);
+    return () => clearTimeout(quoteTimer);
   }, []);
+
+  const segments = 30;
+  const filledSegments = Math.floor((progress / 100) * segments);
 
   return (
     <>
       <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center select-none" style={{ background: '#050510' }}>
         {/* Ambient glow */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full opacity-[0.07]" style={{ background: 'radial-gradient(circle, rgba(56,189,248,0.5), transparent 70%)' }} />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full" style={{ background: 'radial-gradient(circle, rgba(56,189,248,0.06), transparent 70%)' }} />
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[800px] h-[200px] rounded-full" style={{ background: 'radial-gradient(ellipse, rgba(139,92,246,0.04), transparent 70%)' }} />
 
         {/* Name */}
-        <div className="mb-10">
-          <span className="text-sm sm:text-base uppercase tracking-[0.4em] text-white/20 font-light">Muhammad Ahmed</span>
+        <div className="mb-12">
+          <span className="text-sm sm:text-base uppercase tracking-[0.5em] text-white/15 font-extralight">Muhammad Ahmed</span>
         </div>
 
-        {/* Loading bar container */}
-        <div className="relative w-56 sm:w-72">
-          {/* Bar track */}
-          <div className="h-[3px] w-full bg-white/[0.06] rounded-full overflow-hidden">
-            {/* Bar fill */}
-            <div
-              className="h-full rounded-full relative"
-              style={{
-                width: `${progress}%`,
-                background: 'linear-gradient(90deg, rgba(56,189,248,0.3), rgba(96,165,250,0.7), rgba(139,92,246,0.5))',
-                boxShadow: '0 0 16px rgba(56,189,248,0.25), 0 0 4px rgba(96,165,250,0.4)',
-                transition: 'none',
-              }}
-            >
-              {/* Leading dot glow */}
-              <div className="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full" style={{ background: 'rgba(147,197,253,0.9)', boxShadow: '0 0 8px rgba(147,197,253,0.6), 0 0 20px rgba(56,189,248,0.3)' }} />
-            </div>
+        {/* Segmented loading bar */}
+        <div className="relative w-60 sm:w-80">
+          <div className="flex gap-[2px]">
+            {Array.from({ length: segments }).map((_, i) => (
+              <div
+                key={i}
+                className="flex-1 h-[3px] rounded-[1px] transition-all"
+                style={{
+                  background: i < filledSegments
+                    ? `linear-gradient(90deg, rgba(56,189,248,${0.3 + (i / segments) * 0.5}), rgba(139,92,246,${0.2 + (i / segments) * 0.4}))`
+                    : 'rgba(255,255,255,0.04)',
+                  boxShadow: i < filledSegments ? '0 0 6px rgba(56,189,248,0.15)' : 'none',
+                  transitionDuration: '150ms',
+                }}
+              />
+            ))}
           </div>
 
-          {/* Percentage below */}
-          <div className="text-center mt-5">
-            <span className="text-[10px] uppercase tracking-[0.25em] text-white/15 font-mono">{Math.round(progress)}%</span>
+          {/* Percentage */}
+          <div className="flex justify-between mt-4">
+            <span className="text-[10px] uppercase tracking-[0.2em] text-white/10 font-mono">loading</span>
+            <span className="text-[10px] uppercase tracking-[0.2em] text-white/20 font-mono">{Math.round(progress)}%</span>
           </div>
+        </div>
+
+        {/* Quote */}
+        <div className="mt-14 max-w-xs sm:max-w-sm text-center">
+          <p
+            className="text-[11px] sm:text-xs text-white/20 font-light italic leading-relaxed transition-all duration-700"
+            style={{ opacity: quoteVisible ? 1 : 0, transform: quoteVisible ? 'translateY(0)' : 'translateY(8px)' }}
+          >
+            "{quote}"
+          </p>
         </div>
       </div>
     </>
@@ -741,7 +783,7 @@ export default function Page() {
   const pulseTimeoutRef = useRef(null);
 
   useEffect(() => {
-    const minDisplayTime = 2400; // minimum time to show the loading bar
+    const minDisplayTime = 4000; // minimum time to show the loading bar
     const startTime = Date.now();
 
     // Preload the PFP image
@@ -769,8 +811,8 @@ export default function Page() {
       tryDismiss();
     }, minDisplayTime);
 
-    // Hard fallback: dismiss after 5s no matter what
-    const fallback = setTimeout(() => setIsLoading(false), 5000);
+    // Hard fallback: dismiss after 7s no matter what
+    const fallback = setTimeout(() => setIsLoading(false), 7000);
 
     return () => {
       clearTimeout(minTimer);
