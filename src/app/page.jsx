@@ -88,7 +88,7 @@ function LoadingScreen() {
 
         {/* Name */}
         <div className="mb-12">
-          <span className="text-sm sm:text-base uppercase tracking-[0.5em] text-white/15 font-extralight">Muhammad Ahmed</span>
+          <span className="text-sm sm:text-base uppercase tracking-[0.5em] text-white font-extralight">Muhammad Ahmed</span>
         </div>
 
         {/* Segmented loading bar */}
@@ -111,15 +111,15 @@ function LoadingScreen() {
 
           {/* Percentage */}
           <div className="flex justify-between mt-4">
-            <span className="text-[10px] uppercase tracking-[0.2em] text-white/10 font-mono">loading</span>
-            <span className="text-[10px] uppercase tracking-[0.2em] text-white/20 font-mono">{Math.round(progress)}%</span>
+            <span className="text-[10px] uppercase tracking-[0.2em] text-white font-mono">loading</span>
+            <span className="text-[10px] uppercase tracking-[0.2em] text-white font-mono">{Math.round(progress)}%</span>
           </div>
         </div>
 
         {/* Quote */}
         <div className="mt-14 max-w-xs sm:max-w-sm text-center">
           <p
-            className="text-[11px] sm:text-xs text-white/20 font-light italic leading-relaxed transition-all duration-700"
+            className="text-[11px] sm:text-xs text-white font-light italic leading-relaxed transition-all duration-700"
             style={{ opacity: quoteVisible ? 1 : 0, transform: quoteVisible ? 'translateY(0)' : 'translateY(8px)' }}
           >
             "{quote}"
