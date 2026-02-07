@@ -810,6 +810,7 @@ export default function Page() {
   const [currentSection, setCurrentSection] = useState('home');
   const currentSectionRef = useRef('home');
   const techStackContainerRef = useRef(null);
+  const vortexTimeoutRef = useRef(null);
 
   useEffect(() => {
     const minDisplayTime = 6000; // minimum time to show the loading bar
@@ -915,6 +916,16 @@ export default function Page() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const triggerVortex = () => {
+    setIsInteracting(true);
+    if (vortexTimeoutRef.current) {
+      clearTimeout(vortexTimeoutRef.current);
+    }
+    vortexTimeoutRef.current = setTimeout(() => {
+      setIsInteracting(false);
+    }, 500);
+  };
+
   const mainPortfolio = (
     <div className="min-h-screen w-full">
       <section id="home" className="mx-auto max-w-7xl px-6 md:px-20 pt-28 md:pt-32 pb-20 min-h-screen flex items-center">
@@ -966,11 +977,8 @@ export default function Page() {
               <div 
                 onMouseEnter={() => setPfpHovered(true)}
                 onMouseLeave={() => setPfpHovered(false)}
-                onMouseDown={() => {
-                  setIsInteracting(true);
-                  setTimeout(() => setIsInteracting(false), 300);
-                }}
-                className={`relative w-52 h-52 md:w-64 md:h-64 rounded-full overflow-hidden border border-white/10 bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-xl flex items-center justify-center transition-all duration-300 ${pfpHovered ? 'border-blue-400/50 shadow-lg shadow-blue-500/20' : ''} ${!isLoading ? 'pfp-float' : ''} ${isInteracting ? 'pfp-pulse' : ''}`}
+                onMouseDown={triggerVortex}
+                className={`relative w-52 h-52 md:w-64 md:h-64 rounded-full overflow-hidden border border-white/10 bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-xl flex items-center justify-center transition-all duration-300 ${pfpHovered ? 'border-blue-400/50 shadow-lg shadow-blue-500/20' : ''} ${!isLoading && !isInteracting ? 'pfp-float' : ''} ${isInteracting ? 'pfp-vortex' : ''}`}
               >
                 <div className={`absolute inset-0 rounded-full whirlpool-effect transition-opacity duration-500 ${pfpHovered ? 'opacity-100' : 'opacity-70'}`} />
                 <img 
@@ -1404,6 +1412,31 @@ export default function Page() {
           </svg>
         </button>
       )}
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
+.pfp-float {
+  animation: pfp-float 6s ease-in-out infinite;
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+.pfp-vortex {
+  animation: pfp-vortex 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  backface-visibility: hidden;
+}
+@keyframes pfp-float {
+  0% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, -10px, 0); }
+  100% { transform: translate3d(0, 0, 0); }
+}
+@keyframes pfp-vortex {
+  0% { transform: rotate(0deg) scale(1); }
+  100% { transform: rotate(720deg) scale(0); }
+}
+`
+        }}
+      />
     </div>
   );
 
