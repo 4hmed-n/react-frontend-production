@@ -88,7 +88,7 @@ function LoadingScreen() {
 
         {/* Name */}
         <div className="mb-12">
-          <span className="text-sm sm:text-base uppercase tracking-[0.5em] text-white font-extralight">Muhammad Ahmed</span>
+          <span className="text-sm sm:text-base uppercase tracking-widest text-white font-mono">Forgetting Previous Iterations</span>
         </div>
 
         {/* Segmented loading bar */}
