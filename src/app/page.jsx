@@ -684,35 +684,18 @@ function PhysicsBubbleContainer({ containerRef, isLoading }) {
         <div
           key={skill}
           ref={el => ballRefsRef.current[index] = el}
-          className="absolute pointer-events-auto"
-          onMouseEnter={() => setHoveredBubble(skill)}
-          onMouseLeave={() => {
-            if (!isDragging) {
-              setHoveredBubble(null);
-            }
-          }}
-          onPointerDown={() => {
-            setIsDragging(true);
-            setHoveredBubble(skill);
-          }}
-          onPointerUp={() => {
-            setIsDragging(false);
-            setHoveredBubble(null);
-          }}
-          onPointerCancel={() => {
-            setIsDragging(false);
-            setHoveredBubble(null);
-          }}
+          className="absolute pointer-events-none select-none"
           style={{
             width: `${ballRadius * 2}px`,
             height: `${ballRadius * 2}px`,
             willChange: 'transform',
-            pointerEvents: 'all',
-            zIndex: hoveredBubble === skill ? 9999 : 1
+            zIndex: hoveredBubble === skill ? 9999 : 1,
+            userSelect: 'none',
+            WebkitUserSelect: 'none'
           }}
         >
           <div 
-            className={`w-full h-full rounded-full flex items-center justify-center transition-all duration-150 ${
+            className={`w-full h-full rounded-full flex items-center justify-center transition-all duration-150 pointer-events-none ${
               hoveredBubble === skill 
                 ? 'shadow-2xl shadow-blue-500/60 scale-110' 
                 : 'shadow-lg shadow-blue-500/30'
@@ -720,8 +703,7 @@ function PhysicsBubbleContainer({ containerRef, isLoading }) {
             style={{
               background: 'radial-gradient(circle at 30% 30%, rgba(96, 165, 250, 0.3), rgba(59, 130, 246, 0.1))',
               border: hoveredBubble === skill ? '2px solid rgba(96, 165, 250, 0.8)' : '2px solid rgba(96, 165, 250, 0.4)',
-              backdropFilter: 'blur(10px)',
-              pointerEvents: 'all'
+              backdropFilter: 'blur(10px)'
             }}
           >
             <div
