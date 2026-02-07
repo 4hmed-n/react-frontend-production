@@ -144,9 +144,10 @@ export default function Layout({ children }) {
     <div className="relative min-h-screen w-full bg-[#050510] text-white">
       <ParticleBackground />
       <div className="pointer-events-none fixed inset-0 bg-radial-gradient-fade" style={{ zIndex: 2 }} />
-      {/* Left side social icons (desktop) */}
+      <style dangerouslySetInnerHTML={{ __html: `body.app-loading { --ui-opacity: 0; }` }} />
+      {/* Left side social icons (desktop) - hidden during loading */}
       {!isResumePage && (
-        <div className="hidden md:flex fixed left-6 top-1/2 -translate-y-1/2 z-50 flex-col gap-6">
+        <div className="hidden md:flex fixed left-6 top-1/2 -translate-y-1/2 z-50 flex-col gap-6 transition-opacity duration-500" style={{ opacity: 'var(--ui-opacity, 1)' }}>
           <SidebarIcon
             href="https://github.com/4hmed-n"
             label="GitHub"
@@ -186,7 +187,7 @@ export default function Layout({ children }) {
         </div>
       )}
 
-      <nav className="sticky top-4 left-0 right-0 mx-auto z-50 transition-all duration-300" style={{ zIndex: 100 }}>
+      <nav className="sticky top-4 left-0 right-0 mx-auto z-50 transition-all duration-500" style={{ zIndex: 100, opacity: 'var(--ui-opacity, 1)' }}>
         {isResumePage ? (
           <div data-header-shell className={`mx-auto w-full max-w-[920px] ${isScrolled 
               ? 'bg-slate-900/50 backdrop-blur-xl border border-white/15 shadow-2xl shadow-black/40' 

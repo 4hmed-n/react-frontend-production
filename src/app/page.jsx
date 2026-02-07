@@ -11,7 +11,6 @@ function LoadingScreen() {
     const tick = () => {
       const elapsed = Date.now() - start;
       const pct = Math.min(100, (elapsed / duration) * 100);
-      // Ease-out curve for natural feel
       const eased = 100 * (1 - Math.pow(1 - pct / 100, 3));
       setProgress(eased);
       if (pct < 100) requestAnimationFrame(tick);
@@ -21,28 +20,37 @@ function LoadingScreen() {
 
   return (
     <>
-      <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center" style={{ background: '#050510' }}>
-        {/* Subtle top glow */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] rounded-full opacity-20" style={{ background: 'radial-gradient(ellipse, rgba(56,189,248,0.15), transparent 70%)' }} />
-        
+      <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center select-none" style={{ background: '#050510' }}>
+        {/* Ambient glow */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full opacity-[0.07]" style={{ background: 'radial-gradient(circle, rgba(56,189,248,0.5), transparent 70%)' }} />
+
+        {/* Name */}
+        <div className="mb-10">
+          <span className="text-sm sm:text-base uppercase tracking-[0.4em] text-white/20 font-light">Muhammad Ahmed</span>
+        </div>
+
         {/* Loading bar container */}
-        <div className="relative w-64 sm:w-80">
-          {/* Percentage */}
-          <div className="text-center mb-6">
-            <span className="text-xs uppercase tracking-[0.3em] text-gray-500 font-medium">{Math.round(progress)}%</span>
-          </div>
-          
+        <div className="relative w-56 sm:w-72">
           {/* Bar track */}
-          <div className="h-[2px] w-full bg-white/[0.06] rounded-full overflow-hidden">
+          <div className="h-[3px] w-full bg-white/[0.06] rounded-full overflow-hidden">
             {/* Bar fill */}
             <div
-              className="h-full rounded-full transition-none"
+              className="h-full rounded-full relative"
               style={{
                 width: `${progress}%`,
-                background: 'linear-gradient(90deg, rgba(56,189,248,0.4), rgba(96,165,250,0.8))',
-                boxShadow: '0 0 12px rgba(56,189,248,0.3)',
+                background: 'linear-gradient(90deg, rgba(56,189,248,0.3), rgba(96,165,250,0.7), rgba(139,92,246,0.5))',
+                boxShadow: '0 0 16px rgba(56,189,248,0.25), 0 0 4px rgba(96,165,250,0.4)',
+                transition: 'none',
               }}
-            />
+            >
+              {/* Leading dot glow */}
+              <div className="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full" style={{ background: 'rgba(147,197,253,0.9)', boxShadow: '0 0 8px rgba(147,197,253,0.6), 0 0 20px rgba(56,189,248,0.3)' }} />
+            </div>
+          </div>
+
+          {/* Percentage below */}
+          <div className="text-center mt-5">
+            <span className="text-[10px] uppercase tracking-[0.25em] text-white/15 font-mono">{Math.round(progress)}%</span>
           </div>
         </div>
       </div>
@@ -773,11 +781,14 @@ export default function Page() {
   useEffect(() => {
     if (isLoading) {
       document.body.style.overflow = 'hidden';
+      document.body.classList.add('app-loading');
     } else {
       document.body.style.overflow = '';
+      document.body.classList.remove('app-loading');
     }
     return () => {
       document.body.style.overflow = '';
+      document.body.classList.remove('app-loading');
     };
   }, [isLoading]);
 
