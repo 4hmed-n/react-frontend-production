@@ -924,13 +924,13 @@ export default function Page() {
     }
     vortexTimeoutRef.current = setTimeout(() => {
       setIsInteracting(false);
-    }, 800);
+    }, 1300);
   };
 
   // Clear intro animation after it finishes
   useEffect(() => {
     if (!isLoading && isPfpIntro) {
-      const t = setTimeout(() => setIsPfpIntro(false), 1500);
+      const t = setTimeout(() => setIsPfpIntro(false), 2000);
       return () => clearTimeout(t);
     }
   }, [isLoading, isPfpIntro]);
@@ -987,9 +987,11 @@ export default function Page() {
                 onMouseEnter={() => setPfpHovered(true)}
                 onMouseLeave={() => setPfpHovered(false)}
                 onMouseDown={triggerVortex}
-                className={`relative w-52 h-52 md:w-64 md:h-64 rounded-full overflow-hidden border border-white/10 bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-xl flex items-center justify-center transition-all duration-300 ${pfpHovered ? 'border-blue-400/50 shadow-lg shadow-blue-500/20' : ''} ${!isLoading && !isInteracting && !isPfpIntro ? 'pfp-float' : ''} ${isInteracting ? 'pfp-vortex' : ''} ${isPfpIntro && !isLoading ? 'pfp-intro' : ''}`}
+                className={`relative w-52 h-52 md:w-64 md:h-64 rounded-full overflow-hidden border border-white/10 bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-xl flex items-center justify-center transition-all duration-300 ${pfpHovered ? 'border-blue-400/50 shadow-lg shadow-blue-500/20' : ''} ${!isLoading && !isInteracting && !isPfpIntro ? 'pfp-float' : ''} ${isInteracting ? 'pfp-kamui-out' : ''} ${isPfpIntro && !isLoading ? 'pfp-kamui-in' : ''}`}
               >
                 <div className={`absolute inset-0 rounded-full whirlpool-effect transition-opacity duration-500 ${pfpHovered ? 'opacity-100' : 'opacity-70'}`} />
+                {/* Kamui spiral overlay */}
+                <div className={`absolute inset-0 rounded-full kamui-spiral pointer-events-none ${isInteracting || (isPfpIntro && !isLoading) ? 'opacity-100' : 'opacity-0'}`} />
                 <img 
                   src="/images/profile.jpg" 
                   alt="Muhammad Ahmed" 
@@ -1430,27 +1432,96 @@ export default function Page() {
   transform: translateZ(0);
   backface-visibility: hidden;
 }
-.pfp-vortex {
-  animation: pfp-vortex 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+/* Kamui suction - click to teleport out */
+.pfp-kamui-out {
+  animation: kamui-out 1.2s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
   backface-visibility: hidden;
 }
-.pfp-intro {
-  animation: pfp-intro 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+/* Reverse Kamui - materialize in */
+.pfp-kamui-in {
+  animation: kamui-in 1.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   backface-visibility: hidden;
+}
+/* Spiral overlay */
+.kamui-spiral {
+  background: conic-gradient(from 0deg, transparent 0deg, rgba(99,102,241,0.15) 30deg, transparent 60deg, rgba(147,51,234,0.1) 90deg, transparent 120deg, rgba(99,102,241,0.15) 150deg, transparent 180deg, rgba(147,51,234,0.1) 210deg, transparent 240deg, rgba(99,102,241,0.15) 270deg, transparent 300deg, rgba(147,51,234,0.1) 330deg, transparent 360deg);
+  animation: kamui-spiral-spin 0.8s linear infinite;
+  transition: opacity 0.3s ease;
+  z-index: 2;
+}
+@keyframes kamui-spiral-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 @keyframes pfp-float {
   0% { transform: translate3d(0, 0, 0); }
   50% { transform: translate3d(0, -10px, 0); }
   100% { transform: translate3d(0, 0, 0); }
 }
-@keyframes pfp-vortex {
-  0% { transform: rotate(0deg) scale(1); }
-  100% { transform: rotate(720deg) scale(0); }
+@keyframes kamui-out {
+  0% {
+    transform: rotate(0deg) scale(1);
+    clip-path: circle(71% at 50% 50%);
+    filter: blur(0px);
+  }
+  20% {
+    transform: rotate(120deg) scale(0.92);
+    clip-path: circle(55% at 50% 50%);
+    filter: blur(0px);
+  }
+  45% {
+    transform: rotate(360deg) scale(0.65);
+    clip-path: circle(38% at 50% 50%);
+    filter: blur(0.5px);
+  }
+  70% {
+    transform: rotate(720deg) scale(0.3);
+    clip-path: circle(18% at 50% 50%);
+    filter: blur(1.5px);
+  }
+  90% {
+    transform: rotate(1000deg) scale(0.08);
+    clip-path: circle(5% at 50% 50%);
+    filter: blur(2.5px);
+  }
+  100% {
+    transform: rotate(1080deg) scale(0);
+    clip-path: circle(0% at 50% 50%);
+    filter: blur(3px);
+  }
 }
-@keyframes pfp-intro {
-  0% { transform: rotate(-720deg) scale(0); opacity: 0; }
-  30% { opacity: 1; }
-  100% { transform: rotate(0deg) scale(1); opacity: 1; }
+@keyframes kamui-in {
+  0% {
+    transform: rotate(-720deg) scale(0);
+    clip-path: circle(0% at 50% 50%);
+    opacity: 0;
+    filter: blur(3px);
+  }
+  8% {
+    opacity: 1;
+    filter: blur(2px);
+  }
+  25% {
+    transform: rotate(-480deg) scale(0.2);
+    clip-path: circle(15% at 50% 50%);
+    filter: blur(1.5px);
+  }
+  50% {
+    transform: rotate(-240deg) scale(0.55);
+    clip-path: circle(42% at 50% 50%);
+    filter: blur(0.5px);
+  }
+  75% {
+    transform: rotate(-60deg) scale(0.88);
+    clip-path: circle(65% at 50% 50%);
+    filter: blur(0px);
+  }
+  100% {
+    transform: rotate(0deg) scale(1);
+    clip-path: circle(71% at 50% 50%);
+    opacity: 1;
+    filter: blur(0px);
+  }
 }
 `
         }}
