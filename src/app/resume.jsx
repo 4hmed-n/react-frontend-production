@@ -273,9 +273,9 @@ export default function Resume() {
             {/* Header */}
             <div className="mb-8 border-b-4 border-slate-800 pb-6">
               <div className="flex items-start gap-4 md:block">
-                <div className="flex-1 text-center md:text-left">
-                  <h1 className="text-4xl font-bold text-slate-900 mb-2">{personalInfo.name}</h1>
-                  <p className="text-lg text-cyan-600 font-semibold">
+                <div className="flex-1 items-start text-left">
+                  <h1 className="text-4xl font-bold text-slate-900 mb-2 resume-name">{personalInfo.name}</h1>
+                  <p className="text-lg text-cyan-600 font-semibold resume-title">
                     Full-Stack AI Engineer | Data Scientist
                   </p>
                   <p className="text-sm text-gray-600 mt-3 leading-relaxed">
@@ -387,6 +387,23 @@ export default function Resume() {
     height: 297mm !important;
     margin: 0 auto !important;
     transform: none !important;
+  }
+  .resume-scaler {
+    width: 210mm !important;
+    transform: none !important;
+  }
+  .social-icons,
+  .social-icon,
+  .socials,
+  .nav,
+  .navbar,
+  .nav-links,
+  nav {
+    display: none !important;
+  }
+  .resume-name,
+  .resume-title {
+    text-align: left !important;
   }
   .resume-sidebar { border-right: none !important; }
   .resume-container .md\\:hidden { display: none !important; }
