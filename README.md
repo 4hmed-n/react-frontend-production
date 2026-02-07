@@ -61,6 +61,7 @@ A modern, interactive portfolio website built with **React 18** and **Vite**, fe
 ### Cinematic Loading Screen ⭐
 - **Segmented Progress Bar**: 30-segment bar with blue-to-purple gradient and ambient glow
 - **Two-Phase Easing**: Slow start → accelerated finish for natural feel (6s duration)
+- **System Command Text**: "FORGETTING PREVIOUS ITERATIONS" in monospace font with wide letter spacing
 - **Philosophical Quotes**: 24 classic quotes (Socrates, Aristotle, Nietzsche, Lao Tzu, etc.) with Fisher-Yates shuffle cycling
 - **PFP Preloading**: Loading screen waits for profile image to load before dismissing
 - **UI Sync**: Header and sidebar hidden during loading, fade in after
@@ -68,14 +69,17 @@ A modern, interactive portfolio website built with **React 18** and **Vite**, fe
 ### Responsive Physics Engine ⭐
 - **Area-Based Sizing**: Ball radius scales with container area (packing factor 7)
 - **ResizeObserver**: Container size tracked in real-time, physics bodies rescaled on resize
-- **Billiard Physics**: Zero-gravity, high restitution (0.9), zero friction, drag & throw
-- **Smart Tooltips**: Hovered ball tooltip gets z-index 9999 to stay on top
+- **Billiard Physics**: Zero-gravity, high restitution (0.9), low air friction (0.0005), drag & throw
+- **Faster Balls**: Higher initial velocity (±2) with MAX_SPEED cap of 7
+- **Zero-Latency Hover**: Hover detection runs inside the rAF loop with direct DOM updates — no React re-renders
+- **Snappy Drag**: Mouse constraint stiffness 1.0, damping 0.05 for instant pickup feel
 - **Pointer-Events Fix**: Ball overlays set to `pointer-events-none` so Matter.js canvas handles drags
 
 ### Resume Enhancements
-- **Web Profile Picture**: Profile photo on web resume at `/resume`
-- **Smart PDF Hiding**: Profile picture auto-hidden when downloading PDF
-- **Cyan Border Frame**: Professional circular frame with matching cyan accent
+- **Fixed Desktop Layout**: Resume always renders at 850px with sidebar + content, scaled down via `transform: scale()` on smaller screens
+- **No Horizontal Scrollbar**: Viewport wrapper width matches scaled size, centered with `margin: auto`
+- **Profile Picture**: 128px circular photo with cyan border — visible in both web view and PDF download
+- **Consistent PDF**: Fixed 850px clone, 3x scale capture (2550px raster), A4 format (210×297mm), multi-page support
 
 ---
 
@@ -126,6 +130,7 @@ A modern, interactive portfolio website built with **React 18** and **Vite**, fe
 
 - **Cinematic Loading Screen** ⭐ *NEW*
   - 30-segment progress bar with gradient glow
+  - "FORGETTING PREVIOUS ITERATIONS" system text
   - 24 philosophical quotes (Fisher-Yates shuffle)
   - PFP preloading with minimum display time
   - Header/sidebar hidden during load
@@ -287,10 +292,13 @@ react-frontend-production/
 ```javascript
 - Engine: Matter.js with zero gravity {x: 0, y: 0}
 - Ball Sizing: Area-based responsive (packing factor 7, cap 45px)
-- Friction Air: 0.001 | Friction: 0 | Restitution: 0.9
+- Friction Air: 0.0005 | Friction: 0 | Restitution: 0.9
+- Initial Velocity: (Math.random() - 0.5) * 4
+- MAX_SPEED: 7
+- Mouse Constraint: stiffness 1.0, damping 0.05
 - ResizeObserver: Real-time container tracking with Body.scale
-- Drag: Matter.js MouseConstraint (pointer-events-none overlays)
-- Tooltip Z-Index: 9999 on hovered ball
+- Hover: Zero-latency detection in rAF loop, direct DOM updates (no React state)
+- Tooltip Z-Index: 9999 via direct ref manipulation
 ```
 
 ### 3. **Kamui Vortex PFP Effect**
@@ -308,6 +316,7 @@ react-frontend-production/
 ### 4. **Loading Screen**
 ```javascript
 - Duration: 6s minimum display time
+- Text: "FORGETTING PREVIOUS ITERATIONS" (font-mono, tracking-widest)
 - Progress Bar: 30 segments, blue-purple gradient
 - Easing: Two-phase (slow 0-60%, fast 60-100%)
 - Quotes: 24 philosophical quotes, Fisher-Yates shuffle
@@ -318,10 +327,12 @@ react-frontend-production/
 ### 5. **Resume PDF Generation**
 ```javascript
 - Technology: html2canvas + jsPDF
-- Format: A4 Portrait
-- Scale: 2x for high resolution
-- Background: White (#ffffff)
-- Auto-updating from portfolio data
+- Format: A4 Portrait (210×297mm)
+- Clone Width: Fixed 850px (consistent across all devices)
+- Capture Scale: 3x (2550px raster width)
+- Layout: Always desktop (sidebar + content side-by-side)
+- Multi-page: Canvas slicing for content exceeding one page
+- Profile Picture: Included in PDF download
 ```
 
 ### 6. **Smart Navigation**
