@@ -362,6 +362,7 @@ function PhysicsBubbleContainer({ containerRef, isLoading }) {
   const dimensionsRef = useRef({ width: 0, height: 0 });
   const radiusRef = useRef(45);
   const [hoveredBubble, setHoveredBubble] = useState(null);
+  const hoveredBubbleRef = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
   const [ballRadius, setBallRadius] = useState(45); // Increased for better icon fit
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
@@ -508,8 +509,8 @@ function PhysicsBubbleContainer({ containerRef, isLoading }) {
     const mouseConstraint = MouseConstraint.create(engine, {
       mouse: mouse,
       constraint: {
-        stiffness: 0.8,
-        damping: 0.1,
+        stiffness: 1,
+        damping: 0.05,
         render: { visible: false }
       }
     });
@@ -664,24 +665,34 @@ function PhysicsBubbleContainer({ containerRef, isLoading }) {
     // Hover detection — purely visual, no physics mutation
     const handleMouseMove = (e) => {
       const rect = canvas.getBoundingClientRect();
-      const mouseX = e.clientX - rect.left;
-      const mouseY = e.clientY - rect.top;
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      const mouseX = (e.clientX - rect.left) * scaleX;
+      const mouseY = (e.clientY - rect.top) * scaleY;
 
+      const r = radiusRef.current + 4; // slight buffer for easier targeting
+      const r2 = r * r;
       let hovered = null;
       for (const { body } of balls) {
         const dx = mouseX - body.position.x;
         const dy = mouseY - body.position.y;
-        if (dx * dx + dy * dy < radius * radius) {
+        if (dx * dx + dy * dy < r2) {
           hovered = body.label;
           break;
         }
       }
       canvas.style.cursor = hovered ? 'pointer' : 'grab';
-      setHoveredBubble(hovered);
+      if (hoveredBubbleRef.current !== hovered) {
+        hoveredBubbleRef.current = hovered;
+        setHoveredBubble(hovered);
+      }
     };
 
     const handleMouseLeave = () => {
-      setHoveredBubble(null);
+      if (hoveredBubbleRef.current !== null) {
+        hoveredBubbleRef.current = null;
+        setHoveredBubble(null);
+      }
       canvas.style.cursor = 'grab';
     };
 
@@ -769,7 +780,7 @@ function PhysicsBubbleContainer({ containerRef, isLoading }) {
           }}
         >
           <div 
-            className={`w-full h-full rounded-full flex items-center justify-center transition-all duration-150 pointer-events-none ${
+            className={`w-full h-full rounded-full flex items-center justify-center pointer-events-none ${
               hoveredBubble === skill 
                 ? 'shadow-2xl shadow-blue-500/60 scale-110' 
                 : 'shadow-lg shadow-blue-500/30'
@@ -777,7 +788,8 @@ function PhysicsBubbleContainer({ containerRef, isLoading }) {
             style={{
               background: 'radial-gradient(circle at 30% 30%, rgba(96, 165, 250, 0.3), rgba(59, 130, 246, 0.1))',
               border: hoveredBubble === skill ? '2px solid rgba(96, 165, 250, 0.8)' : '2px solid rgba(96, 165, 250, 0.4)',
-              backdropFilter: 'blur(10px)'
+              backdropFilter: 'blur(10px)',
+              transition: 'transform 80ms ease-out, box-shadow 80ms ease-out, border-color 80ms ease-out'
             }}
           >
             <div
