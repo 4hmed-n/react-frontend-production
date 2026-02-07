@@ -481,17 +481,17 @@ function PhysicsBubbleContainer({ containerRef, isLoading }) {
       const body = Bodies.circle(x, y, radius, {
         restitution: 0.9,
         friction: 0,
-        frictionAir: 0.001,
+        frictionAir: 0.0005,
         inertia: Infinity,
         density: 0.03,
         render: { visible: false },
         label: skill
       });
 
-      // Gentle initial velocity
+      // Initial velocity
       Body.setVelocity(body, {
-        x: (Math.random() - 0.5) * 2,
-        y: (Math.random() - 0.5) * 2
+        x: (Math.random() - 0.5) * 4,
+        y: (Math.random() - 0.5) * 4
       });
 
       bodiesRef.current[skill] = body;
@@ -529,7 +529,7 @@ function PhysicsBubbleContainer({ containerRef, isLoading }) {
     runnerRef.current = runner;
 
     // ABSOLUTE boundary constraint - prevents any ball escape with buffer
-    const MAX_SPEED = 5;
+    const MAX_SPEED = 7;
     const collisionRadius = () => radiusRef.current + 6; // full outer radius: circle + border + glow
 
     Events.on(engine, 'beforeUpdate', () => {
