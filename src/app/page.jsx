@@ -806,6 +806,7 @@ export default function Page() {
   const [isLoading, setIsLoading] = useState(true);
   const [pfpHovered, setPfpHovered] = useState(false);
   const [isInteracting, setIsInteracting] = useState(false);
+  const [isPfpIntro, setIsPfpIntro] = useState(true);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [currentSection, setCurrentSection] = useState('home');
   const currentSectionRef = useRef('home');
@@ -923,8 +924,16 @@ export default function Page() {
     }
     vortexTimeoutRef.current = setTimeout(() => {
       setIsInteracting(false);
-    }, 500);
+    }, 800);
   };
+
+  // Clear intro animation after it finishes
+  useEffect(() => {
+    if (!isLoading && isPfpIntro) {
+      const t = setTimeout(() => setIsPfpIntro(false), 1500);
+      return () => clearTimeout(t);
+    }
+  }, [isLoading, isPfpIntro]);
 
   const mainPortfolio = (
     <div className="min-h-screen w-full">
@@ -978,7 +987,7 @@ export default function Page() {
                 onMouseEnter={() => setPfpHovered(true)}
                 onMouseLeave={() => setPfpHovered(false)}
                 onMouseDown={triggerVortex}
-                className={`relative w-52 h-52 md:w-64 md:h-64 rounded-full overflow-hidden border border-white/10 bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-xl flex items-center justify-center transition-all duration-300 ${pfpHovered ? 'border-blue-400/50 shadow-lg shadow-blue-500/20' : ''} ${!isLoading && !isInteracting ? 'pfp-float' : ''} ${isInteracting ? 'pfp-vortex' : ''}`}
+                className={`relative w-52 h-52 md:w-64 md:h-64 rounded-full overflow-hidden border border-white/10 bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-xl flex items-center justify-center transition-all duration-300 ${pfpHovered ? 'border-blue-400/50 shadow-lg shadow-blue-500/20' : ''} ${!isLoading && !isInteracting && !isPfpIntro ? 'pfp-float' : ''} ${isInteracting ? 'pfp-vortex' : ''} ${isPfpIntro && !isLoading ? 'pfp-intro' : ''}`}
               >
                 <div className={`absolute inset-0 rounded-full whirlpool-effect transition-opacity duration-500 ${pfpHovered ? 'opacity-100' : 'opacity-70'}`} />
                 <img 
@@ -1422,7 +1431,11 @@ export default function Page() {
   backface-visibility: hidden;
 }
 .pfp-vortex {
-  animation: pfp-vortex 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation: pfp-vortex 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  backface-visibility: hidden;
+}
+.pfp-intro {
+  animation: pfp-intro 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   backface-visibility: hidden;
 }
 @keyframes pfp-float {
@@ -1433,6 +1446,11 @@ export default function Page() {
 @keyframes pfp-vortex {
   0% { transform: rotate(0deg) scale(1); }
   100% { transform: rotate(720deg) scale(0); }
+}
+@keyframes pfp-intro {
+  0% { transform: rotate(-720deg) scale(0); opacity: 0; }
+  30% { opacity: 1; }
+  100% { transform: rotate(0deg) scale(1); opacity: 1; }
 }
 `
         }}
