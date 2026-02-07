@@ -286,11 +286,11 @@ function PhysicsBubbleContainer({ containerRef }) {
     });
     renderRef.current = render;
 
-    // Ball physics - rock solid bouncy balls with high restitution
+    // Wall physics - moderate bounce, no friction
     const wallOptions = { 
       isStatic: true, 
       render: { visible: false },
-      restitution: 0.98,
+      restitution: 0.6,
       friction: 0,
       frictionStatic: 0,
       density: 0.001
@@ -317,9 +317,9 @@ function PhysicsBubbleContainer({ containerRef }) {
       const y = Math.random() * safeHeight + padding;
 
       const body = Bodies.circle(x, y, radius, {
-        restitution: 0.7,
+        restitution: 0.6,
         friction: 0.05,
-        frictionAir: 0.02,
+        frictionAir: 0.04,
         density: 0.03,
         render: { visible: false },
         label: skill
@@ -353,6 +353,14 @@ function PhysicsBubbleContainer({ containerRef }) {
 
     World.add(engine.world, mouseConstraint);
 
+    // Drag start: boost engine for snappy pickup; drag end: cool down fast
+    Events.on(mouseConstraint, 'startdrag', () => {
+      engine.timing.timeScale = 1.2;
+    });
+    Events.on(mouseConstraint, 'enddrag', () => {
+      engine.timing.timeScale = 1;
+    });
+
     // Run physics engine
     const runner = Runner.create();
     Runner.run(runner, engine);
@@ -360,7 +368,7 @@ function PhysicsBubbleContainer({ containerRef }) {
     runnerRef.current = runner;
 
     // ABSOLUTE boundary constraint - prevents any ball escape with buffer
-    const MAX_SPEED = 6;
+    const MAX_SPEED = 5;
     const collisionRadius = radius + 6; // full outer radius: circle + border + glow
 
     Events.on(engine, 'beforeUpdate', () => {
@@ -553,7 +561,8 @@ function PhysicsBubbleContainer({ containerRef }) {
             style={{
               background: 'radial-gradient(circle at 30% 30%, rgba(96, 165, 250, 0.3), rgba(59, 130, 246, 0.1))',
               border: hoveredBubble === skill ? '2px solid rgba(96, 165, 250, 0.8)' : '2px solid rgba(96, 165, 250, 0.4)',
-              backdropFilter: 'blur(10px)'
+              backdropFilter: 'blur(10px)',
+              pointerEvents: 'all'
             }}
           >
             <div
