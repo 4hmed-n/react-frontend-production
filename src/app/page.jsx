@@ -317,9 +317,10 @@ function PhysicsBubbleContainer({ containerRef }) {
       const y = Math.random() * safeHeight + padding;
 
       const body = Bodies.circle(x, y, radius, {
-        restitution: 0.6,
+        restitution: 0.8,
         friction: 0.05,
-        frictionAir: 0.04,
+        frictionAir: 0.1,
+        inertia: Infinity,
         density: 0.03,
         render: { visible: false },
         label: skill
@@ -446,6 +447,18 @@ function PhysicsBubbleContainer({ containerRef }) {
         } else if (body.position.y > height - margin) {
           Body.setPosition(body, { x: body.position.x, y: height - margin });
           Body.setVelocity(body, { x: body.velocity.x, y: -Math.abs(body.velocity.y) * 0.7 });
+        }
+      });
+    });
+
+    // Hard boundary clamping after physics step to prevent seepage
+    Events.on(engine, 'afterUpdate', () => {
+      balls.forEach(({ body }) => {
+        const margin = radius;
+        const clampedX = Math.max(margin, Math.min(width - margin, body.position.x));
+        const clampedY = Math.max(margin, Math.min(height - margin, body.position.y));
+        if (clampedX !== body.position.x || clampedY !== body.position.y) {
+          Body.setPosition(body, { x: clampedX, y: clampedY });
         }
       });
     });
