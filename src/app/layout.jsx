@@ -187,7 +187,7 @@ export default function Layout({ children }) {
         </div>
       )}
 
-      <nav className="sticky top-4 left-0 right-0 mx-auto z-50 transition-all duration-500" style={{ zIndex: 100, opacity: 'var(--ui-opacity, 1)' }}>
+      <nav className="sticky top-4 left-0 right-0 mx-auto px-3 sm:px-4 z-50 transition-all duration-500" style={{ zIndex: 100, opacity: 'var(--ui-opacity, 1)' }}>
         {isResumePage ? (
           <div data-header-shell className={`mx-auto w-full max-w-[920px] ${isScrolled 
               ? 'bg-slate-900/50 backdrop-blur-xl border border-white/15 shadow-2xl shadow-black/40' 

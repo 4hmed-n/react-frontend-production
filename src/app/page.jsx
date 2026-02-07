@@ -993,14 +993,14 @@ export default function Page() {
 
   const mainPortfolio = (
     <div className="min-h-screen w-full">
-      <section id="home" className="mx-auto max-w-7xl px-6 md:px-20 pt-28 md:pt-32 pb-20 min-h-screen flex items-center">
+      <section id="home" className="mx-auto max-w-7xl px-4 sm:px-6 md:px-20 pt-24 sm:pt-28 md:pt-32 pb-16 sm:pb-20 min-h-screen flex items-center">
         <div className="grid gap-10 md:grid-cols-2 items-center w-full">
           <div>
-            <h1 className="text-5xl md:text-6xl font-bold leading-tight">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
               Hi, I'm{' '}
               <span className="text-blue-400">Muhammad Ahmed</span>
             </h1>
-            <p className="mt-4 text-2xl md:text-3xl font-light text-gray-300 font-display">
+            <p className="mt-4 text-xl sm:text-2xl md:text-3xl font-light text-gray-300 font-display">
               <Typewriter 
                 strings={[
                   'Full-Stack AI Engineer',
@@ -1065,7 +1065,7 @@ export default function Page() {
         </div>
       </section>
 
-      <section id="about" className="mx-auto max-w-7xl px-6 md:px-20 py-20">
+      <section id="about" className="mx-auto max-w-7xl px-4 sm:px-6 md:px-20 py-16 sm:py-20">
         <div className="grid gap-10 md:grid-cols-2 items-start">
           <div>
             <h2 className="text-4xl md:text-5xl font-bold tracking-tight">
@@ -1107,7 +1107,7 @@ export default function Page() {
               </div>
               <span className="ml-4 text-xs text-gray-400">developer.js</span>
             </div>
-            <div className="p-6 font-mono text-sm">
+            <div className="p-4 sm:p-6 font-mono text-xs sm:text-sm overflow-x-auto">
               <div className="text-gray-500"><span className="text-purple-400">class</span> <span className="text-blue-400">SoftwareEngineer</span> {'{'}</div>
               <div className="ml-4 text-gray-400"><span className="text-purple-400">constructor</span>() {'{'}</div>
               <div className="ml-8 text-gray-500"><span className="text-cyan-400">this</span>.name = <span className="text-green-400">"Muhammad Ahmed"</span>;</div>
@@ -1145,7 +1145,7 @@ export default function Page() {
         </div>
       </section>
 
-      <section id="skills" className="mx-auto max-w-7xl px-6 md:px-20 py-20">
+      <section id="skills" className="mx-auto max-w-7xl px-4 sm:px-6 md:px-20 py-16 sm:py-20">
         <div className="text-center mb-12">
           <p className="text-xs uppercase tracking-widest text-blue-400">Core Technologies</p>
           <h2 className="mt-3 text-4xl md:text-5xl font-bold tracking-tighter">Main Tech Stack</h2>
@@ -1154,7 +1154,7 @@ export default function Page() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 auto-rows-[minmax(400px,600px)]">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 auto-rows-[minmax(350px,600px)]">
           {/* Left Side - Main Tech Stack with Matter.js Physics */}
           <div
             ref={techStackContainerRef}
@@ -1259,7 +1259,7 @@ export default function Page() {
         </div>
       </section>
 
-      <section id="projects" className="mx-auto max-w-7xl px-6 md:px-20 py-20">
+      <section id="projects" className="mx-auto max-w-7xl px-4 sm:px-6 md:px-20 py-16 sm:py-20">
         <div className="text-center">
           <p className="text-xs uppercase tracking-widest text-blue-400">Selected Work</p>
           <h2 className="mt-3 text-4xl md:text-5xl font-bold tracking-tighter">Projects</h2>
@@ -1301,7 +1301,7 @@ export default function Page() {
         </div>
       </section>
 
-      <section id="contact" className="mx-auto max-w-7xl px-6 md:px-20 py-12">
+      <section id="contact" className="mx-auto max-w-7xl px-4 sm:px-6 md:px-20 py-12">
         <div className="relative rounded-[2rem] border border-white/10 bg-gradient-to-br from-slate-900/80 via-[#1a1030]/80 to-slate-950/90 p-6 md:p-8 backdrop-blur-xl overflow-hidden">
           <div className="absolute inset-0 pointer-events-none">
             <div className="absolute -top-24 -left-24 h-64 w-64 rounded-full bg-purple-500/20 blur-3xl" />
@@ -1408,8 +1408,8 @@ export default function Page() {
       </section>
 
       <footer className="footer-section mt-4">
-        <div className="mx-auto max-w-7xl px-6 md:px-20 py-12 border-t border-white/10">
-          <div className="grid md:grid-cols-4 gap-8 mb-8">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-20 py-12 border-t border-white/10">
+          <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-8 mb-8">
             <div>
               <h3 className="text-lg font-bold tracking-tight mb-3">Muhammad Ahmed</h3>
               <p className="text-sm text-gray-400">BS Data Science, KFUEIT</p>
