@@ -17,20 +17,47 @@ const LOADING_QUOTES = [
   "Deploying imagination to production.",
   "Elegance in every function call.",
   "Bridging ideas and implementation.",
+  "First, solve the problem. Then, write the code.",
+  "Simplicity is the ultimate sophistication.",
+  "The best error message is the one that never shows up.",
+  "Make it work. Make it right. Make it fast.",
+  "Every expert was once a beginner.",
+  "Think twice, code once.",
+  "Data is the new oil. AI is the refinery.",
+  "Clean code always looks like it was written by someone who cares.",
+  "The only way to go fast is to go well.",
+  "Debugging is like being a detective in a crime movie where you're also the murderer.",
 ];
+
+// Fisher-Yates shuffle that cycles through all quotes before repeating
+function createQuoteCycler() {
+  let remaining = [];
+  return function next() {
+    if (remaining.length === 0) {
+      remaining = [...LOADING_QUOTES];
+      for (let i = remaining.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [remaining[i], remaining[j]] = [remaining[j], remaining[i]];
+      }
+    }
+    return remaining.pop();
+  };
+}
+
+const nextQuote = createQuoteCycler();
 
 function LoadingScreen() {
   const [progress, setProgress] = useState(0);
-  const [quote] = useState(() => LOADING_QUOTES[Math.floor(Math.random() * LOADING_QUOTES.length)]);
+  const [quote, setQuote] = useState(() => nextQuote());
   const [quoteVisible, setQuoteVisible] = useState(false);
+  const [quoteFading, setQuoteFading] = useState(false);
 
   useEffect(() => {
     const start = Date.now();
-    const duration = 4000;
+    const duration = 6000;
     const tick = () => {
       const elapsed = Date.now() - start;
       const pct = Math.min(100, (elapsed / duration) * 100);
-      // Two-phase easing: fast start, slow middle, fast finish
       let eased;
       if (pct < 50) {
         eased = 2 * Math.pow(pct / 100, 2) * 100;
@@ -41,9 +68,23 @@ function LoadingScreen() {
       if (pct < 100) requestAnimationFrame(tick);
     };
     requestAnimationFrame(tick);
-    // Fade in quote after a short delay
-    const quoteTimer = setTimeout(() => setQuoteVisible(true), 400);
-    return () => clearTimeout(quoteTimer);
+
+    // Fade in first quote
+    const showTimer = setTimeout(() => setQuoteVisible(true), 400);
+
+    // Rotate quotes every 2.5s
+    const rotateInterval = setInterval(() => {
+      setQuoteFading(true);
+      setTimeout(() => {
+        setQuote(nextQuote());
+        setQuoteFading(false);
+      }, 400);
+    }, 2500);
+
+    return () => {
+      clearTimeout(showTimer);
+      clearInterval(rotateInterval);
+    };
   }, []);
 
   const segments = 30;
@@ -89,8 +130,8 @@ function LoadingScreen() {
         {/* Quote */}
         <div className="mt-14 max-w-xs sm:max-w-sm text-center">
           <p
-            className="text-[11px] sm:text-xs text-white/20 font-light italic leading-relaxed transition-all duration-700"
-            style={{ opacity: quoteVisible ? 1 : 0, transform: quoteVisible ? 'translateY(0)' : 'translateY(8px)' }}
+            className="text-[11px] sm:text-xs text-white/20 font-light italic leading-relaxed transition-all duration-500"
+            style={{ opacity: quoteVisible && !quoteFading ? 1 : 0, transform: quoteVisible && !quoteFading ? 'translateY(0)' : 'translateY(8px)' }}
           >
             "{quote}"
           </p>
@@ -783,7 +824,7 @@ export default function Page() {
   const pulseTimeoutRef = useRef(null);
 
   useEffect(() => {
-    const minDisplayTime = 4000; // minimum time to show the loading bar
+    const minDisplayTime = 6000; // minimum time to show the loading bar
     const startTime = Date.now();
 
     // Preload the PFP image
@@ -811,8 +852,8 @@ export default function Page() {
       tryDismiss();
     }, minDisplayTime);
 
-    // Hard fallback: dismiss after 7s no matter what
-    const fallback = setTimeout(() => setIsLoading(false), 7000);
+    // Hard fallback: dismiss after 9s no matter what
+    const fallback = setTimeout(() => setIsLoading(false), 9000);
 
     return () => {
       clearTimeout(minTimer);
