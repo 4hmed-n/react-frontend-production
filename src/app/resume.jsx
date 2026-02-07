@@ -194,9 +194,9 @@ export default function Resume() {
     const updateScale = () => {
       if (!containerRef.current || !resumeRef.current) return;
 
-      const parentWidth = containerRef.current.offsetWidth;
+      const parentWidth = containerRef.current.clientWidth;
       const baseWidth = 850;
-      const scale = Math.min((parentWidth - 20) / baseWidth, 1);
+      const scale = Math.min(parentWidth / baseWidth, 1);
       setResumeScale(scale);
       setViewportHeight(`${resumeRef.current.scrollHeight * scale}px`);
     };
@@ -214,24 +214,34 @@ export default function Resume() {
       }`}
       style={{
         width: '100%',
+        maxWidth: '100vw',
         minHeight: '100vh',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        overflowX: 'hidden',
+        overflow: 'hidden',
         padding: '40px 0'
       }}
     >
       <div
         className="resume-viewport"
-        style={!isDownloading ? { height: viewportHeight, overflow: 'hidden' } : undefined}
+        style={!isDownloading ? { 
+          width: `${850 * resumeScale}px`,
+          height: viewportHeight, 
+          overflow: 'hidden',
+          margin: '0 auto'
+        } : undefined}
       >
         <div
           id="resume-scaler"
-          className="mx-auto bg-white shadow-2xl resume-container w-[850px]"
+          className="bg-white shadow-2xl resume-container"
           ref={resumeRef}
           data-resume-root
-          style={!isDownloading ? { transform: `scale(${resumeScale})`, transformOrigin: 'top center' } : undefined}
+          style={!isDownloading ? { 
+            width: '850px',
+            transform: `scale(${resumeScale})`, 
+            transformOrigin: 'top left' 
+          } : { width: '850px' }}
         >
             <div className="flex flex-row resume-layout">
           {/* Left Sidebar */}
