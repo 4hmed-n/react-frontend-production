@@ -4,12 +4,55 @@ import Matter from 'matter-js';
 
 function LoadingScreen() {
   return (
-    <div className="kamui-loading fixed inset-0 z-[9999] bg-black">
-      <div className="kamui-core" aria-hidden="true">
-        <div className="kamui-whirlpool"></div>
-        <div className="kamui-eye"></div>
+    <>
+      <div className="kamui-loading fixed inset-0 z-[9999] bg-black">
+        <div className="kamui-core" aria-hidden="true">
+          <div className="kamui-whirlpool"></div>
+          <div className="kamui-eye"></div>
+        </div>
       </div>
-    </div>
+      <style dangerouslySetInnerHTML={{ __html: `
+.kamui-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.kamui-core {
+  position: relative;
+  width: 260px;
+  height: 260px;
+  display: grid;
+  place-items: center;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+.kamui-whirlpool {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: conic-gradient(from 0deg, rgba(20, 10, 40, 0.1), rgba(160, 120, 255, 0.95), rgba(0, 0, 0, 0));
+  -webkit-mask: radial-gradient(circle, transparent 25%, #000 26%, #000 62%, transparent 63%);
+  mask: radial-gradient(circle, transparent 25%, #000 26%, #000 62%, transparent 63%);
+  animation: whirlpool 1.2s cubic-bezier(0.9, 0, 0.1, 1) infinite;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+.kamui-eye {
+  width: 30px;
+  height: 30px;
+  border-radius: 9999px;
+  background: radial-gradient(circle, rgba(235, 225, 255, 0.95), rgba(120, 90, 200, 0.2));
+  box-shadow: 0 0 20px rgba(164, 112, 255, 0.75);
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+@keyframes whirlpool {
+  0% { transform: translateZ(0) scale(0.9) rotate(0deg); }
+  70% { transform: translateZ(0) scale(1.04) rotate(260deg); }
+  100% { transform: translateZ(0) scale(0.95) rotate(360deg); }
+}
+      `}} />
+    </>
   );
 }
 
@@ -693,7 +736,12 @@ export default function Page() {
     if (document.readyState === 'complete') {
       setIsLoading(false);
     }
-    return () => window.removeEventListener('load', handleLoad);
+    // Fallback: force dismiss after 3 seconds no matter what
+    const timeout = setTimeout(() => setIsLoading(false), 3000);
+    return () => {
+      window.removeEventListener('load', handleLoad);
+      clearTimeout(timeout);
+    };
   }, []);
 
   useEffect(() => {
@@ -1258,40 +1306,6 @@ export default function Page() {
       <style
         dangerouslySetInnerHTML={{
           __html: `
-.kamui-loading {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.kamui-core {
-  position: relative;
-  width: 260px;
-  height: 260px;
-  display: grid;
-  place-items: center;
-  transform: translateZ(0);
-  backface-visibility: hidden;
-}
-.kamui-whirlpool {
-  position: absolute;
-  inset: 0;
-  border-radius: 9999px;
-  background: conic-gradient(from 0deg, rgba(20, 10, 40, 0.1), rgba(160, 120, 255, 0.95), rgba(0, 0, 0, 0));
-  -webkit-mask: radial-gradient(circle, transparent 25%, #000 26%, #000 62%, transparent 63%);
-  mask: radial-gradient(circle, transparent 25%, #000 26%, #000 62%, transparent 63%);
-  animation: whirlpool 1.2s cubic-bezier(0.9, 0, 0.1, 1) infinite;
-  transform: translateZ(0);
-  backface-visibility: hidden;
-}
-.kamui-eye {
-  width: 30px;
-  height: 30px;
-  border-radius: 9999px;
-  background: radial-gradient(circle, rgba(235, 225, 255, 0.95), rgba(120, 90, 200, 0.2));
-  box-shadow: 0 0 20px rgba(164, 112, 255, 0.75);
-  transform: translateZ(0);
-  backface-visibility: hidden;
-}
 .pfp-float {
   animation: pfp-float 6s ease-in-out infinite;
   will-change: transform;
@@ -1300,11 +1314,6 @@ export default function Page() {
 }
 .pfp-pulse {
   animation: pfp-pulse 0.3s ease-in-out;
-}
-@keyframes whirlpool {
-  0% { transform: translateZ(0) scale(0.9) rotate(0deg); }
-  70% { transform: translateZ(0) scale(1.04) rotate(260deg); }
-  100% { transform: translateZ(0) scale(0.95) rotate(360deg); }
 }
 @keyframes pfp-float {
   0% { transform: translate3d(0, 0, 0); }
