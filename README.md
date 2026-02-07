@@ -38,7 +38,7 @@
 A modern, interactive portfolio website built with **React 18** and **Vite**, featuring:
 
 - 🎯 **Interactive Physics Engine** - Real-time 2D physics using Matter.js
-- � **Whirlpool PFP Transitions** - Clip-path iris-wipe intro & click animations
+- 🌀 **Kamui Vortex PFP** - Obito-inspired suck-in/suck-out spiral transitions
 - 🎨 **Glassmorphic Design** - Modern UI with backdrop blur and transparency effects
 - ⏳ **Cinematic Loading Screen** - Segmented progress bar with philosophical quotes
 - 📱 **Fully Responsive** - Optimized for all devices and screen sizes
@@ -50,11 +50,13 @@ A modern, interactive portfolio website built with **React 18** and **Vite**, fe
 
 ## 🔄 Recent Updates (February 2026)
 
-### Whirlpool PFP Transitions ⭐
-- **Intro Animation**: Profile picture materializes via reverse whirlpool effect on page load — `clip-path: circle()` iris-wipe expanding from center (1.6s)
-- **Click Interaction**: On mouse down, PFP collapses into a singularity and re-emerges — full out-and-back whirlpool cycle (1.8s)
-- **Clean Compositing**: Single-property `clip-path` animation for smooth GPU rendering with zero frame drops
-- **Gentle Float**: PFP gently bobs up and down when idle, with hover glow effect preserved
+### Kamui Vortex PFP Transitions ⭐
+- **Intro Animation**: Profile picture materializes via reverse Kamui vortex on page load — 1080° counter-rotation from scale(0) to full size (1s)
+- **Click Interaction (Obito-style)**: On mouse down, PFP spirals into a singularity (1s suck-in → 1.5s hold at void → 1s suck-out), full 3.5s cycle
+- **Vortex Physics**: `rotate(1080deg) scale(0)` with ease-in acceleration — starts slow, snaps aggressively into center like space-time ninjutsu
+- **Three-Phase State Machine**: `vortexPhase` cycles through `idle → suck-in → suck-out` with re-trigger prevention
+- **GPU Optimized**: `translateZ(0)`, `backface-visibility: hidden`, `will-change: transform`
+- **Gentle Float**: PFP bobs up and down when idle, with independent hover glow preserved
 
 ### Cinematic Loading Screen ⭐
 - **Segmented Progress Bar**: 30-segment bar with blue-to-purple gradient and ambient glow
@@ -91,10 +93,11 @@ A modern, interactive portfolio website built with **React 18** and **Vite**, fe
   - Smooth deletion animation (50ms)
   - Sky-blue blinking cursor
 
-- **Whirlpool PFP Transitions** ⭐ *NEW*
-  - Reverse whirlpool intro on page load (iris-wipe from center)
-  - Click-triggered out-and-back whirlpool cycle
-  - Clean `clip-path: circle()` animation
+- **Kamui Vortex PFP** ⭐ *NEW*
+  - Obito Uchiha-inspired Kamui suck-in/suck-out effect
+  - 1080° spiral rotation + scale(0) vortex on click
+  - Three-phase cycle: suck-in (1s) → hold (1.5s) → suck-out (1s)
+  - Reverse Kamui intro on page load
   - Idle floating animation with hover glow
 
 - **Responsive Physics-Based Skills**
@@ -290,13 +293,16 @@ react-frontend-production/
 - Tooltip Z-Index: 9999 on hovered ball
 ```
 
-### 3. **Whirlpool PFP Effect**
+### 3. **Kamui Vortex PFP Effect**
 ```javascript
-- Intro (kamui-in): clip-path circle 0% → 71%, 1.6s ease-out
-- Click (kamui-out): circle 71% → 0% → hold → 0% → 71%, 1.8s ease-in-out
+- Suck-In: rotate(1080deg) scale(0), 1s ease-in (cubic-bezier 0.55, 0.06, 0.68, 0.19)
+- Hold: 1.5s at void (PFP fully vanished)
+- Suck-Out: rotate(-1080deg) scale(0→1), 1s ease-out (cubic-bezier 0.22, 1, 0.36, 1)
+- Intro: Reverse Kamui on page load, 1s ease-out
+- State: vortexPhase ('idle' → 'suck-in' → 'suck-out' → 'idle')
 - Float: translate3d(0, -10px, 0), 6s ease-in-out infinite
-- Hover: border-blue-400/50, shadow-blue-500/20 glow
-- GPU: will-change: clip-path, single-property animation
+- Hover: border-blue-400/50, shadow-blue-500/20 glow (independent)
+- GPU: will-change: transform, backface-visibility: hidden
 ```
 
 ### 4. **Loading Screen**
