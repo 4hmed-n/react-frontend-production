@@ -7,7 +7,7 @@ function LoadingScreen() {
 
   useEffect(() => {
     const start = Date.now();
-    const duration = 2200;
+    const duration = 2400;
     const tick = () => {
       const elapsed = Date.now() - start;
       const pct = Math.min(100, (elapsed / duration) * 100);
@@ -733,16 +733,40 @@ export default function Page() {
   const pulseTimeoutRef = useRef(null);
 
   useEffect(() => {
-    const handleLoad = () => setIsLoading(false);
-    window.addEventListener('load', handleLoad);
-    if (document.readyState === 'complete') {
-      setIsLoading(false);
-    }
-    // Fallback: force dismiss after 3 seconds no matter what
-    const timeout = setTimeout(() => setIsLoading(false), 3000);
+    const minDisplayTime = 2400; // minimum time to show the loading bar
+    const startTime = Date.now();
+
+    // Preload the PFP image
+    const pfpImg = new Image();
+    let pfpLoaded = false;
+    let minTimePassed = false;
+
+    const tryDismiss = () => {
+      if (pfpLoaded && minTimePassed) {
+        setIsLoading(false);
+      }
+    };
+
+    pfpImg.onload = pfpImg.onerror = () => {
+      pfpLoaded = true;
+      tryDismiss();
+    };
+    pfpImg.src = '/images/profile.jpg';
+
+    // If image is already cached, onload fires synchronously
+    if (pfpImg.complete) pfpLoaded = true;
+
+    const minTimer = setTimeout(() => {
+      minTimePassed = true;
+      tryDismiss();
+    }, minDisplayTime);
+
+    // Hard fallback: dismiss after 5s no matter what
+    const fallback = setTimeout(() => setIsLoading(false), 5000);
+
     return () => {
-      window.removeEventListener('load', handleLoad);
-      clearTimeout(timeout);
+      clearTimeout(minTimer);
+      clearTimeout(fallback);
     };
   }, []);
 
