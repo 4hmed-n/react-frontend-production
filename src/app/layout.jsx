@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import './globals.css';
 import ParticleBackground from './ParticleBackground';
@@ -54,7 +54,6 @@ export default function Layout({ children }) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMobileSocialOpen, setIsMobileSocialOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
   const location = useLocation();
   const isResumePage = location.pathname === '/resume';
 
@@ -120,16 +119,6 @@ export default function Layout({ children }) {
   }, []);
 
   useEffect(() => {
-    const handleLoad = () => setIsLoading(false);
-    if (document.readyState === 'complete') {
-      setIsLoading(false);
-      return undefined;
-    }
-    window.addEventListener('load', handleLoad);
-    return () => window.removeEventListener('load', handleLoad);
-  }, []);
-
-  useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
     };
@@ -141,49 +130,11 @@ export default function Layout({ children }) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const enhancedChildren = React.Children.map(children, (child) => {
-    if (React.isValidElement(child)) {
-      return React.cloneElement(child, { isLoading });
-    }
-    return child;
-  });
 
   return (
     <div className="relative min-h-screen w-full bg-[#050510] text-white">
       <ParticleBackground />
       <div className="pointer-events-none fixed inset-0 bg-radial-gradient-fade" style={{ zIndex: 2 }} />
-      {isLoading && (
-        <div className="kamui-loading" aria-label="Loading">
-          <div className="kamui-core" aria-hidden="true">
-            <svg className="kamui-whirlpool" viewBox="0 0 200 200" role="presentation">
-              <defs>
-                <linearGradient id="kamui-glow" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0%" stopColor="rgba(200, 170, 255, 0.0)" />
-                  <stop offset="45%" stopColor="rgba(160, 120, 255, 0.85)" />
-                  <stop offset="100%" stopColor="rgba(30, 18, 50, 0.0)" />
-                </linearGradient>
-              </defs>
-              <path
-                d="M100 20c44 0 80 36 80 80s-36 80-80 80-80-36-80-80 36-80 80-80z"
-                fill="none"
-                stroke="url(#kamui-glow)"
-                strokeWidth="18"
-                strokeLinecap="round"
-                strokeDasharray="12 18"
-              />
-              <path
-                d="M100 40c33 0 60 27 60 60s-27 60-60 60-60-27-60-60 27-60 60-60z"
-                fill="none"
-                stroke="rgba(210, 180, 255, 0.75)"
-                strokeWidth="10"
-                strokeLinecap="round"
-                strokeDasharray="6 14"
-              />
-            </svg>
-            <div className="kamui-eye"></div>
-          </div>
-        </div>
-      )}
       {/* Left side social icons (desktop) */}
       {!isResumePage && (
         <div className="hidden md:flex fixed left-6 top-1/2 -translate-y-1/2 z-50 flex-col gap-6">
@@ -331,50 +282,7 @@ export default function Layout({ children }) {
           </>
         )}
       </nav>
-      <main className="relative" style={{ zIndex: 10 }}>{enhancedChildren}</main>
-      <style
-        dangerouslySetInnerHTML={{
-          __html: `
-.kamui-loading {
-  position: fixed;
-  inset: 0;
-  background: radial-gradient(circle at center, rgba(9, 10, 20, 0.95), rgba(2, 2, 8, 1));
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-}
-.kamui-core {
-  position: relative;
-  width: 240px;
-  height: 240px;
-  display: grid;
-  place-items: center;
-}
-.kamui-whirlpool {
-  width: 100%;
-  height: 100%;
-  filter: drop-shadow(0 0 22px rgba(140, 100, 255, 0.45));
-  animation: kamui-spin 1.6s cubic-bezier(0.1, 0.85, 0.2, 1) infinite;
-}
-.kamui-eye {
-  position: absolute;
-  inset: 0;
-  margin: auto;
-  width: 28px;
-  height: 28px;
-  border-radius: 9999px;
-  background: radial-gradient(circle, rgba(235, 225, 255, 0.95), rgba(120, 90, 200, 0.4));
-  box-shadow: 0 0 18px rgba(164, 112, 255, 0.7);
-}
-@keyframes kamui-spin {
-  0% { transform: rotate(0deg) scale(0.92); }
-  45% { transform: rotate(200deg) scale(1.02); }
-  100% { transform: rotate(360deg) scale(0.95); }
-}
-`
-        }}
-      />
+      <main className="relative" style={{ zIndex: 10 }}>{children}</main>
     </div>
   );
 }

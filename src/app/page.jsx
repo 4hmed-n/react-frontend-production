@@ -2,6 +2,17 @@
 import { useState, useEffect, useRef } from 'react';
 import Matter from 'matter-js';
 
+function LoadingScreen() {
+  return (
+    <div className="kamui-loading fixed inset-0 z-50 bg-black">
+      <div className="kamui-core" aria-hidden="true">
+        <div className="kamui-whirlpool"></div>
+        <div className="kamui-eye"></div>
+      </div>
+    </div>
+  );
+}
+
 // TYPEWRITER COMPONENT
 function Typewriter({ 
   strings = [], 
@@ -228,6 +239,8 @@ function PhysicsBubbleContainer({ containerRef, isLoading }) {
   const renderRef = useRef(null);
   const bodiesRef = useRef({});
   const ballRefsRef = useRef([]);
+  const animationFrameIdRef = useRef(null);
+  const isRunningRef = useRef(false);
   const [hoveredBubble, setHoveredBubble] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
   const [ballRadius, setBallRadius] = useState(45); // Increased for better icon fit
@@ -249,7 +262,6 @@ function PhysicsBubbleContainer({ containerRef, isLoading }) {
     const engine = Engine.create();
     engine.world.gravity.y = 0;
     engine.world.gravity.x = 0;
-    engine.timing.timeScale = isLoading ? 0 : 1;
 
     // Rock solid ball physics - high precision
     engine.positionIterations = 12;
@@ -363,10 +375,8 @@ function PhysicsBubbleContainer({ containerRef, isLoading }) {
       engine.timing.timeScale = 1;
     });
 
-    // Run physics engine
+    // Prepare physics runner (start after loading)
     const runner = Runner.create();
-    Runner.run(runner, engine);
-    Render.run(render);
     runnerRef.current = runner;
 
     // ABSOLUTE boundary constraint - prevents any ball escape with buffer
@@ -465,7 +475,6 @@ function PhysicsBubbleContainer({ containerRef, isLoading }) {
     });
 
     // Sync loop to update React ball positions
-    let animationFrameId;
     const updateLoop = () => {
       balls.forEach(({ body, index }) => {
         if (ballRefsRef.current[index]) {
@@ -473,9 +482,30 @@ function PhysicsBubbleContainer({ containerRef, isLoading }) {
           ballEl.style.transform = `translate(${body.position.x - radius}px, ${body.position.y - radius}px)`;
         }
       });
-      animationFrameId = requestAnimationFrame(updateLoop);
+      animationFrameIdRef.current = requestAnimationFrame(updateLoop);
     };
-    updateLoop();
+
+    const startEngine = () => {
+      if (isRunningRef.current) return;
+      Runner.run(runner, engine);
+      Render.run(render);
+      updateLoop();
+      isRunningRef.current = true;
+    };
+
+    const stopEngine = () => {
+      if (!isRunningRef.current) return;
+      Runner.stop(runner);
+      Render.stop(render);
+      if (animationFrameIdRef.current) {
+        cancelAnimationFrame(animationFrameIdRef.current);
+      }
+      isRunningRef.current = false;
+    };
+
+    if (!isLoading) {
+      startEngine();
+    }
 
     // Hover detection — purely visual, no physics mutation
     const handleMouseMove = (e) => {
@@ -521,20 +551,34 @@ function PhysicsBubbleContainer({ containerRef, isLoading }) {
     // Cleanup
     return () => {
       window.removeEventListener('resize', handleCanvasResize);
-      Render.stop(render);
-      Runner.stop(runner);
-      cancelAnimationFrame(animationFrameId);
+      stopEngine();
       World.clear(engine.world);
       Engine.clear(engine);
       if (render.canvas && render.canvas.parentNode) {
         render.canvas.parentNode.removeChild(render.canvas);
       }
     };
-  }, [containerRef, containerSize.width, containerSize.height]);
+  }, [containerRef, containerSize.width, containerSize.height, isLoading]);
 
   useEffect(() => {
     if (!engineRef.current) return;
     engineRef.current.timing.timeScale = isLoading ? 0 : 1;
+    if (isLoading) {
+      if (runnerRef.current) {
+        Runner.stop(runnerRef.current);
+      }
+      if (renderRef.current) {
+        Render.stop(renderRef.current);
+      }
+      if (animationFrameIdRef.current) {
+        cancelAnimationFrame(animationFrameIdRef.current);
+      }
+      isRunningRef.current = false;
+    } else if (runnerRef.current && renderRef.current && !isRunningRef.current) {
+      Runner.run(runnerRef.current, engineRef.current);
+      Render.run(renderRef.current);
+      isRunningRef.current = true;
+    }
   }, [isLoading]);
 
   const iconScale = ballRadius / 45;
@@ -606,13 +650,35 @@ function PhysicsBubbleContainer({ containerRef, isLoading }) {
   );
 }
 
-export default function Page({ isLoading = false }) {
+export default function Page() {
+  const [isLoading, setIsLoading] = useState(true);
   const [pfpHovered, setPfpHovered] = useState(false);
   const [isPfpActive, setIsPfpActive] = useState(false);
+  const pulseTimeoutRef = useRef(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [currentSection, setCurrentSection] = useState('home');
   const currentSectionRef = useRef('home');
   const techStackContainerRef = useRef(null);
+
+  useEffect(() => {
+    const handleLoad = () => setIsLoading(false);
+    window.addEventListener('load', handleLoad);
+    if (document.readyState === 'complete') {
+      setIsLoading(false);
+    }
+    return () => window.removeEventListener('load', handleLoad);
+  }, []);
+
+  useEffect(() => {
+    if (isLoading) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isLoading]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -666,7 +732,17 @@ export default function Page({ isLoading = false }) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  return (
+  const triggerPfpPulse = () => {
+    setIsPfpActive(true);
+    if (pulseTimeoutRef.current) {
+      clearTimeout(pulseTimeoutRef.current);
+    }
+    pulseTimeoutRef.current = setTimeout(() => {
+      setIsPfpActive(false);
+    }, 300);
+  };
+
+  const mainPortfolio = (
     <div className="min-h-screen w-full">
       <section id="home" className="mx-auto max-w-7xl px-6 md:px-20 pt-28 md:pt-32 pb-20 min-h-screen flex items-center">
         <div className="grid gap-10 md:grid-cols-2 items-center w-full">
@@ -717,15 +793,9 @@ export default function Page({ isLoading = false }) {
               <div 
                 onMouseEnter={() => setPfpHovered(true)}
                 onMouseLeave={() => setPfpHovered(false)}
-                onPointerDown={(event) => {
-                  setIsPfpActive(true);
-                  if (event.currentTarget.setPointerCapture) {
-                    event.currentTarget.setPointerCapture(event.pointerId);
-                  }
-                }}
-                onPointerUp={() => setIsPfpActive(false)}
-                onPointerCancel={() => setIsPfpActive(false)}
-                className={`relative w-52 h-52 md:w-64 md:h-64 rounded-full overflow-hidden border border-white/10 bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-xl flex items-center justify-center transition-all duration-300 ${pfpHovered ? 'border-blue-400/50 shadow-lg shadow-blue-500/20' : ''} ${!isLoading ? 'pfp-float' : ''} ${isPfpActive ? 'pfp-jiggle' : ''}`}
+                onMouseDown={triggerPfpPulse}
+                onClick={triggerPfpPulse}
+                className={`relative w-52 h-52 md:w-64 md:h-64 rounded-full overflow-hidden border border-white/10 bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-xl flex items-center justify-center transition-all duration-300 ${pfpHovered ? 'border-blue-400/50 shadow-lg shadow-blue-500/20' : ''} ${!isLoading ? 'pfp-float' : ''} ${isPfpActive ? 'pfp-pulse' : ''}`}
               >
                 <div className={`absolute inset-0 rounded-full whirlpool-effect transition-opacity duration-500 ${pfpHovered ? 'opacity-100' : 'opacity-70'}`} />
                 <img 
@@ -844,25 +914,74 @@ export default function Page({ isLoading = false }) {
           >
             <PhysicsBubbleContainer containerRef={techStackContainerRef} isLoading={isLoading} />
           </div>
-
+      <style
           {/* Right Side - Skills Block */}
           <div className="order-2 flex flex-col h-full">
+.kamui-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.kamui-core {
+  position: relative;
+  width: 260px;
+  height: 260px;
+  display: grid;
+  place-items: center;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+.kamui-whirlpool {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: conic-gradient(from 0deg, rgba(20, 10, 40, 0.1), rgba(160, 120, 255, 0.95), rgba(0, 0, 0, 0));
+  -webkit-mask: radial-gradient(circle, transparent 25%, #000 26%, #000 62%, transparent 63%);
+  mask: radial-gradient(circle, transparent 25%, #000 26%, #000 62%, transparent 63%);
+  animation: kamui-spin 1.3s cubic-bezier(0.12, 0.8, 0.2, 1) infinite;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+.kamui-eye {
+  width: 30px;
+  height: 30px;
+  border-radius: 9999px;
+  background: radial-gradient(circle, rgba(235, 225, 255, 0.95), rgba(120, 90, 200, 0.2));
+  box-shadow: 0 0 20px rgba(164, 112, 255, 0.75);
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+.pfp-float {
+  animation: pfp-float 6s ease-in-out infinite;
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+.pfp-pulse {
+  animation: pfp-pulse 0.3s ease-in-out;
+}
+@keyframes kamui-spin {
+  0% { transform: translateZ(0) scale(0.9) rotate(0deg); }
+  70% { transform: translateZ(0) scale(1.04) rotate(260deg); }
+  100% { transform: translateZ(0) scale(0.95) rotate(360deg); }
+}
             <div className="rounded-3xl border border-white/10 bg-gradient-to-br from-slate-800/50 to-slate-900/80 backdrop-blur-xl overflow-hidden flex-1 flex flex-col">
             <div className="flex items-center gap-2 border-b border-white/10 px-4 py-3">
               <div className="flex gap-2">
                 <div className="h-3 w-3 rounded-full bg-red-500 animate-pulse"></div>
                 <div className="h-3 w-3 rounded-full bg-yellow-500"></div>
-                <div className="h-3 w-3 rounded-full bg-green-500"></div>
-              </div>
-              <span className="ml-4 text-xs text-gray-400">skills.config.ts</span>
-              <div className="ml-auto text-xs text-gray-500">40+ technologies</div>
-            </div>
+@keyframes pfp-pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.04); }
+  100% { transform: scale(1); }
             <div className="p-6 max-h-[580px] overflow-y-auto custom-scrollbar">
               
               {/* Backend & Databases */}
               <div className="mb-6">
                 <div className="flex items-center gap-2 mb-3">
                   <div className="w-1 h-4 bg-gradient-to-b from-green-400 to-green-600 rounded-full"></div>
+
+  return isLoading ? <LoadingScreen /> : mainPortfolio;
                   <p className="text-xs uppercase tracking-widest text-green-400 font-semibold">Backend & Databases</p>
                 </div>
                 <div className="flex flex-wrap gap-2">
