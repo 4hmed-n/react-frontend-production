@@ -924,7 +924,7 @@ export default function Page() {
     }
     vortexTimeoutRef.current = setTimeout(() => {
       setIsInteracting(false);
-    }, 1300);
+    }, 2200);
   };
 
   // Clear intro animation after it finishes
@@ -987,7 +987,7 @@ export default function Page() {
                 onMouseEnter={() => setPfpHovered(true)}
                 onMouseLeave={() => setPfpHovered(false)}
                 onMouseDown={triggerVortex}
-                className={`relative w-52 h-52 md:w-64 md:h-64 rounded-full overflow-hidden border border-white/10 bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-xl flex items-center justify-center transition-all duration-300 ${pfpHovered ? 'border-blue-400/50 shadow-lg shadow-blue-500/20' : ''} ${!isLoading && !isInteracting && !isPfpIntro ? 'pfp-float' : ''} ${isInteracting ? 'pfp-kamui-out' : ''} ${isPfpIntro && !isLoading ? 'pfp-kamui-in' : ''}`}
+                className={`relative w-52 h-52 md:w-64 md:h-64 rounded-full overflow-hidden border border-white/10 bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-xl flex items-center justify-center ${pfpHovered && !isInteracting && !isPfpIntro ? 'border-blue-400/50 shadow-lg shadow-blue-500/20' : ''} ${!isLoading && !isInteracting && !isPfpIntro ? 'pfp-float pfp-hoverable' : ''} ${isInteracting ? 'pfp-kamui-out' : ''} ${isPfpIntro && !isLoading ? 'pfp-kamui-in' : ''}`}
               >
                 <div className={`absolute inset-0 rounded-full whirlpool-effect transition-opacity duration-500 ${pfpHovered ? 'opacity-100' : 'opacity-70'}`} />
                 {/* Kamui spiral overlay */}
@@ -1432,15 +1432,20 @@ export default function Page() {
   transform: translateZ(0);
   backface-visibility: hidden;
 }
-/* Kamui suction - click to teleport out */
-.pfp-kamui-out {
-  animation: kamui-out 1.2s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
-  backface-visibility: hidden;
+.pfp-hoverable {
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
-/* Reverse Kamui - materialize in */
+/* Kamui suction - click: spirals out then back in */
+.pfp-kamui-out {
+  animation: kamui-out 2.1s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+  backface-visibility: hidden;
+  transition: none !important;
+}
+/* Reverse Kamui - materialize in on page load */
 .pfp-kamui-in {
   animation: kamui-in 1.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   backface-visibility: hidden;
+  transition: none !important;
 }
 /* Spiral overlay */
 .kamui-spiral {
@@ -1459,35 +1464,68 @@ export default function Page() {
   100% { transform: translate3d(0, 0, 0); }
 }
 @keyframes kamui-out {
+  /* Phase 1: spiral into singularity */
   0% {
     transform: rotate(0deg) scale(1);
     clip-path: circle(71% at 50% 50%);
     filter: blur(0px);
   }
-  20% {
-    transform: rotate(120deg) scale(0.92);
+  10% {
+    transform: rotate(90deg) scale(0.9);
     clip-path: circle(55% at 50% 50%);
     filter: blur(0px);
   }
-  45% {
-    transform: rotate(360deg) scale(0.65);
-    clip-path: circle(38% at 50% 50%);
+  22% {
+    transform: rotate(270deg) scale(0.6);
+    clip-path: circle(35% at 50% 50%);
     filter: blur(0.5px);
   }
-  70% {
-    transform: rotate(720deg) scale(0.3);
-    clip-path: circle(18% at 50% 50%);
+  35% {
+    transform: rotate(540deg) scale(0.25);
+    clip-path: circle(14% at 50% 50%);
     filter: blur(1.5px);
   }
-  90% {
-    transform: rotate(1000deg) scale(0.08);
-    clip-path: circle(5% at 50% 50%);
+  44% {
+    transform: rotate(720deg) scale(0.05);
+    clip-path: circle(2% at 50% 50%);
     filter: blur(2.5px);
   }
-  100% {
-    transform: rotate(1080deg) scale(0);
+  48% {
+    transform: rotate(810deg) scale(0);
     clip-path: circle(0% at 50% 50%);
     filter: blur(3px);
+  }
+  /* Hold at singularity */
+  55% {
+    transform: rotate(810deg) scale(0);
+    clip-path: circle(0% at 50% 50%);
+    filter: blur(3px);
+  }
+  /* Phase 2: reverse Kamui back */
+  60% {
+    transform: rotate(-540deg) scale(0.05);
+    clip-path: circle(3% at 50% 50%);
+    filter: blur(2.5px);
+  }
+  72% {
+    transform: rotate(-360deg) scale(0.3);
+    clip-path: circle(20% at 50% 50%);
+    filter: blur(1px);
+  }
+  84% {
+    transform: rotate(-120deg) scale(0.65);
+    clip-path: circle(48% at 50% 50%);
+    filter: blur(0.3px);
+  }
+  94% {
+    transform: rotate(-20deg) scale(0.95);
+    clip-path: circle(68% at 50% 50%);
+    filter: blur(0px);
+  }
+  100% {
+    transform: rotate(0deg) scale(1);
+    clip-path: circle(71% at 50% 50%);
+    filter: blur(0px);
   }
 }
 @keyframes kamui-in {
