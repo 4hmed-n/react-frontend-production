@@ -241,6 +241,8 @@ function PhysicsBubbleContainer({ containerRef, isLoading }) {
   const ballRefsRef = useRef([]);
   const animationFrameIdRef = useRef(null);
   const isRunningRef = useRef(false);
+  const wallsRef = useRef([]);
+  const dimensionsRef = useRef({ width: 0, height: 0 });
   const [hoveredBubble, setHoveredBubble] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
   const [ballRadius, setBallRadius] = useState(45); // Increased for better icon fit
@@ -251,6 +253,7 @@ function PhysicsBubbleContainer({ containerRef, isLoading }) {
     const width = containerSize.width || containerRef.current.clientWidth;
     const height = containerSize.height || containerRef.current.clientHeight;
     if (width === 0 || height === 0) return;
+    dimensionsRef.current = { width, height };
 
     const minSide = Math.min(width, height);
     const autoRadius = Math.floor(minSide / (Math.sqrt(MainSkills.length) * 2.2));
@@ -317,6 +320,8 @@ function PhysicsBubbleContainer({ containerRef, isLoading }) {
       Bodies.rectangle(width + 50, height / 2, 100, height + 200, { ...wallOptions, label: 'rightWall' }),
       Bodies.rectangle(-50, height / 2, 100, height + 200, { ...wallOptions, label: 'leftWall' })
     ];
+
+    wallsRef.current = walls;
 
     World.add(engine.world, walls);
 
@@ -444,20 +449,22 @@ function PhysicsBubbleContainer({ containerRef, isLoading }) {
       // 3. Hard wall constraints with velocity inversion
       balls.forEach(({ body }) => {
         const margin = radius + 2;
+        const currentWidth = dimensionsRef.current.width;
+        const currentHeight = dimensionsRef.current.height;
 
         if (body.position.x < margin) {
           Body.setPosition(body, { x: margin, y: body.position.y });
           Body.setVelocity(body, { x: Math.abs(body.velocity.x) * 0.7, y: body.velocity.y });
-        } else if (body.position.x > width - margin) {
-          Body.setPosition(body, { x: width - margin, y: body.position.y });
+        } else if (body.position.x > currentWidth - margin) {
+          Body.setPosition(body, { x: currentWidth - margin, y: body.position.y });
           Body.setVelocity(body, { x: -Math.abs(body.velocity.x) * 0.7, y: body.velocity.y });
         }
 
         if (body.position.y < margin) {
           Body.setPosition(body, { x: body.position.x, y: margin });
           Body.setVelocity(body, { x: body.velocity.x, y: Math.abs(body.velocity.y) * 0.7 });
-        } else if (body.position.y > height - margin) {
-          Body.setPosition(body, { x: body.position.x, y: height - margin });
+        } else if (body.position.y > currentHeight - margin) {
+          Body.setPosition(body, { x: body.position.x, y: currentHeight - margin });
           Body.setVelocity(body, { x: body.velocity.x, y: -Math.abs(body.velocity.y) * 0.7 });
         }
       });
@@ -467,8 +474,10 @@ function PhysicsBubbleContainer({ containerRef, isLoading }) {
     Events.on(engine, 'afterUpdate', () => {
       balls.forEach(({ body }) => {
         const margin = radius;
-        const clampedX = Math.max(margin, Math.min(width - margin, body.position.x));
-        const clampedY = Math.max(margin, Math.min(height - margin, body.position.y));
+        const currentWidth = dimensionsRef.current.width;
+        const currentHeight = dimensionsRef.current.height;
+        const clampedX = Math.max(margin, Math.min(currentWidth - margin, body.position.x));
+        const clampedY = Math.max(margin, Math.min(currentHeight - margin, body.position.y));
         if (clampedX !== body.position.x || clampedY !== body.position.y) {
           Body.setPosition(body, { x: clampedX, y: clampedY });
         }
@@ -539,12 +548,32 @@ function PhysicsBubbleContainer({ containerRef, isLoading }) {
       if (!renderRef.current || !containerRef.current) return;
       const newWidth = containerRef.current.clientWidth;
       const newHeight = containerRef.current.clientHeight;
+      if (newWidth === 0 || newHeight === 0) return;
+
+      dimensionsRef.current = { width: newWidth, height: newHeight };
       
       const render = renderRef.current;
       if (render.canvas) {
         render.canvas.width = newWidth;
         render.canvas.height = newHeight;
       }
+      render.options.width = newWidth;
+      render.options.height = newHeight;
+      if (typeof Render.setSize === 'function') {
+        Render.setSize(render, newWidth, newHeight);
+      }
+
+      if (wallsRef.current.length) {
+        World.remove(engine.world, wallsRef.current);
+      }
+      const resizedWalls = [
+        Bodies.rectangle(newWidth / 2, -50, newWidth + 200, 100, { ...wallOptions, label: 'topWall' }),
+        Bodies.rectangle(newWidth / 2, newHeight + 50, newWidth + 200, 100, { ...wallOptions, label: 'bottomWall' }),
+        Bodies.rectangle(newWidth + 50, newHeight / 2, 100, newHeight + 200, { ...wallOptions, label: 'rightWall' }),
+        Bodies.rectangle(-50, newHeight / 2, 100, newHeight + 200, { ...wallOptions, label: 'leftWall' })
+      ];
+      wallsRef.current = resizedWalls;
+      World.add(engine.world, resizedWalls);
     };
 
     window.addEventListener('resize', handleCanvasResize);
