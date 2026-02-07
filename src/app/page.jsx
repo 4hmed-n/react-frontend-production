@@ -317,18 +317,18 @@ function PhysicsBubbleContainer({ containerRef }) {
       const y = Math.random() * safeHeight + padding;
 
       const body = Bodies.circle(x, y, radius, {
-        restitution: 0.98,
-        friction: 0,
-        frictionAir: 0.002,
+        restitution: 0.7,
+        friction: 0.05,
+        frictionAir: 0.02,
         density: 0.03,
         render: { visible: false },
         label: skill
       });
 
-      // Initial velocity for movement
+      // Gentle initial velocity
       Body.setVelocity(body, {
-        x: (Math.random() - 0.5) * 4,
-        y: (Math.random() - 0.5) * 4
+        x: (Math.random() - 0.5) * 2,
+        y: (Math.random() - 0.5) * 2
       });
 
       bodiesRef.current[skill] = body;
@@ -345,7 +345,8 @@ function PhysicsBubbleContainer({ containerRef }) {
     const mouseConstraint = MouseConstraint.create(engine, {
       mouse: mouse,
       constraint: {
-        stiffness: 0.2,
+        stiffness: 0.8,
+        damping: 0.1,
         render: { visible: false }
       }
     });
@@ -359,24 +360,38 @@ function PhysicsBubbleContainer({ containerRef }) {
     runnerRef.current = runner;
 
     // ABSOLUTE boundary constraint - prevents any ball escape with buffer
+    const MAX_SPEED = 6;
+    const collisionRadius = radius + 6; // full outer radius: circle + border + glow
+
     Events.on(engine, 'beforeUpdate', () => {
-      // First, check ball-to-ball collisions and separate overlapping balls
+      // 1. Enforce speed limit on every body
+      balls.forEach(({ body }) => {
+        const speed = Math.sqrt(body.velocity.x ** 2 + body.velocity.y ** 2);
+        if (speed > MAX_SPEED) {
+          const scale = MAX_SPEED / speed;
+          Body.setVelocity(body, {
+            x: body.velocity.x * scale,
+            y: body.velocity.y * scale
+          });
+        }
+      });
+
+      // 2. Ball-to-ball collision separation using full collision radius
       for (let i = 0; i < balls.length; i++) {
         for (let j = i + 1; j < balls.length; j++) {
           const body1 = balls[i].body;
           const body2 = balls[j].body;
-          
+
           const dx = body2.position.x - body1.position.x;
           const dy = body2.position.y - body1.position.y;
           const distance = Math.sqrt(dx * dx + dy * dy);
-          const minDistance = radius * 2 + 4; // Billiard-tight buffer
-          
-          // If balls are overlapping or too close, separate them
+          const minDistance = collisionRadius * 2;
+
           if (distance < minDistance && distance > 0) {
             const overlap = minDistance - distance;
             const nx = dx / distance;
             const ny = dy / distance;
-            const correction = overlap / 2;
+            const correction = overlap / 2 + 0.5;
 
             Body.setPosition(body1, {
               x: body1.position.x - nx * correction,
@@ -387,32 +402,42 @@ function PhysicsBubbleContainer({ containerRef }) {
               y: body2.position.y + ny * correction
             });
 
-            Body.setVelocity(body1, { x: body1.velocity.x * 0.97, y: body1.velocity.y * 0.97 });
-            Body.setVelocity(body2, { x: body2.velocity.x * 0.97, y: body2.velocity.y * 0.97 });
+            // Swap velocity components along collision normal (billiard response)
+            const relVelX = body1.velocity.x - body2.velocity.x;
+            const relVelY = body1.velocity.y - body2.velocity.y;
+            const impulse = relVelX * nx + relVelY * ny;
+            if (impulse > 0) {
+              Body.setVelocity(body1, {
+                x: body1.velocity.x - impulse * nx * 0.5,
+                y: body1.velocity.y - impulse * ny * 0.5
+              });
+              Body.setVelocity(body2, {
+                x: body2.velocity.x + impulse * nx * 0.5,
+                y: body2.velocity.y + impulse * ny * 0.5
+              });
+            }
           }
         }
       }
-      
-      // Then, enforce boundary constraints with proper clamping
+
+      // 3. Hard wall constraints with velocity inversion
       balls.forEach(({ body }) => {
-        const margin = radius; // Keep bubble boundary inside container
-        
-        // Hard clamp to prevent any escape or touching boundaries
-        if (body.position.x - margin < 0) {
-          body.position.x = margin;
-          body.velocity.x = Math.max(0, body.velocity.x);
+        const margin = radius + 2;
+
+        if (body.position.x < margin) {
+          Body.setPosition(body, { x: margin, y: body.position.y });
+          Body.setVelocity(body, { x: Math.abs(body.velocity.x) * 0.7, y: body.velocity.y });
+        } else if (body.position.x > width - margin) {
+          Body.setPosition(body, { x: width - margin, y: body.position.y });
+          Body.setVelocity(body, { x: -Math.abs(body.velocity.x) * 0.7, y: body.velocity.y });
         }
-        if (body.position.x + margin > width) {
-          body.position.x = width - margin;
-          body.velocity.x = Math.min(0, body.velocity.x);
-        }
-        if (body.position.y - margin < 0) {
-          body.position.y = margin;
-          body.velocity.y = Math.max(0, body.velocity.y);
-        }
-        if (body.position.y + margin > height) {
-          body.position.y = height - margin;
-          body.velocity.y = Math.min(0, body.velocity.y);
+
+        if (body.position.y < margin) {
+          Body.setPosition(body, { x: body.position.x, y: margin });
+          Body.setVelocity(body, { x: body.velocity.x, y: Math.abs(body.velocity.y) * 0.7 });
+        } else if (body.position.y > height - margin) {
+          Body.setPosition(body, { x: body.position.x, y: height - margin });
+          Body.setVelocity(body, { x: body.velocity.x, y: -Math.abs(body.velocity.y) * 0.7 });
         }
       });
     });
@@ -430,26 +455,22 @@ function PhysicsBubbleContainer({ containerRef }) {
     };
     updateLoop();
 
-    // Mouse interaction for hovering
+    // Hover detection — purely visual, no physics mutation
     const handleMouseMove = (e) => {
       const rect = canvas.getBoundingClientRect();
       const mouseX = e.clientX - rect.left;
       const mouseY = e.clientY - rect.top;
 
       let hovered = null;
-      balls.forEach(({ body }) => {
+      for (const { body } of balls) {
         const dx = mouseX - body.position.x;
         const dy = mouseY - body.position.y;
-        const distance = Math.sqrt(dx * dx + dy * dy);
-        if (distance < radius) {
+        if (dx * dx + dy * dy < radius * radius) {
           hovered = body.label;
-          canvas.style.cursor = 'pointer';
+          break;
         }
-      });
-
-      if (!hovered) {
-        canvas.style.cursor = 'grab';
       }
+      canvas.style.cursor = hovered ? 'pointer' : 'grab';
       setHoveredBubble(hovered);
     };
 
