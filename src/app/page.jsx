@@ -311,15 +311,12 @@ function PhysicsBubbleContainer({ containerRef, isLoading }) {
 
   // Compute max radius so all balls fit in the container area
   const getRadius = (w, h) => {
-    const count = MainSkills.length; // 17 balls
-    // Estimate: area needed per ball = (2.8r)^2 to leave gaps
-    // Available area = w * h
-    // count * (2.8r)^2 <= w * h  =>  r <= sqrt(w*h / (count * 7.84))
-    const areaRadius = Math.sqrt((w * h) / (count * 8.5));
-    // Also cap so balls don't exceed ~1/8th of the smaller dimension
-    const dimRadius = Math.min(w, h) / 8;
-    // Floor at 14px so icons stay readable, cap at 40px
-    return Math.max(14, Math.min(40, Math.floor(Math.min(areaRadius, dimRadius))));
+    const count = MainSkills.length;
+    // Looser packing factor for bigger balls
+    const areaRadius = Math.sqrt((w * h) / (count * 6));
+    const dimRadius = Math.min(w, h) / 7;
+    // Floor at 18px, cap at 55px
+    return Math.max(18, Math.min(55, Math.floor(Math.min(areaRadius, dimRadius))));
   };
 
   useEffect(() => {
@@ -411,7 +408,7 @@ function PhysicsBubbleContainer({ containerRef, isLoading }) {
       const body = Bodies.circle(x, y, radius, {
         restitution: 0.9,
         friction: 0,
-        frictionAir: 0.01,
+        frictionAir: 0.001,
         inertia: Infinity,
         density: 0.03,
         render: { visible: false },
@@ -679,8 +676,8 @@ function PhysicsBubbleContainer({ containerRef, isLoading }) {
     engineRef.current.timing.timeScale = isLoading ? 0 : 1;
   }, [isLoading]);
 
-  // Scale icons to ~70% of ball diameter (icons are 48px base)
-  const iconScale = (ballRadius * 2 * 0.7) / 48;
+  // Keep icons at native size (w-12 h-12 = 48px)
+  const iconScale = 1;
 
   return (
     <>
