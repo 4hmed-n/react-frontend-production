@@ -229,6 +229,7 @@ function PhysicsBubbleContainer({ containerRef }) {
   const bodiesRef = useRef({});
   const ballRefsRef = useRef([]);
   const [hoveredBubble, setHoveredBubble] = useState(null);
+  const [isDragging, setIsDragging] = useState(false);
   const [ballRadius, setBallRadius] = useState(45); // Increased for better icon fit
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
 
@@ -498,7 +499,23 @@ function PhysicsBubbleContainer({ containerRef }) {
           ref={el => ballRefsRef.current[index] = el}
           className="absolute pointer-events-auto"
           onMouseEnter={() => setHoveredBubble(skill)}
-          onMouseLeave={() => setHoveredBubble(null)}
+          onMouseLeave={() => {
+            if (!isDragging) {
+              setHoveredBubble(null);
+            }
+          }}
+          onPointerDown={() => {
+            setIsDragging(true);
+            setHoveredBubble(skill);
+          }}
+          onPointerUp={() => {
+            setIsDragging(false);
+            setHoveredBubble(null);
+          }}
+          onPointerCancel={() => {
+            setIsDragging(false);
+            setHoveredBubble(null);
+          }}
           style={{
             width: `${ballRadius * 2}px`,
             height: `${ballRadius * 2}px`,
@@ -527,7 +544,7 @@ function PhysicsBubbleContainer({ containerRef }) {
           </div>
           <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 whitespace-nowrap z-50">
             <span
-              className={`text-xs font-medium text-blue-300 bg-slate-900/90 px-3 py-1 rounded-full border border-blue-400/30 backdrop-blur-sm transition-opacity duration-200 ${
+              className={`pointer-events-none text-xs font-medium text-blue-300 bg-slate-900/90 px-3 py-1 rounded-full border border-blue-400/30 backdrop-blur-sm transition-opacity duration-100 ${
                 hoveredBubble === skill ? 'opacity-100' : 'opacity-0'
               }`}
             >
