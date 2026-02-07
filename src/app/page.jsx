@@ -708,7 +708,8 @@ function PhysicsBubbleContainer({ containerRef, isLoading }) {
             width: `${ballRadius * 2}px`,
             height: `${ballRadius * 2}px`,
             willChange: 'transform',
-            pointerEvents: 'all'
+            pointerEvents: 'all',
+            zIndex: hoveredBubble === skill ? 9999 : 1
           }}
         >
           <div 
