@@ -155,8 +155,31 @@ export default function Layout({ children }) {
       {isLoading && (
         <div className="kamui-loading" aria-label="Loading">
           <div className="kamui-core" aria-hidden="true">
-            <div className="kamui-spiral"></div>
-            <div className="kamui-spiral kamui-spiral--inner"></div>
+            <svg className="kamui-whirlpool" viewBox="0 0 200 200" role="presentation">
+              <defs>
+                <linearGradient id="kamui-glow" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stopColor="rgba(200, 170, 255, 0.0)" />
+                  <stop offset="45%" stopColor="rgba(160, 120, 255, 0.85)" />
+                  <stop offset="100%" stopColor="rgba(30, 18, 50, 0.0)" />
+                </linearGradient>
+              </defs>
+              <path
+                d="M100 20c44 0 80 36 80 80s-36 80-80 80-80-36-80-80 36-80 80-80z"
+                fill="none"
+                stroke="url(#kamui-glow)"
+                strokeWidth="18"
+                strokeLinecap="round"
+                strokeDasharray="12 18"
+              />
+              <path
+                d="M100 40c33 0 60 27 60 60s-27 60-60 60-60-27-60-60 27-60 60-60z"
+                fill="none"
+                stroke="rgba(210, 180, 255, 0.75)"
+                strokeWidth="10"
+                strokeLinecap="round"
+                strokeDasharray="6 14"
+              />
+            </svg>
             <div className="kamui-eye"></div>
           </div>
         </div>
@@ -323,37 +346,31 @@ export default function Layout({ children }) {
 }
 .kamui-core {
   position: relative;
-  width: 220px;
-  height: 220px;
+  width: 240px;
+  height: 240px;
+  display: grid;
+  place-items: center;
 }
-.kamui-spiral {
-  position: absolute;
-  inset: 0;
-  border-radius: 9999px;
-  background: conic-gradient(from 0deg, rgba(255, 255, 255, 0.0), rgba(131, 86, 255, 0.85), rgba(0, 0, 0, 0));
-  -webkit-mask: radial-gradient(circle, transparent 34%, #000 35%, #000 68%, transparent 69%);
-  mask: radial-gradient(circle, transparent 34%, #000 35%, #000 68%, transparent 69%);
-  animation: kamui-spin 1.7s cubic-bezier(0.2, 0.8, 0.3, 1) infinite;
-}
-.kamui-spiral--inner {
-  inset: 26px;
-  background: conic-gradient(from 0deg, rgba(255, 255, 255, 0.0), rgba(164, 112, 255, 0.9), rgba(0, 0, 0, 0));
-  animation-duration: 1.25s;
-  animation-direction: reverse;
+.kamui-whirlpool {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 0 22px rgba(140, 100, 255, 0.45));
+  animation: kamui-spin 1.6s cubic-bezier(0.1, 0.85, 0.2, 1) infinite;
 }
 .kamui-eye {
   position: absolute;
   inset: 0;
   margin: auto;
-  width: 26px;
-  height: 26px;
+  width: 28px;
+  height: 28px;
   border-radius: 9999px;
   background: radial-gradient(circle, rgba(235, 225, 255, 0.95), rgba(120, 90, 200, 0.4));
   box-shadow: 0 0 18px rgba(164, 112, 255, 0.7);
 }
 @keyframes kamui-spin {
-  0% { transform: rotate(0deg) scale(0.95); }
-  100% { transform: rotate(360deg) scale(1.02); }
+  0% { transform: rotate(0deg) scale(0.92); }
+  45% { transform: rotate(200deg) scale(1.02); }
+  100% { transform: rotate(360deg) scale(0.95); }
 }
 `
         }}

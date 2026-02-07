@@ -712,7 +712,7 @@ export default function Page({ isLoading = false }) {
             </div>
           </div>
           <div className="flex items-center justify-center">
-            <div className={`relative ${!isLoading ? 'pfp-float' : ''}`}>
+            <div className="relative">
               <div className={`absolute inset-0 bg-gradient-to-br from-blue-500/20 to-purple-500/20 blur-3xl transition-all duration-300 ${pfpHovered ? 'blur-2xl scale-110' : ''}`} />
               <div 
                 onMouseEnter={() => setPfpHovered(true)}
@@ -725,7 +725,7 @@ export default function Page({ isLoading = false }) {
                 }}
                 onPointerUp={() => setIsPfpActive(false)}
                 onPointerCancel={() => setIsPfpActive(false)}
-                className={`relative w-52 h-52 md:w-64 md:h-64 rounded-full overflow-hidden border border-white/10 bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-xl flex items-center justify-center transition-all duration-300 ${pfpHovered ? 'border-blue-400/50 shadow-lg shadow-blue-500/20' : ''} ${isPfpActive ? 'pfp-jiggle' : ''}`}
+                className={`relative w-52 h-52 md:w-64 md:h-64 rounded-full overflow-hidden border border-white/10 bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-xl flex items-center justify-center transition-all duration-300 ${pfpHovered ? 'border-blue-400/50 shadow-lg shadow-blue-500/20' : ''} ${!isLoading ? 'pfp-float' : ''} ${isPfpActive ? 'pfp-jiggle' : ''}`}
               >
                 <div className={`absolute inset-0 rounded-full whirlpool-effect transition-opacity duration-500 ${pfpHovered ? 'opacity-100' : 'opacity-70'}`} />
                 <img 
@@ -1164,9 +1164,10 @@ export default function Page({ isLoading = false }) {
           __html: `
 .pfp-float {
   animation: pfp-float 6s ease-in-out infinite;
+  will-change: transform;
 }
 .pfp-jiggle {
-  animation: pfp-jiggle 0.35s ease-in-out infinite;
+  animation: pfp-jiggle 0.32s ease-in-out infinite;
 }
 @keyframes pfp-float {
   0% { transform: translate3d(0, 0, 0); }
