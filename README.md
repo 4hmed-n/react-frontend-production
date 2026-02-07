@@ -4,13 +4,13 @@
 
 ### Full-Stack AI Engineer | Data Scientist | ML Architect
 
-[![Live Demo](https://img.shields.io/badge/Live-Demo-blue?style=for-the-badge&logo=vercel)](https://your-portfolio-url.vercel.app)
+[![Live Demo](https://img.shields.io/badge/Live-Demo-blue?style=for-the-badge&logo=vercel)](https://react-frontend-production.vercel.app)
 [![React](https://img.shields.io/badge/React-18.3.1-61DAFB?style=for-the-badge&logo=react)](https://reactjs.org/)
 [![Vite](https://img.shields.io/badge/Vite-7.3.1-646CFF?style=for-the-badge&logo=vite)](https://vitejs.dev/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4.3-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
-*An interactive portfolio showcasing full-stack development expertise with AI/ML integration, featuring real-time physics simulation and glassmorphic UI design.*
+*An interactive portfolio showcasing full-stack development expertise with AI/ML integration, featuring real-time physics simulation, whirlpool transitions, and glassmorphic UI design.*
 
 [Features](#-features) • [Tech Stack](#-tech-stack) • [Installation](#-installation) • [Deployment](#-deployment) • [Contact](#-contact)
 
@@ -38,7 +38,9 @@
 A modern, interactive portfolio website built with **React 18** and **Vite**, featuring:
 
 - 🎯 **Interactive Physics Engine** - Real-time 2D physics using Matter.js
+- � **Whirlpool PFP Transitions** - Clip-path iris-wipe intro & click animations
 - 🎨 **Glassmorphic Design** - Modern UI with backdrop blur and transparency effects
+- ⏳ **Cinematic Loading Screen** - Segmented progress bar with philosophical quotes
 - 📱 **Fully Responsive** - Optimized for all devices and screen sizes
 - 📄 **PDF Resume Generator** - Download professional resume with one click
 - ⚡ **Lightning Fast** - Built with Vite for optimal performance
@@ -48,21 +50,30 @@ A modern, interactive portfolio website built with **React 18** and **Vite**, fe
 
 ## 🔄 Recent Updates (February 2026)
 
-### Physics Engine Overhaul ⭐
-- **Rock-Solid Balls**: Replaced soft bubble physics with billiard-style rigid body physics
-- **Increased Ball Radius**: Expanded from 30px to 45px for better SVG icon visibility
-- **Collision System**: Added ball-to-ball collision detection with separation forces
-- **Absolute Containment**: Implemented hard boundary constraints preventing any ball escape
-- **Buffer Zones**: 5px container edge buffer + 2px inter-ball spacing
+### Whirlpool PFP Transitions ⭐
+- **Intro Animation**: Profile picture materializes via reverse whirlpool effect on page load — `clip-path: circle()` iris-wipe expanding from center (1.6s)
+- **Click Interaction**: On mouse down, PFP collapses into a singularity and re-emerges — full out-and-back whirlpool cycle (1.8s)
+- **Clean Compositing**: Single-property `clip-path` animation for smooth GPU rendering with zero frame drops
+- **Gentle Float**: PFP gently bobs up and down when idle, with hover glow effect preserved
 
-### Resume Enhancements ⭐
-- **Web Profile Picture**: Added personal profile photo to web resume at `/resume`
-- **Smart PDF Hiding**: Profile picture automatically hidden when downloading PDF
+### Cinematic Loading Screen ⭐
+- **Segmented Progress Bar**: 30-segment bar with blue-to-purple gradient and ambient glow
+- **Two-Phase Easing**: Slow start → accelerated finish for natural feel (6s duration)
+- **Philosophical Quotes**: 24 classic quotes (Socrates, Aristotle, Nietzsche, Lao Tzu, etc.) with Fisher-Yates shuffle cycling
+- **PFP Preloading**: Loading screen waits for profile image to load before dismissing
+- **UI Sync**: Header and sidebar hidden during loading, fade in after
+
+### Responsive Physics Engine ⭐
+- **Area-Based Sizing**: Ball radius scales with container area (packing factor 7)
+- **ResizeObserver**: Container size tracked in real-time, physics bodies rescaled on resize
+- **Billiard Physics**: Zero-gravity, high restitution (0.9), zero friction, drag & throw
+- **Smart Tooltips**: Hovered ball tooltip gets z-index 9999 to stay on top
+- **Pointer-Events Fix**: Ball overlays set to `pointer-events-none` so Matter.js canvas handles drags
+
+### Resume Enhancements
+- **Web Profile Picture**: Profile photo on web resume at `/resume`
+- **Smart PDF Hiding**: Profile picture auto-hidden when downloading PDF
 - **Cyan Border Frame**: Professional circular frame with matching cyan accent
-
-### Profile Picture Update ⭐
-- **New PFP Uploaded**: Updated portfolio profile picture across all sections
-- **Consistent Display**: Shows on hero section and web resume
 
 ---
 
@@ -80,14 +91,18 @@ A modern, interactive portfolio website built with **React 18** and **Vite**, fe
   - Smooth deletion animation (50ms)
   - Sky-blue blinking cursor
 
-- **Rock-Solid Physics-Based Skills** ⭐ *NEW*
+- **Whirlpool PFP Transitions** ⭐ *NEW*
+  - Reverse whirlpool intro on page load (iris-wipe from center)
+  - Click-triggered out-and-back whirlpool cycle
+  - Clean `clip-path: circle()` animation
+  - Idle floating animation with hover glow
+
+- **Responsive Physics-Based Skills**
   - Zero-gravity billiard ball physics
-  - Balls with 45px radius for icon visibility
-  - Ball-to-ball collision detection & separation
-  - Absolute boundary containment (no escape)
-  - 2px inter-ball buffer + 5px container buffer
+  - Area-based responsive ball sizing
+  - ResizeObserver for real-time container tracking
   - Drag & throw interactions
-  - Real-time collision impulses
+  - Smart tooltip z-indexing
 
 </td>
 <td width="50%">
@@ -100,11 +115,17 @@ A modern, interactive portfolio website built with **React 18** and **Vite**, fe
   - One-click PDF download
   - Capitalized field descriptions
 
-- **Web Resume with Profile Picture** ⭐ *NEW*
+- **Web Resume with Profile Picture**
   - Profile picture displays on web `/resume` page
   - Auto-hidden from PDF downloads
   - Cyan-bordered circular frame
   - Fallback emoji if image missing
+
+- **Cinematic Loading Screen** ⭐ *NEW*
+  - 30-segment progress bar with gradient glow
+  - 24 philosophical quotes (Fisher-Yates shuffle)
+  - PFP preloading with minimum display time
+  - Header/sidebar hidden during load
 
 - **Smart Navigation**
   - Dynamic header button states
@@ -262,14 +283,33 @@ react-frontend-production/
 ### 2. **Physics Engine Configuration**
 ```javascript
 - Engine: Matter.js with zero gravity {x: 0, y: 0}
-- Bubble Radius: 25px
-- Wall Thickness: 100px (invisible)
-- Iterations: 20/20 (position/velocity)
-- Restitution: 0.8
-- Magnetic Pulse: Inverse-distance force on double-click
+- Ball Sizing: Area-based responsive (packing factor 7, cap 45px)
+- Friction Air: 0.001 | Friction: 0 | Restitution: 0.9
+- ResizeObserver: Real-time container tracking with Body.scale
+- Drag: Matter.js MouseConstraint (pointer-events-none overlays)
+- Tooltip Z-Index: 9999 on hovered ball
 ```
 
-### 3. **Resume PDF Generation**
+### 3. **Whirlpool PFP Effect**
+```javascript
+- Intro (kamui-in): clip-path circle 0% → 71%, 1.6s ease-out
+- Click (kamui-out): circle 71% → 0% → hold → 0% → 71%, 1.8s ease-in-out
+- Float: translate3d(0, -10px, 0), 6s ease-in-out infinite
+- Hover: border-blue-400/50, shadow-blue-500/20 glow
+- GPU: will-change: clip-path, single-property animation
+```
+
+### 4. **Loading Screen**
+```javascript
+- Duration: 6s minimum display time
+- Progress Bar: 30 segments, blue-purple gradient
+- Easing: Two-phase (slow 0-60%, fast 60-100%)
+- Quotes: 24 philosophical quotes, Fisher-Yates shuffle
+- Preloading: PFP image preloaded before dismiss
+- UI Sync: body.app-loading → --ui-opacity: 0
+```
+
+### 5. **Resume PDF Generation**
 ```javascript
 - Technology: html2canvas + jsPDF
 - Format: A4 Portrait
@@ -278,7 +318,7 @@ react-frontend-production/
 - Auto-updating from portfolio data
 ```
 
-### 4. **Smart Navigation**
+### 6. **Smart Navigation**
 ```javascript
 - Home Page: "Resume" button (blue-cyan gradient)
 - Resume Page: "Download PDF" button (yellow-orange gradient)
@@ -292,7 +332,7 @@ react-frontend-production/
 
 | Metric | Score | Status |
 |--------|-------|--------|
-| **Build Time** | 2.76s | ✅ Optimized |
+| **Build Time** | ~5s | ✅ Optimized |
 | **Bundle Size** | ~500KB (gzipped) | ✅ Efficient |
 | **First Paint** | < 1s | ✅ Fast |
 | **Lighthouse Score** | 95+ | ✅ Excellent |
@@ -304,6 +344,8 @@ react-frontend-production/
 - ✅ Lazy loading for images
 - ✅ CSS minification with Tailwind
 - ✅ Gzip compression (69% reduction)
+- ✅ Single-property CSS animations for GPU compositing
+- ✅ PFP image preloading for seamless transitions
 
 ---
 
@@ -377,6 +419,6 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 **Built with ❤️ by Muhammad Ahmed**
 
-[![Portfolio](https://img.shields.io/badge/Portfolio-Visit-blue?style=for-the-badge)](https://your-portfolio-url.vercel.app)
+[![Portfolio](https://img.shields.io/badge/Portfolio-Visit-blue?style=for-the-badge)](https://react-frontend-production.vercel.app)
 
 </div>
