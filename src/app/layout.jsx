@@ -109,6 +109,7 @@ export default function Layout({ children }) {
     const title = 'Muhammad Ahmed | Portfolio';
     const description = 'Software Engineer & AI Researcher';
     document.title = title;
+    document.documentElement.lang = 'en';
     let meta = document.querySelector('meta[name="description"]');
     if (!meta) {
       meta = document.createElement('meta');
@@ -116,6 +117,14 @@ export default function Layout({ children }) {
       document.head.appendChild(meta);
     }
     meta.setAttribute('content', description);
+
+    let noTranslate = document.querySelector('meta[name="google"]');
+    if (!noTranslate) {
+      noTranslate = document.createElement('meta');
+      noTranslate.setAttribute('name', 'google');
+      document.head.appendChild(noTranslate);
+    }
+    noTranslate.setAttribute('content', 'notranslate');
   }, []);
 
   useEffect(() => {

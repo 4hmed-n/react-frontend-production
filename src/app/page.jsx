@@ -243,10 +243,13 @@ function PhysicsBubbleContainer({ containerRef, isLoading }) {
   const isRunningRef = useRef(false);
   const wallsRef = useRef([]);
   const dimensionsRef = useRef({ width: 0, height: 0 });
+  const radiusRef = useRef(45);
   const [hoveredBubble, setHoveredBubble] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
   const [ballRadius, setBallRadius] = useState(45); // Increased for better icon fit
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
+
+  const getRadius = (width) => Math.min(50, Math.max(16, Math.round(width / 25)));
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -255,9 +258,8 @@ function PhysicsBubbleContainer({ containerRef, isLoading }) {
     if (width === 0 || height === 0) return;
     dimensionsRef.current = { width, height };
 
-    const minSide = Math.min(width, height);
-    const autoRadius = Math.floor(minSide / (Math.sqrt(MainSkills.length) * 2.2));
-    const radius = Math.min(45, Math.max(18, autoRadius));
+    const radius = getRadius(width);
+    radiusRef.current = radius;
     setBallRadius((prev) => (prev === radius ? prev : radius));
 
     const { Engine, Render, World, Bodies, Mouse, MouseConstraint, Runner, Events, Body } = Matter;
@@ -336,9 +338,9 @@ function PhysicsBubbleContainer({ containerRef, isLoading }) {
       const y = Math.random() * safeHeight + padding;
 
       const body = Bodies.circle(x, y, radius, {
-        restitution: 0.8,
-        friction: 0.05,
-        frictionAir: 0.1,
+        restitution: 0.9,
+        friction: 0,
+        frictionAir: 0.01,
         inertia: Infinity,
         density: 0.03,
         render: { visible: false },
@@ -387,7 +389,7 @@ function PhysicsBubbleContainer({ containerRef, isLoading }) {
 
     // ABSOLUTE boundary constraint - prevents any ball escape with buffer
     const MAX_SPEED = 5;
-    const collisionRadius = radius + 6; // full outer radius: circle + border + glow
+    const collisionRadius = () => radiusRef.current + 6; // full outer radius: circle + border + glow
 
     Events.on(engine, 'beforeUpdate', () => {
       // 1. Enforce speed limit on every body
@@ -411,7 +413,7 @@ function PhysicsBubbleContainer({ containerRef, isLoading }) {
           const dx = body2.position.x - body1.position.x;
           const dy = body2.position.y - body1.position.y;
           const distance = Math.sqrt(dx * dx + dy * dy);
-          const minDistance = collisionRadius * 2;
+          const minDistance = collisionRadius() * 2;
 
           if (distance < minDistance && distance > 0) {
             const overlap = minDistance - distance;
@@ -448,7 +450,7 @@ function PhysicsBubbleContainer({ containerRef, isLoading }) {
 
       // 3. Hard wall constraints with velocity inversion
       balls.forEach(({ body }) => {
-        const margin = radius + 2;
+        const margin = radiusRef.current + 2;
         const currentWidth = dimensionsRef.current.width;
         const currentHeight = dimensionsRef.current.height;
 
@@ -473,7 +475,7 @@ function PhysicsBubbleContainer({ containerRef, isLoading }) {
     // Hard boundary clamping after physics step to prevent seepage
     Events.on(engine, 'afterUpdate', () => {
       balls.forEach(({ body }) => {
-        const margin = radius;
+        const margin = radiusRef.current;
         const currentWidth = dimensionsRef.current.width;
         const currentHeight = dimensionsRef.current.height;
         const clampedX = Math.max(margin, Math.min(currentWidth - margin, body.position.x));
@@ -489,7 +491,8 @@ function PhysicsBubbleContainer({ containerRef, isLoading }) {
       balls.forEach(({ body, index }) => {
         if (ballRefsRef.current[index]) {
           const ballEl = ballRefsRef.current[index];
-          ballEl.style.transform = `translate(${body.position.x - radius}px, ${body.position.y - radius}px)`;
+          const currentRadius = radiusRef.current;
+          ballEl.style.transform = `translate(${body.position.x - currentRadius}px, ${body.position.y - currentRadius}px)`;
         }
       });
       animationFrameIdRef.current = requestAnimationFrame(updateLoop);
@@ -551,6 +554,16 @@ function PhysicsBubbleContainer({ containerRef, isLoading }) {
       if (newWidth === 0 || newHeight === 0) return;
 
       dimensionsRef.current = { width: newWidth, height: newHeight };
+
+      const nextRadius = getRadius(newWidth);
+      if (nextRadius !== radiusRef.current) {
+        const scale = nextRadius / radiusRef.current;
+        balls.forEach(({ body }) => {
+          Body.scale(body, scale, scale);
+        });
+        radiusRef.current = nextRadius;
+        setBallRadius(nextRadius);
+      }
       
       const render = renderRef.current;
       if (render.canvas) {
@@ -808,7 +821,6 @@ export default function Page() {
                 onMouseEnter={() => setPfpHovered(true)}
                 onMouseLeave={() => setPfpHovered(false)}
                 onMouseDown={triggerPfpPulse}
-                onClick={triggerPfpPulse}
                 className={`relative w-52 h-52 md:w-64 md:h-64 rounded-full overflow-hidden border border-white/10 bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-xl flex items-center justify-center transition-all duration-300 ${pfpHovered ? 'border-blue-400/50 shadow-lg shadow-blue-500/20' : ''} ${!isLoading ? 'pfp-float' : ''} ${isPfpActive ? 'pfp-pulse' : ''}`}
               >
                 <div className={`absolute inset-0 rounded-full whirlpool-effect transition-opacity duration-500 ${pfpHovered ? 'opacity-100' : 'opacity-70'}`} />
