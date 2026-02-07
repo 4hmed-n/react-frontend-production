@@ -924,13 +924,13 @@ export default function Page() {
     }
     vortexTimeoutRef.current = setTimeout(() => {
       setIsInteracting(false);
-    }, 1900);
+    }, 500);
   };
 
   // Clear intro animation after it finishes
   useEffect(() => {
     if (!isLoading && isPfpIntro) {
-      const t = setTimeout(() => setIsPfpIntro(false), 1700);
+      const t = setTimeout(() => setIsPfpIntro(false), 800);
       return () => clearTimeout(t);
     }
   }, [isLoading, isPfpIntro]);
@@ -987,7 +987,7 @@ export default function Page() {
                 onMouseEnter={() => setPfpHovered(true)}
                 onMouseLeave={() => setPfpHovered(false)}
                 onMouseDown={triggerVortex}
-                className={`relative w-52 h-52 md:w-64 md:h-64 rounded-full overflow-hidden border border-white/10 bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-xl flex items-center justify-center ${pfpHovered && !isInteracting && !isPfpIntro ? 'border-blue-400/50 shadow-lg shadow-blue-500/20' : ''} ${!isLoading && !isInteracting && !isPfpIntro ? 'pfp-float pfp-hoverable' : ''} ${isInteracting ? 'pfp-kamui-out' : ''} ${isPfpIntro && !isLoading ? 'pfp-kamui-in' : ''}`}
+                className={`relative w-52 h-52 md:w-64 md:h-64 rounded-full overflow-hidden border border-white/10 bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-xl flex items-center justify-center pfp-hoverable ${pfpHovered ? 'border-blue-400/50 shadow-lg shadow-blue-500/20' : ''} ${!isLoading && !isInteracting && !isPfpIntro ? 'pfp-float' : ''} ${isInteracting ? 'pfp-vortex' : ''} ${isPfpIntro && !isLoading ? 'pfp-vortex-in' : ''}`}
               >
                 <div className={`absolute inset-0 rounded-full whirlpool-effect transition-opacity duration-500 ${pfpHovered ? 'opacity-100' : 'opacity-70'}`} />
                 <img 
@@ -1427,48 +1427,44 @@ export default function Page() {
 .pfp-float {
   animation: pfp-float 6s ease-in-out infinite;
   will-change: transform;
-  transform: translateZ(0);
+  transform: translate3d(0, 0, 0);
   backface-visibility: hidden;
 }
 .pfp-hoverable {
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
-/* Kamui suction - click: spirals out then back in */
-.pfp-kamui-out {
-  animation: kamui-out 1.8s ease-in-out forwards;
-  will-change: clip-path;
-  transition: none !important;
+.pfp-vortex {
+  animation: pfp-vortex 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  transform-origin: center center;
+  will-change: transform;
+  backface-visibility: hidden;
 }
-/* Reverse Kamui - materialize in on page load */
-.pfp-kamui-in {
-  animation: kamui-in 1.6s ease-out forwards;
-  will-change: clip-path;
-  transition: none !important;
+.pfp-vortex-in {
+  animation: pfp-vortex-in 0.7s cubic-bezier(0.0, 0, 0.2, 1) forwards;
+  transform-origin: center center;
+  will-change: transform;
+  backface-visibility: hidden;
 }
 @keyframes pfp-float {
   0% { transform: translate3d(0, 0, 0); }
   50% { transform: translate3d(0, -10px, 0); }
   100% { transform: translate3d(0, 0, 0); }
 }
-@keyframes kamui-out {
-  0%   { clip-path: circle(71% at 50% 50%); }
-  15%  { clip-path: circle(50% at 50% 50%); }
-  30%  { clip-path: circle(32% at 50% 50%); }
-  42%  { clip-path: circle(15% at 50% 50%); }
-  50%  { clip-path: circle(0% at 50% 50%); }
-  58%  { clip-path: circle(0% at 50% 50%); }
-  70%  { clip-path: circle(18% at 50% 50%); }
-  82%  { clip-path: circle(40% at 50% 50%); }
-  92%  { clip-path: circle(62% at 50% 50%); }
-  100% { clip-path: circle(71% at 50% 50%); }
+@keyframes pfp-vortex {
+  0% {
+    transform: rotate(0deg) scale(1) translateZ(0);
+  }
+  100% {
+    transform: rotate(720deg) scale(0) translateZ(0);
+  }
 }
-@keyframes kamui-in {
-  0%   { clip-path: circle(0% at 50% 50%); }
-  20%  { clip-path: circle(12% at 50% 50%); }
-  40%  { clip-path: circle(30% at 50% 50%); }
-  60%  { clip-path: circle(48% at 50% 50%); }
-  80%  { clip-path: circle(64% at 50% 50%); }
-  100% { clip-path: circle(71% at 50% 50%); }
+@keyframes pfp-vortex-in {
+  0% {
+    transform: rotate(-720deg) scale(0) translateZ(0);
+  }
+  100% {
+    transform: rotate(0deg) scale(1) translateZ(0);
+  }
 }
 `
         }}
