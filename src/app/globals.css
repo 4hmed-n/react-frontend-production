@@ -79,3 +79,25 @@ html {
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(180deg, #c084fc 0%, #a855f7 100%);
 }
+
+/* Constant float starting after load */
+.pfp-float {
+  animation: float 6s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* The 'clicked' pulse effect */
+.pfp-pulse {
+  animation: pulse 0.3s ease-out;
+}
+
+@keyframes float {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, -15px, 0); }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}

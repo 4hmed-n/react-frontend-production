@@ -805,12 +805,11 @@ function PhysicsBubbleContainer({ containerRef, isLoading }) {
 export default function Page() {
   const [isLoading, setIsLoading] = useState(true);
   const [pfpHovered, setPfpHovered] = useState(false);
-  const [isPfpActive, setIsPfpActive] = useState(false);
+  const [isInteracting, setIsInteracting] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [currentSection, setCurrentSection] = useState('home');
   const currentSectionRef = useRef('home');
   const techStackContainerRef = useRef(null);
-  const pulseTimeoutRef = useRef(null);
 
   useEffect(() => {
     const minDisplayTime = 6000; // minimum time to show the loading bar
@@ -916,16 +915,6 @@ export default function Page() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const triggerPfpPulse = () => {
-    setIsPfpActive(true);
-    if (pulseTimeoutRef.current) {
-      clearTimeout(pulseTimeoutRef.current);
-    }
-    pulseTimeoutRef.current = setTimeout(() => {
-      setIsPfpActive(false);
-    }, 300);
-  };
-
   const mainPortfolio = (
     <div className="min-h-screen w-full">
       <section id="home" className="mx-auto max-w-7xl px-6 md:px-20 pt-28 md:pt-32 pb-20 min-h-screen flex items-center">
@@ -977,8 +966,11 @@ export default function Page() {
               <div 
                 onMouseEnter={() => setPfpHovered(true)}
                 onMouseLeave={() => setPfpHovered(false)}
-                onMouseDown={triggerPfpPulse}
-                className={`relative w-52 h-52 md:w-64 md:h-64 rounded-full overflow-hidden border border-white/10 bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-xl flex items-center justify-center transition-all duration-300 ${pfpHovered ? 'border-blue-400/50 shadow-lg shadow-blue-500/20' : ''} ${!isLoading ? 'pfp-float' : ''} ${isPfpActive ? 'pfp-pulse' : ''}`}
+                onMouseDown={() => {
+                  setIsInteracting(true);
+                  setTimeout(() => setIsInteracting(false), 300);
+                }}
+                className={`relative w-52 h-52 md:w-64 md:h-64 rounded-full overflow-hidden border border-white/10 bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-xl flex items-center justify-center transition-all duration-300 ${pfpHovered ? 'border-blue-400/50 shadow-lg shadow-blue-500/20' : ''} ${!isLoading ? 'pfp-float' : ''} ${isInteracting ? 'pfp-pulse' : ''}`}
               >
                 <div className={`absolute inset-0 rounded-full whirlpool-effect transition-opacity duration-500 ${pfpHovered ? 'opacity-100' : 'opacity-70'}`} />
                 <img 
@@ -1412,31 +1404,6 @@ export default function Page() {
           </svg>
         </button>
       )}
-      <style
-        dangerouslySetInnerHTML={{
-          __html: `
-.pfp-float {
-  animation: pfp-float 6s ease-in-out infinite;
-  will-change: transform;
-  transform: translateZ(0);
-  backface-visibility: hidden;
-}
-.pfp-pulse {
-  animation: pfp-pulse 0.3s ease-in-out;
-}
-@keyframes pfp-float {
-  0% { transform: translate3d(0, 0, 0); }
-  50% { transform: translate3d(0, -10px, 0); }
-  100% { transform: translate3d(0, 0, 0); }
-}
-@keyframes pfp-pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.2); }
-  100% { transform: scale(1); }
-}
-`
-        }}
-      />
     </div>
   );
 
