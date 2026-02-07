@@ -4,7 +4,7 @@ import Matter from 'matter-js';
 
 function LoadingScreen() {
   return (
-    <div className="kamui-loading fixed inset-0 z-50 bg-black">
+    <div className="kamui-loading fixed inset-0 z-[9999] bg-black">
       <div className="kamui-core" aria-hidden="true">
         <div className="kamui-whirlpool"></div>
         <div className="kamui-eye"></div>
@@ -249,7 +249,7 @@ function PhysicsBubbleContainer({ containerRef, isLoading }) {
   const [ballRadius, setBallRadius] = useState(45); // Increased for better icon fit
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
 
-  const getRadius = (width) => Math.min(50, Math.max(16, Math.round(width / 25)));
+  const getRadius = (width) => Math.min(width / 25, 35);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -1279,7 +1279,7 @@ export default function Page() {
   background: conic-gradient(from 0deg, rgba(20, 10, 40, 0.1), rgba(160, 120, 255, 0.95), rgba(0, 0, 0, 0));
   -webkit-mask: radial-gradient(circle, transparent 25%, #000 26%, #000 62%, transparent 63%);
   mask: radial-gradient(circle, transparent 25%, #000 26%, #000 62%, transparent 63%);
-  animation: kamui-spin 1.3s cubic-bezier(0.12, 0.8, 0.2, 1) infinite;
+  animation: whirlpool 1.2s cubic-bezier(0.9, 0, 0.1, 1) infinite;
   transform: translateZ(0);
   backface-visibility: hidden;
 }
@@ -1301,7 +1301,7 @@ export default function Page() {
 .pfp-pulse {
   animation: pfp-pulse 0.3s ease-in-out;
 }
-@keyframes kamui-spin {
+@keyframes whirlpool {
   0% { transform: translateZ(0) scale(0.9) rotate(0deg); }
   70% { transform: translateZ(0) scale(1.04) rotate(260deg); }
   100% { transform: translateZ(0) scale(0.95) rotate(360deg); }
@@ -1313,7 +1313,7 @@ export default function Page() {
 }
 @keyframes pfp-pulse {
   0% { transform: scale(1); }
-  50% { transform: scale(1.04); }
+  50% { transform: scale(1.2); }
   100% { transform: scale(1); }
 }
 `
