@@ -228,14 +228,14 @@ export default function Resume() {
       >
         <div
           id="resume-scaler"
-          className="mx-auto bg-white shadow-2xl resume-container w-full max-w-[850px]"
+          className="mx-auto bg-white shadow-2xl resume-container w-[850px]"
           ref={resumeRef}
           data-resume-root
           style={!isDownloading ? { transform: `scale(${resumeScale})`, transformOrigin: 'top center' } : undefined}
         >
-            <div className="flex flex-col sm:flex-row resume-layout">
+            <div className="flex flex-row resume-layout">
           {/* Left Sidebar */}
-          <div className="flex-none w-full sm:w-[300px] bg-[#0f2230] text-white p-5 sm:p-6 md:p-8 border-b-4 sm:border-b-0 sm:border-r-4 border-cyan-400 resume-sidebar">
+          <div className="flex-none w-[300px] bg-[#0f2230] text-white p-8 border-r-4 border-cyan-400 resume-sidebar">
             {/* Profile */}
             <div className="mb-8">
               <div className="w-32 h-32 rounded-full overflow-hidden shadow-lg border-4 border-cyan-300">
@@ -321,19 +321,19 @@ export default function Resume() {
           </div>
 
           {/* Right Content */}
-          <div className="flex-1 min-w-0 p-5 sm:p-6 md:p-8 lg:p-10">
+          <div className="flex-1 min-w-0 p-8">
             {/* Header */}
-            <div className="mb-6 sm:mb-8 border-b-4 border-slate-800 pb-4 sm:pb-6">
-              <div className="flex items-start gap-4 md:block">
+            <div className="mb-8 border-b-4 border-slate-800 pb-6">
+              <div>
                 <div className="flex-1 items-start text-left">
-                  <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 mb-1.5 sm:mb-2 resume-name">{personalInfo.name}</h1>
-                  <p className="text-sm sm:text-base md:text-lg text-cyan-600 font-semibold resume-title">
+                  <h1 className="text-4xl font-bold text-slate-900 mb-2 resume-name">{personalInfo.name}</h1>
+                  <p className="text-lg text-cyan-600 font-semibold resume-title">
                     Full-Stack AI Engineer | Data Scientist
                   </p>
-                  <p className="text-xs sm:text-sm text-gray-600 mt-2 sm:mt-3 leading-relaxed">
+                  <p className="text-sm text-gray-600 mt-3 leading-relaxed">
                     Bridging the gap between intelligent systems and elegant user experiences. I architect scalable full-stack solutions powered by machine learning, transforming complex data into intuitive, production-ready applications that drive real-world impact.
                   </p>
-                  <div className="flex flex-wrap justify-start gap-2 sm:gap-4 text-xs sm:text-sm text-gray-600 mt-3 sm:mt-4">
+                  <div className="flex flex-wrap justify-start gap-4 text-sm text-gray-600 mt-4">
                     <span>📍 {personalInfo.location}</span>
                     <span>💼 3+ Years Experience</span>
                   </div>
