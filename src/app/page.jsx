@@ -805,13 +805,14 @@ function PhysicsBubbleContainer({ containerRef, isLoading }) {
 export default function Page() {
   const [isLoading, setIsLoading] = useState(true);
   const [pfpHovered, setPfpHovered] = useState(false);
-  const [isInteracting, setIsInteracting] = useState(false);
+  const [vortexPhase, setVortexPhase] = useState('idle'); // 'idle' | 'suck-in' | 'suck-out'
   const [isPfpIntro, setIsPfpIntro] = useState(true);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [currentSection, setCurrentSection] = useState('home');
   const currentSectionRef = useRef('home');
   const techStackContainerRef = useRef(null);
   const vortexTimeoutRef = useRef(null);
+  const vortexTimeout2Ref = useRef(null);
 
   useEffect(() => {
     const minDisplayTime = 6000; // minimum time to show the loading bar
@@ -918,13 +919,18 @@ export default function Page() {
   };
 
   const triggerVortex = () => {
-    setIsInteracting(true);
-    if (vortexTimeoutRef.current) {
-      clearTimeout(vortexTimeoutRef.current);
-    }
+    if (vortexPhase !== 'idle') return; // prevent re-trigger mid-animation
+    setVortexPhase('suck-in');
+    if (vortexTimeoutRef.current) clearTimeout(vortexTimeoutRef.current);
+    if (vortexTimeout2Ref.current) clearTimeout(vortexTimeout2Ref.current);
+    // After suck-in completes (700ms) + brief hold (200ms), start suck-out
     vortexTimeoutRef.current = setTimeout(() => {
-      setIsInteracting(false);
-    }, 750);
+      setVortexPhase('suck-out');
+    }, 900);
+    // After suck-out completes (1000ms), return to idle
+    vortexTimeout2Ref.current = setTimeout(() => {
+      setVortexPhase('idle');
+    }, 1900);
   };
 
   // Clear intro animation after it finishes
@@ -987,7 +993,7 @@ export default function Page() {
                 onMouseEnter={() => setPfpHovered(true)}
                 onMouseLeave={() => setPfpHovered(false)}
                 onMouseDown={triggerVortex}
-                className={`relative w-52 h-52 md:w-64 md:h-64 rounded-full overflow-hidden border border-white/10 bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-xl flex items-center justify-center pfp-hoverable ${pfpHovered ? 'border-blue-400/50 shadow-lg shadow-blue-500/20' : ''} ${!isLoading && !isInteracting && !isPfpIntro ? 'pfp-float' : ''} ${isInteracting ? 'pfp-vortex' : ''} ${isPfpIntro && !isLoading ? 'pfp-vortex-in' : ''}`}
+                className={`relative w-52 h-52 md:w-64 md:h-64 rounded-full overflow-hidden border border-white/10 bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-xl flex items-center justify-center pfp-hoverable ${pfpHovered ? 'border-blue-400/50 shadow-lg shadow-blue-500/20' : ''} ${!isLoading && vortexPhase === 'idle' && !isPfpIntro ? 'pfp-float' : ''} ${vortexPhase === 'suck-in' ? 'pfp-vortex' : ''} ${vortexPhase === 'suck-out' ? 'pfp-vortex-in' : ''} ${isPfpIntro && !isLoading ? 'pfp-vortex-in' : ''}`}
               >
                 <div className={`absolute inset-0 rounded-full whirlpool-effect transition-opacity duration-500 ${pfpHovered ? 'opacity-100' : 'opacity-70'}`} />
                 <img 
