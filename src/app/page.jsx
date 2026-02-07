@@ -220,7 +220,7 @@ const MainSkills = [
 ];
 
 // Physics-based Bubble Component using Matter.js with Soft-Body Deformation
-function PhysicsBubbleContainer({ containerRef }) {
+function PhysicsBubbleContainer({ containerRef, isLoading }) {
   const sceneRef = useRef(null);
   const canvasRef = useRef(null);
   const engineRef = useRef(null);
@@ -249,6 +249,7 @@ function PhysicsBubbleContainer({ containerRef }) {
     const engine = Engine.create();
     engine.world.gravity.y = 0;
     engine.world.gravity.x = 0;
+    engine.timing.timeScale = isLoading ? 0 : 1;
 
     // Rock solid ball physics - high precision
     engine.positionIterations = 12;
@@ -531,6 +532,11 @@ function PhysicsBubbleContainer({ containerRef }) {
     };
   }, [containerRef, containerSize.width, containerSize.height]);
 
+  useEffect(() => {
+    if (!engineRef.current) return;
+    engineRef.current.timing.timeScale = isLoading ? 0 : 1;
+  }, [isLoading]);
+
   const iconScale = ballRadius / 45;
 
   return (
@@ -600,8 +606,9 @@ function PhysicsBubbleContainer({ containerRef }) {
   );
 }
 
-export default function Page() {
+export default function Page({ isLoading = false }) {
   const [pfpHovered, setPfpHovered] = useState(false);
+  const [isPfpActive, setIsPfpActive] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [currentSection, setCurrentSection] = useState('home');
   const currentSectionRef = useRef('home');
@@ -705,12 +712,20 @@ export default function Page() {
             </div>
           </div>
           <div className="flex items-center justify-center">
-            <div className="relative">
+            <div className={`relative ${!isLoading ? 'pfp-float' : ''}`}>
               <div className={`absolute inset-0 bg-gradient-to-br from-blue-500/20 to-purple-500/20 blur-3xl transition-all duration-300 ${pfpHovered ? 'blur-2xl scale-110' : ''}`} />
               <div 
                 onMouseEnter={() => setPfpHovered(true)}
                 onMouseLeave={() => setPfpHovered(false)}
-                className={`relative w-52 h-52 md:w-64 md:h-64 rounded-full overflow-hidden border border-white/10 bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-xl flex items-center justify-center transition-all duration-300 ${pfpHovered ? 'border-blue-400/50 shadow-lg shadow-blue-500/20' : ''}`}
+                onPointerDown={(event) => {
+                  setIsPfpActive(true);
+                  if (event.currentTarget.setPointerCapture) {
+                    event.currentTarget.setPointerCapture(event.pointerId);
+                  }
+                }}
+                onPointerUp={() => setIsPfpActive(false)}
+                onPointerCancel={() => setIsPfpActive(false)}
+                className={`relative w-52 h-52 md:w-64 md:h-64 rounded-full overflow-hidden border border-white/10 bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-xl flex items-center justify-center transition-all duration-300 ${pfpHovered ? 'border-blue-400/50 shadow-lg shadow-blue-500/20' : ''} ${isPfpActive ? 'pfp-jiggle' : ''}`}
               >
                 <div className={`absolute inset-0 rounded-full whirlpool-effect transition-opacity duration-500 ${pfpHovered ? 'opacity-100' : 'opacity-70'}`} />
                 <img 
@@ -827,7 +842,7 @@ export default function Page() {
             ref={techStackContainerRef}
             className="order-1 rounded-3xl border border-white/10 bg-gradient-to-br from-slate-800/50 to-slate-900/80 backdrop-blur-xl p-4 sm:p-6 md:p-8 relative overflow-hidden h-[620px] sm:h-[700px] md:h-full"
           >
-            <PhysicsBubbleContainer containerRef={techStackContainerRef} />
+            <PhysicsBubbleContainer containerRef={techStackContainerRef} isLoading={isLoading} />
           </div>
 
           {/* Right Side - Skills Block */}
@@ -1144,6 +1159,29 @@ export default function Page() {
           </svg>
         </button>
       )}
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
+.pfp-float {
+  animation: pfp-float 6s ease-in-out infinite;
+}
+.pfp-jiggle {
+  animation: pfp-jiggle 0.35s ease-in-out infinite;
+}
+@keyframes pfp-float {
+  0% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, -10px, 0); }
+  100% { transform: translate3d(0, 0, 0); }
+}
+@keyframes pfp-jiggle {
+  0% { transform: scale(1) rotate(0deg); }
+  30% { transform: scale(1.02) rotate(-1.5deg); }
+  60% { transform: scale(0.99) rotate(1.5deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+`
+        }}
+      />
     </div>
   );
 }

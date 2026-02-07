@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import './globals.css';
 import ParticleBackground from './ParticleBackground';
@@ -54,6 +54,7 @@ export default function Layout({ children }) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMobileSocialOpen, setIsMobileSocialOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const location = useLocation();
   const isResumePage = location.pathname === '/resume';
 
@@ -106,6 +107,29 @@ export default function Layout({ children }) {
   };
 
   useEffect(() => {
+    const title = 'Muhammad Ahmed | Portfolio';
+    const description = 'Software Engineer & AI Researcher';
+    document.title = title;
+    let meta = document.querySelector('meta[name="description"]');
+    if (!meta) {
+      meta = document.createElement('meta');
+      meta.setAttribute('name', 'description');
+      document.head.appendChild(meta);
+    }
+    meta.setAttribute('content', description);
+  }, []);
+
+  useEffect(() => {
+    const handleLoad = () => setIsLoading(false);
+    if (document.readyState === 'complete') {
+      setIsLoading(false);
+      return undefined;
+    }
+    window.addEventListener('load', handleLoad);
+    return () => window.removeEventListener('load', handleLoad);
+  }, []);
+
+  useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
     };
@@ -117,10 +141,26 @@ export default function Layout({ children }) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const enhancedChildren = React.Children.map(children, (child) => {
+    if (React.isValidElement(child)) {
+      return React.cloneElement(child, { isLoading });
+    }
+    return child;
+  });
+
   return (
     <div className="relative min-h-screen w-full bg-[#050510] text-white">
       <ParticleBackground />
       <div className="pointer-events-none fixed inset-0 bg-radial-gradient-fade" style={{ zIndex: 2 }} />
+      {isLoading && (
+        <div className="kamui-loading" aria-label="Loading">
+          <div className="kamui-core" aria-hidden="true">
+            <div className="kamui-spiral"></div>
+            <div className="kamui-spiral kamui-spiral--inner"></div>
+            <div className="kamui-eye"></div>
+          </div>
+        </div>
+      )}
       {/* Left side social icons (desktop) */}
       {!isResumePage && (
         <div className="hidden md:flex fixed left-6 top-1/2 -translate-y-1/2 z-50 flex-col gap-6">
@@ -268,7 +308,56 @@ export default function Layout({ children }) {
           </>
         )}
       </nav>
-      <main className="relative" style={{ zIndex: 10 }}>{children}</main>
+      <main className="relative" style={{ zIndex: 10 }}>{enhancedChildren}</main>
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
+.kamui-loading {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(9, 10, 20, 0.95), rgba(2, 2, 8, 1));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+.kamui-core {
+  position: relative;
+  width: 220px;
+  height: 220px;
+}
+.kamui-spiral {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: conic-gradient(from 0deg, rgba(255, 255, 255, 0.0), rgba(131, 86, 255, 0.85), rgba(0, 0, 0, 0));
+  -webkit-mask: radial-gradient(circle, transparent 34%, #000 35%, #000 68%, transparent 69%);
+  mask: radial-gradient(circle, transparent 34%, #000 35%, #000 68%, transparent 69%);
+  animation: kamui-spin 1.7s cubic-bezier(0.2, 0.8, 0.3, 1) infinite;
+}
+.kamui-spiral--inner {
+  inset: 26px;
+  background: conic-gradient(from 0deg, rgba(255, 255, 255, 0.0), rgba(164, 112, 255, 0.9), rgba(0, 0, 0, 0));
+  animation-duration: 1.25s;
+  animation-direction: reverse;
+}
+.kamui-eye {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 26px;
+  height: 26px;
+  border-radius: 9999px;
+  background: radial-gradient(circle, rgba(235, 225, 255, 0.95), rgba(120, 90, 200, 0.4));
+  box-shadow: 0 0 18px rgba(164, 112, 255, 0.7);
+}
+@keyframes kamui-spin {
+  0% { transform: rotate(0deg) scale(0.95); }
+  100% { transform: rotate(360deg) scale(1.02); }
+}
+`
+        }}
+      />
     </div>
   );
 }
