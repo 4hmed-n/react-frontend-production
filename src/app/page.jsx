@@ -1006,18 +1006,18 @@ export default function Page() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 auto-rows-[minmax(400px,600px)]">
           {/* Left Side - Main Tech Stack with Matter.js Physics */}
           <div
             ref={techStackContainerRef}
-            className="order-1 rounded-3xl border border-white/10 bg-gradient-to-br from-slate-800/50 to-slate-900/80 backdrop-blur-xl p-4 sm:p-6 md:p-8 relative overflow-hidden h-[60vh] min-h-[350px] max-h-[700px]"
+            className="order-1 rounded-3xl border border-white/10 bg-gradient-to-br from-slate-800/50 to-slate-900/80 backdrop-blur-xl p-4 sm:p-6 md:p-8 relative overflow-hidden h-full"
           >
             <PhysicsBubbleContainer containerRef={techStackContainerRef} isLoading={isLoading} />
           </div>
 
           {/* Right Side - Skills Block */}
           <div className="order-2 flex flex-col h-full">
-            <div className="rounded-3xl border border-white/10 bg-gradient-to-br from-slate-800/50 to-slate-900/80 backdrop-blur-xl overflow-hidden flex-1 flex flex-col">
+            <div className="rounded-3xl border border-white/10 bg-gradient-to-br from-slate-800/50 to-slate-900/80 backdrop-blur-xl overflow-hidden flex-1 flex flex-col h-full">
             <div className="flex items-center gap-2 border-b border-white/10 px-4 py-3">
               <div className="flex gap-2">
                 <div className="h-3 w-3 rounded-full bg-red-500 animate-pulse"></div>
@@ -1027,7 +1027,7 @@ export default function Page() {
               <span className="ml-4 text-xs text-gray-400">skills.config.ts</span>
               <div className="ml-auto text-xs text-gray-500">40+ technologies</div>
             </div>
-            <div className="p-6 max-h-[580px] overflow-y-auto custom-scrollbar">
+            <div className="p-6 flex-1 overflow-y-auto custom-scrollbar">
               
               {/* Backend & Databases */}
               <div className="mb-6">
