@@ -262,6 +262,7 @@ function PhysicsBubbleContainer({ containerRef, isLoading }) {
     const engine = Engine.create();
     engine.world.gravity.y = 0;
     engine.world.gravity.x = 0;
+    engine.timing.timeScale = isLoading ? 0 : 1;
 
     // Rock solid ball physics - high precision
     engine.positionIterations = 12;
@@ -563,22 +564,6 @@ function PhysicsBubbleContainer({ containerRef, isLoading }) {
   useEffect(() => {
     if (!engineRef.current) return;
     engineRef.current.timing.timeScale = isLoading ? 0 : 1;
-    if (isLoading) {
-      if (runnerRef.current) {
-        Runner.stop(runnerRef.current);
-      }
-      if (renderRef.current) {
-        Render.stop(renderRef.current);
-      }
-      if (animationFrameIdRef.current) {
-        cancelAnimationFrame(animationFrameIdRef.current);
-      }
-      isRunningRef.current = false;
-    } else if (runnerRef.current && renderRef.current && !isRunningRef.current) {
-      Runner.run(runnerRef.current, engineRef.current);
-      Render.run(renderRef.current);
-      isRunningRef.current = true;
-    }
   }, [isLoading]);
 
   const iconScale = ballRadius / 45;
@@ -654,11 +639,11 @@ export default function Page() {
   const [isLoading, setIsLoading] = useState(true);
   const [pfpHovered, setPfpHovered] = useState(false);
   const [isPfpActive, setIsPfpActive] = useState(false);
-  const pulseTimeoutRef = useRef(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [currentSection, setCurrentSection] = useState('home');
   const currentSectionRef = useRef('home');
   const techStackContainerRef = useRef(null);
+  const pulseTimeoutRef = useRef(null);
 
   useEffect(() => {
     const handleLoad = () => setIsLoading(false);
@@ -914,74 +899,25 @@ export default function Page() {
           >
             <PhysicsBubbleContainer containerRef={techStackContainerRef} isLoading={isLoading} />
           </div>
-      <style
+
           {/* Right Side - Skills Block */}
           <div className="order-2 flex flex-col h-full">
-.kamui-loading {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.kamui-core {
-  position: relative;
-  width: 260px;
-  height: 260px;
-  display: grid;
-  place-items: center;
-  transform: translateZ(0);
-  backface-visibility: hidden;
-}
-.kamui-whirlpool {
-  position: absolute;
-  inset: 0;
-  border-radius: 9999px;
-  background: conic-gradient(from 0deg, rgba(20, 10, 40, 0.1), rgba(160, 120, 255, 0.95), rgba(0, 0, 0, 0));
-  -webkit-mask: radial-gradient(circle, transparent 25%, #000 26%, #000 62%, transparent 63%);
-  mask: radial-gradient(circle, transparent 25%, #000 26%, #000 62%, transparent 63%);
-  animation: kamui-spin 1.3s cubic-bezier(0.12, 0.8, 0.2, 1) infinite;
-  transform: translateZ(0);
-  backface-visibility: hidden;
-}
-.kamui-eye {
-  width: 30px;
-  height: 30px;
-  border-radius: 9999px;
-  background: radial-gradient(circle, rgba(235, 225, 255, 0.95), rgba(120, 90, 200, 0.2));
-  box-shadow: 0 0 20px rgba(164, 112, 255, 0.75);
-  transform: translateZ(0);
-  backface-visibility: hidden;
-}
-.pfp-float {
-  animation: pfp-float 6s ease-in-out infinite;
-  will-change: transform;
-  transform: translateZ(0);
-  backface-visibility: hidden;
-}
-.pfp-pulse {
-  animation: pfp-pulse 0.3s ease-in-out;
-}
-@keyframes kamui-spin {
-  0% { transform: translateZ(0) scale(0.9) rotate(0deg); }
-  70% { transform: translateZ(0) scale(1.04) rotate(260deg); }
-  100% { transform: translateZ(0) scale(0.95) rotate(360deg); }
-}
             <div className="rounded-3xl border border-white/10 bg-gradient-to-br from-slate-800/50 to-slate-900/80 backdrop-blur-xl overflow-hidden flex-1 flex flex-col">
             <div className="flex items-center gap-2 border-b border-white/10 px-4 py-3">
               <div className="flex gap-2">
                 <div className="h-3 w-3 rounded-full bg-red-500 animate-pulse"></div>
                 <div className="h-3 w-3 rounded-full bg-yellow-500"></div>
-@keyframes pfp-pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.04); }
-  100% { transform: scale(1); }
+                <div className="h-3 w-3 rounded-full bg-green-500"></div>
+              </div>
+              <span className="ml-4 text-xs text-gray-400">skills.config.ts</span>
+              <div className="ml-auto text-xs text-gray-500">40+ technologies</div>
+            </div>
             <div className="p-6 max-h-[580px] overflow-y-auto custom-scrollbar">
               
               {/* Backend & Databases */}
               <div className="mb-6">
                 <div className="flex items-center gap-2 mb-3">
                   <div className="w-1 h-4 bg-gradient-to-b from-green-400 to-green-600 rounded-full"></div>
-
-  return isLoading ? <LoadingScreen /> : mainPortfolio;
                   <p className="text-xs uppercase tracking-widest text-green-400 font-semibold">Backend & Databases</p>
                 </div>
                 <div className="flex flex-wrap gap-2">
@@ -1281,27 +1217,69 @@ export default function Page() {
       <style
         dangerouslySetInnerHTML={{
           __html: `
+.kamui-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.kamui-core {
+  position: relative;
+  width: 260px;
+  height: 260px;
+  display: grid;
+  place-items: center;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+.kamui-whirlpool {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: conic-gradient(from 0deg, rgba(20, 10, 40, 0.1), rgba(160, 120, 255, 0.95), rgba(0, 0, 0, 0));
+  -webkit-mask: radial-gradient(circle, transparent 25%, #000 26%, #000 62%, transparent 63%);
+  mask: radial-gradient(circle, transparent 25%, #000 26%, #000 62%, transparent 63%);
+  animation: kamui-spin 1.3s cubic-bezier(0.12, 0.8, 0.2, 1) infinite;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+.kamui-eye {
+  width: 30px;
+  height: 30px;
+  border-radius: 9999px;
+  background: radial-gradient(circle, rgba(235, 225, 255, 0.95), rgba(120, 90, 200, 0.2));
+  box-shadow: 0 0 20px rgba(164, 112, 255, 0.75);
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
 .pfp-float {
   animation: pfp-float 6s ease-in-out infinite;
   will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
-.pfp-jiggle {
-  animation: pfp-jiggle 0.32s ease-in-out infinite;
+.pfp-pulse {
+  animation: pfp-pulse 0.3s ease-in-out;
+}
+@keyframes kamui-spin {
+  0% { transform: translateZ(0) scale(0.9) rotate(0deg); }
+  70% { transform: translateZ(0) scale(1.04) rotate(260deg); }
+  100% { transform: translateZ(0) scale(0.95) rotate(360deg); }
 }
 @keyframes pfp-float {
   0% { transform: translate3d(0, 0, 0); }
   50% { transform: translate3d(0, -10px, 0); }
   100% { transform: translate3d(0, 0, 0); }
 }
-@keyframes pfp-jiggle {
-  0% { transform: scale(1) rotate(0deg); }
-  30% { transform: scale(1.02) rotate(-1.5deg); }
-  60% { transform: scale(0.99) rotate(1.5deg); }
-  100% { transform: scale(1) rotate(0deg); }
+@keyframes pfp-pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.04); }
+  100% { transform: scale(1); }
 }
 `
         }}
       />
     </div>
   );
+
+  return isLoading ? <LoadingScreen /> : mainPortfolio;
 }
