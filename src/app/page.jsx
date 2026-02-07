@@ -48,9 +48,8 @@ const nextQuote = createQuoteCycler();
 
 function LoadingScreen() {
   const [progress, setProgress] = useState(0);
-  const [quote, setQuote] = useState(() => nextQuote());
+  const [quote] = useState(() => nextQuote());
   const [quoteVisible, setQuoteVisible] = useState(false);
-  const [quoteFading, setQuoteFading] = useState(false);
 
   useEffect(() => {
     const start = Date.now();
@@ -69,21 +68,11 @@ function LoadingScreen() {
     };
     requestAnimationFrame(tick);
 
-    // Fade in first quote
+    // Fade in quote after a short delay
     const showTimer = setTimeout(() => setQuoteVisible(true), 400);
-
-    // Rotate quotes every 2.5s
-    const rotateInterval = setInterval(() => {
-      setQuoteFading(true);
-      setTimeout(() => {
-        setQuote(nextQuote());
-        setQuoteFading(false);
-      }, 400);
-    }, 2500);
 
     return () => {
       clearTimeout(showTimer);
-      clearInterval(rotateInterval);
     };
   }, []);
 
@@ -130,8 +119,8 @@ function LoadingScreen() {
         {/* Quote */}
         <div className="mt-14 max-w-xs sm:max-w-sm text-center">
           <p
-            className="text-[11px] sm:text-xs text-white/20 font-light italic leading-relaxed transition-all duration-500"
-            style={{ opacity: quoteVisible && !quoteFading ? 1 : 0, transform: quoteVisible && !quoteFading ? 'translateY(0)' : 'translateY(8px)' }}
+            className="text-[11px] sm:text-xs text-white/20 font-light italic leading-relaxed transition-all duration-700"
+            style={{ opacity: quoteVisible ? 1 : 0, transform: quoteVisible ? 'translateY(0)' : 'translateY(8px)' }}
           >
             "{quote}"
           </p>
