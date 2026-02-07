@@ -924,13 +924,13 @@ export default function Page() {
     }
     vortexTimeoutRef.current = setTimeout(() => {
       setIsInteracting(false);
-    }, 900);
+    }, 750);
   };
 
   // Clear intro animation after it finishes
   useEffect(() => {
     if (!isLoading && isPfpIntro) {
-      const t = setTimeout(() => setIsPfpIntro(false), 1100);
+      const t = setTimeout(() => setIsPfpIntro(false), 1050);
       return () => clearTimeout(t);
     }
   }, [isLoading, isPfpIntro]);
@@ -981,7 +981,7 @@ export default function Page() {
             </div>
           </div>
           <div className="flex items-center justify-center">
-            <div className="relative" style={{ perspective: '800px' }}>
+            <div className="relative">
               <div className={`absolute inset-0 bg-gradient-to-br from-blue-500/20 to-purple-500/20 blur-3xl transition-all duration-300 ${pfpHovered ? 'blur-2xl scale-110' : ''}`} />
               <div 
                 onMouseEnter={() => setPfpHovered(true)}
@@ -1434,16 +1434,16 @@ export default function Page() {
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 .pfp-vortex {
-  animation: pfp-vortex 0.85s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation: pfp-vortex-spin 0.7s cubic-bezier(0.55, 0.06, 0.68, 0.19) forwards,
+             pfp-vortex-shrink 0.7s cubic-bezier(0.55, 0.06, 0.68, 0.19) forwards;
   transform-origin: center center;
-  transform-style: preserve-3d;
   will-change: transform, opacity;
   backface-visibility: hidden;
 }
 .pfp-vortex-in {
-  animation: pfp-vortex-in 1.0s cubic-bezier(0.0, 0, 0.2, 1) forwards;
+  animation: pfp-vortex-spin-in 1.0s cubic-bezier(0.22, 1, 0.36, 1) forwards,
+             pfp-vortex-grow 1.0s cubic-bezier(0.22, 1, 0.36, 1) forwards;
   transform-origin: center center;
-  transform-style: preserve-3d;
   will-change: transform, opacity;
   backface-visibility: hidden;
 }
@@ -1452,65 +1452,23 @@ export default function Page() {
   50% { transform: translate3d(0, -10px, 0); }
   100% { transform: translate3d(0, 0, 0); }
 }
-@keyframes pfp-vortex {
-  0% {
-    transform: perspective(800px) rotateZ(0deg) scale(1) translateZ(0px);
-    opacity: 1;
-  }
-  15% {
-    transform: perspective(800px) rotateZ(90deg) scale(0.82) translateZ(-80px);
-    opacity: 1;
-  }
-  30% {
-    transform: perspective(800px) rotateZ(220deg) scale(0.6) translateZ(-200px);
-    opacity: 0.9;
-  }
-  50% {
-    transform: perspective(800px) rotateZ(420deg) scale(0.35) translateZ(-400px);
-    opacity: 0.7;
-  }
-  70% {
-    transform: perspective(800px) rotateZ(600deg) scale(0.15) translateZ(-600px);
-    opacity: 0.4;
-  }
-  85% {
-    transform: perspective(800px) rotateZ(690deg) scale(0.05) translateZ(-750px);
-    opacity: 0.15;
-  }
-  100% {
-    transform: perspective(800px) rotateZ(720deg) scale(0) translateZ(-800px);
-    opacity: 0;
-  }
+@keyframes pfp-vortex-spin {
+  from { transform: rotate(0deg) scale(1); }
+  to   { transform: rotate(1080deg) scale(0); }
 }
-@keyframes pfp-vortex-in {
-  0% {
-    transform: perspective(800px) rotateZ(-720deg) scale(0) translateZ(-800px);
-    opacity: 0;
-  }
-  15% {
-    transform: perspective(800px) rotateZ(-600deg) scale(0.05) translateZ(-700px);
-    opacity: 0.15;
-  }
-  30% {
-    transform: perspective(800px) rotateZ(-460deg) scale(0.18) translateZ(-500px);
-    opacity: 0.4;
-  }
-  50% {
-    transform: perspective(800px) rotateZ(-280deg) scale(0.42) translateZ(-300px);
-    opacity: 0.65;
-  }
-  70% {
-    transform: perspective(800px) rotateZ(-120deg) scale(0.7) translateZ(-130px);
-    opacity: 0.85;
-  }
-  85% {
-    transform: perspective(800px) rotateZ(-30deg) scale(0.92) translateZ(-30px);
-    opacity: 0.95;
-  }
-  100% {
-    transform: perspective(800px) rotateZ(0deg) scale(1) translateZ(0px);
-    opacity: 1;
-  }
+@keyframes pfp-vortex-shrink {
+  0%   { opacity: 1; }
+  60%  { opacity: 0.8; }
+  100% { opacity: 0; }
+}
+@keyframes pfp-vortex-spin-in {
+  from { transform: rotate(-1080deg) scale(0); }
+  to   { transform: rotate(0deg) scale(1); }
+}
+@keyframes pfp-vortex-grow {
+  0%   { opacity: 0; }
+  25%  { opacity: 0.6; }
+  100% { opacity: 1; }
 }
 `
         }}
