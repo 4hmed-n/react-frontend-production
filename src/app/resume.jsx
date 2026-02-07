@@ -237,8 +237,8 @@ export default function Resume() {
           {/* Left Sidebar */}
           <div className="flex-none w-full sm:w-[300px] bg-[#0f2230] text-white p-5 sm:p-6 md:p-8 border-b-4 sm:border-b-0 sm:border-r-4 border-cyan-400 resume-sidebar">
             {/* Profile */}
-            <div className="mb-8" data-hide-in-pdf>
-              <div className="w-24 h-24 rounded-full overflow-hidden shadow-lg border-4 border-cyan-300">
+            <div className="mb-8">
+              <div className="w-32 h-32 rounded-full overflow-hidden shadow-lg border-4 border-cyan-300">
                 <img 
                   src="/images/profile.jpg" 
                   alt="Muhammad Ahmed" 
