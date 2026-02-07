@@ -923,14 +923,14 @@ export default function Page() {
     setVortexPhase('suck-in');
     if (vortexTimeoutRef.current) clearTimeout(vortexTimeoutRef.current);
     if (vortexTimeout2Ref.current) clearTimeout(vortexTimeout2Ref.current);
-    // After suck-in completes (700ms) + brief hold (200ms), start suck-out
+    // After suck-in completes (700ms) + hold (2000ms), start suck-out
     vortexTimeoutRef.current = setTimeout(() => {
       setVortexPhase('suck-out');
-    }, 900);
+    }, 2700);
     // After suck-out completes (1000ms), return to idle
     vortexTimeout2Ref.current = setTimeout(() => {
       setVortexPhase('idle');
-    }, 1900);
+    }, 3700);
   };
 
   // Clear intro animation after it finishes
