@@ -16,42 +16,94 @@ export default function Resume() {
     setIsDownloading(true);
     const element = resumeRef.current;
 
-    // Clone resume and force desktop layout for PDF capture
+    // Clone resume and force a fixed desktop layout for consistent PDF on ALL devices
     const clone = element.cloneNode(true);
     clone.classList.add('resume-print');
-    clone.style.width = '980px';
-    clone.style.maxWidth = '980px';
-    clone.style.position = 'fixed';
-    clone.style.left = '-9999px';
-    clone.style.top = '0';
-    clone.style.boxShadow = 'none';
+
+    // Fixed dimensions — same on every device
+    const FIXED_WIDTH = 850;
+    const CAPTURE_SCALE = 3; // High-res capture (3x = 2550px wide raster)
+
+    clone.style.cssText = `
+      width: ${FIXED_WIDTH}px !important;
+      max-width: ${FIXED_WIDTH}px !important;
+      min-width: ${FIXED_WIDTH}px !important;
+      position: fixed;
+      left: -9999px;
+      top: 0;
+      box-shadow: none;
+      transform: none !important;
+      zoom: 1 !important;
+      -webkit-text-size-adjust: 100%;
+      font-size: 16px;
+    `;
     document.body.appendChild(clone);
+
+    // Let the browser layout the clone before capturing
+    await new Promise(r => setTimeout(r, 100));
 
     const resumeElement = clone;
 
     try {
-      const rect = resumeElement.getBoundingClientRect();
       const canvas = await html2canvas(resumeElement, {
-        scale: 2,
+        scale: CAPTURE_SCALE,
         useCORS: true,
         logging: false,
         backgroundColor: '#ffffff',
-        width: rect.width,
-        height: rect.height,
-        windowWidth: rect.width,
-        windowHeight: rect.height,
+        width: FIXED_WIDTH,
+        height: resumeElement.scrollHeight,
+        windowWidth: FIXED_WIDTH,
+        windowHeight: resumeElement.scrollHeight,
         scrollX: 0,
         scrollY: 0
       });
 
       const imgData = canvas.toDataURL('image/png');
+
+      // A4 dimensions in mm
+      const A4_WIDTH_MM = 210;
+      const A4_HEIGHT_MM = 297;
+
       const pdf = new jsPDF({
         orientation: 'portrait',
-        unit: 'px',
-        format: [rect.width, rect.height]
+        unit: 'mm',
+        format: 'a4'
       });
 
-      pdf.addImage(imgData, 'PNG', 0, 0, rect.width, rect.height);
+      // Scale image to fill A4 width, calculate proportional height
+      const imgAspect = canvas.height / canvas.width;
+      const pdfWidth = A4_WIDTH_MM;
+      const pdfHeight = pdfWidth * imgAspect;
+
+      // If content fits on one page
+      if (pdfHeight <= A4_HEIGHT_MM) {
+        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
+      } else {
+        // Multi-page: slice the canvas into A4-height chunks
+        const pageCanvasHeight = (A4_HEIGHT_MM / pdfHeight) * canvas.height;
+        let remainingHeight = canvas.height;
+        let position = 0;
+        let page = 0;
+
+        while (remainingHeight > 0) {
+          if (page > 0) pdf.addPage();
+
+          const sliceHeight = Math.min(pageCanvasHeight, remainingHeight);
+          const pageCanvas = document.createElement('canvas');
+          pageCanvas.width = canvas.width;
+          pageCanvas.height = sliceHeight;
+          const ctx = pageCanvas.getContext('2d');
+          ctx.drawImage(canvas, 0, position, canvas.width, sliceHeight, 0, 0, canvas.width, sliceHeight);
+
+          const pageImgData = pageCanvas.toDataURL('image/png');
+          const sliceHeightMM = (sliceHeight / canvas.height) * pdfHeight;
+          pdf.addImage(pageImgData, 'PNG', 0, 0, pdfWidth, sliceHeightMM, undefined, 'FAST');
+
+          position += sliceHeight;
+          remainingHeight -= sliceHeight;
+          page++;
+        }
+      }
 
       pdf.save('Muhammad_Ahmed_Resume.pdf');
     } catch (error) {
@@ -412,11 +464,13 @@ export default function Resume() {
   background: #ffffff !important;
 }
 .resume-print .resume-container {
-  width: 980px !important;
-  max-width: 980px !important;
+  width: 850px !important;
+  max-width: 850px !important;
+  min-width: 850px !important;
   margin: 0 auto !important;
   box-shadow: none !important;
   background: #ffffff !important;
+  transform: none !important;
 }
 .resume-print .resume-layout {
   flex-direction: row !important;
