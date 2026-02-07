@@ -3,55 +3,49 @@ import { useState, useEffect, useRef } from 'react';
 import Matter from 'matter-js';
 
 function LoadingScreen() {
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    const start = Date.now();
+    const duration = 2200;
+    const tick = () => {
+      const elapsed = Date.now() - start;
+      const pct = Math.min(100, (elapsed / duration) * 100);
+      // Ease-out curve for natural feel
+      const eased = 100 * (1 - Math.pow(1 - pct / 100, 3));
+      setProgress(eased);
+      if (pct < 100) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }, []);
+
   return (
     <>
-      <div className="kamui-loading fixed inset-0 z-[9999] bg-black">
-        <div className="kamui-core" aria-hidden="true">
-          <div className="kamui-whirlpool"></div>
-          <div className="kamui-eye"></div>
+      <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center" style={{ background: '#050510' }}>
+        {/* Subtle top glow */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] rounded-full opacity-20" style={{ background: 'radial-gradient(ellipse, rgba(56,189,248,0.15), transparent 70%)' }} />
+        
+        {/* Loading bar container */}
+        <div className="relative w-64 sm:w-80">
+          {/* Percentage */}
+          <div className="text-center mb-6">
+            <span className="text-xs uppercase tracking-[0.3em] text-gray-500 font-medium">{Math.round(progress)}%</span>
+          </div>
+          
+          {/* Bar track */}
+          <div className="h-[2px] w-full bg-white/[0.06] rounded-full overflow-hidden">
+            {/* Bar fill */}
+            <div
+              className="h-full rounded-full transition-none"
+              style={{
+                width: `${progress}%`,
+                background: 'linear-gradient(90deg, rgba(56,189,248,0.4), rgba(96,165,250,0.8))',
+                boxShadow: '0 0 12px rgba(56,189,248,0.3)',
+              }}
+            />
+          </div>
         </div>
       </div>
-      <style dangerouslySetInnerHTML={{ __html: `
-.kamui-loading {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.kamui-core {
-  position: relative;
-  width: 260px;
-  height: 260px;
-  display: grid;
-  place-items: center;
-  transform: translateZ(0);
-  backface-visibility: hidden;
-}
-.kamui-whirlpool {
-  position: absolute;
-  inset: 0;
-  border-radius: 9999px;
-  background: conic-gradient(from 0deg, rgba(20, 10, 40, 0.1), rgba(160, 120, 255, 0.95), rgba(0, 0, 0, 0));
-  -webkit-mask: radial-gradient(circle, transparent 25%, #000 26%, #000 62%, transparent 63%);
-  mask: radial-gradient(circle, transparent 25%, #000 26%, #000 62%, transparent 63%);
-  animation: whirlpool 1.2s cubic-bezier(0.9, 0, 0.1, 1) infinite;
-  transform: translateZ(0);
-  backface-visibility: hidden;
-}
-.kamui-eye {
-  width: 30px;
-  height: 30px;
-  border-radius: 9999px;
-  background: radial-gradient(circle, rgba(235, 225, 255, 0.95), rgba(120, 90, 200, 0.2));
-  box-shadow: 0 0 20px rgba(164, 112, 255, 0.75);
-  transform: translateZ(0);
-  backface-visibility: hidden;
-}
-@keyframes whirlpool {
-  0% { transform: translateZ(0) scale(0.9) rotate(0deg); }
-  70% { transform: translateZ(0) scale(1.04) rotate(260deg); }
-  100% { transform: translateZ(0) scale(0.95) rotate(360deg); }
-}
-      `}} />
     </>
   );
 }
