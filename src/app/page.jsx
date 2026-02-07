@@ -361,11 +361,13 @@ function PhysicsBubbleContainer({ containerRef, isLoading }) {
   const wallsRef = useRef([]);
   const dimensionsRef = useRef({ width: 0, height: 0 });
   const radiusRef = useRef(45);
-  const [hoveredBubble, setHoveredBubble] = useState(null);
   const hoveredBubbleRef = useRef(null);
+  const mousePosRef = useRef({ x: -9999, y: -9999, inside: false });
   const [isDragging, setIsDragging] = useState(false);
-  const [ballRadius, setBallRadius] = useState(45); // Increased for better icon fit
+  const [ballRadius, setBallRadius] = useState(45);
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
+  const tooltipRefsRef = useRef([]);
+  const innerBallRefsRef = useRef([]);
 
   // Keep containerSize in sync with actual container dimensions via ResizeObserver
   useEffect(() => {
@@ -628,15 +630,73 @@ function PhysicsBubbleContainer({ containerRef, isLoading }) {
       });
     });
 
-    // Sync loop to update React ball positions
+    // Unified sync loop: positions + hover detection in one rAF for zero latency
     const updateLoop = () => {
+      const currentRadius = radiusRef.current;
+      const mx = mousePosRef.current.x;
+      const my = mousePosRef.current.y;
+      const mouseInside = mousePosRef.current.inside;
+      const r = currentRadius + 6;
+      const r2 = r * r;
+
+      let newHovered = null;
+
+      // Find hovered ball (inline with position updates for zero-delay)
+      if (mouseInside) {
+        for (const { body } of balls) {
+          const dx = mx - body.position.x;
+          const dy = my - body.position.y;
+          if (dx * dx + dy * dy < r2) {
+            newHovered = body.label;
+            break;
+          }
+        }
+      }
+
+      // Update hover visuals directly on DOM (no React re-render)
+      if (newHovered !== hoveredBubbleRef.current) {
+        const prevIdx = hoveredBubbleRef.current ? MainSkills.indexOf(hoveredBubbleRef.current) : -1;
+        const nextIdx = newHovered ? MainSkills.indexOf(newHovered) : -1;
+
+        // Remove old hover
+        if (prevIdx >= 0) {
+          const el = ballRefsRef.current[prevIdx];
+          const inner = innerBallRefsRef.current[prevIdx];
+          const tip = tooltipRefsRef.current[prevIdx];
+          if (el) el.style.zIndex = '1';
+          if (inner) {
+            inner.style.transform = 'scale(1)';
+            inner.style.boxShadow = '0 10px 15px -3px rgba(59,130,246,0.3)';
+            inner.style.borderColor = 'rgba(96, 165, 250, 0.4)';
+          }
+          if (tip) tip.style.opacity = '0';
+        }
+
+        // Apply new hover
+        if (nextIdx >= 0) {
+          const el = ballRefsRef.current[nextIdx];
+          const inner = innerBallRefsRef.current[nextIdx];
+          const tip = tooltipRefsRef.current[nextIdx];
+          if (el) el.style.zIndex = '9999';
+          if (inner) {
+            inner.style.transform = 'scale(1.1)';
+            inner.style.boxShadow = '0 25px 50px -12px rgba(59,130,246,0.6)';
+            inner.style.borderColor = 'rgba(96, 165, 250, 0.8)';
+          }
+          if (tip) tip.style.opacity = '1';
+        }
+
+        canvas.style.cursor = newHovered ? 'pointer' : 'grab';
+        hoveredBubbleRef.current = newHovered;
+      }
+
+      // Update positions
       balls.forEach(({ body, index }) => {
         if (ballRefsRef.current[index]) {
-          const ballEl = ballRefsRef.current[index];
-          const currentRadius = radiusRef.current;
-          ballEl.style.transform = `translate(${body.position.x - currentRadius}px, ${body.position.y - currentRadius}px)`;
+          ballRefsRef.current[index].style.transform = `translate(${body.position.x - currentRadius}px, ${body.position.y - currentRadius}px)`;
         }
       });
+
       animationFrameIdRef.current = requestAnimationFrame(updateLoop);
     };
 
@@ -662,42 +722,22 @@ function PhysicsBubbleContainer({ containerRef, isLoading }) {
       startEngine();
     }
 
-    // Hover detection — purely visual, no physics mutation
+    // Track mouse position in ref — hover detection happens in rAF loop above
     const handleMouseMove = (e) => {
       const rect = canvas.getBoundingClientRect();
       const scaleX = canvas.width / rect.width;
       const scaleY = canvas.height / rect.height;
-      const mouseX = (e.clientX - rect.left) * scaleX;
-      const mouseY = (e.clientY - rect.top) * scaleY;
-
-      const r = radiusRef.current + 4; // slight buffer for easier targeting
-      const r2 = r * r;
-      let hovered = null;
-      for (const { body } of balls) {
-        const dx = mouseX - body.position.x;
-        const dy = mouseY - body.position.y;
-        if (dx * dx + dy * dy < r2) {
-          hovered = body.label;
-          break;
-        }
-      }
-      canvas.style.cursor = hovered ? 'pointer' : 'grab';
-      if (hoveredBubbleRef.current !== hovered) {
-        hoveredBubbleRef.current = hovered;
-        setHoveredBubble(hovered);
-      }
+      mousePosRef.current.x = (e.clientX - rect.left) * scaleX;
+      mousePosRef.current.y = (e.clientY - rect.top) * scaleY;
+      mousePosRef.current.inside = true;
     };
 
     const handleMouseLeave = () => {
-      if (hoveredBubbleRef.current !== null) {
-        hoveredBubbleRef.current = null;
-        setHoveredBubble(null);
-      }
-      canvas.style.cursor = 'grab';
+      mousePosRef.current.inside = false;
     };
 
-    canvas.addEventListener('mousemove', handleMouseMove);
-    canvas.addEventListener('mouseleave', handleMouseLeave);
+    canvas.addEventListener('mousemove', handleMouseMove, { passive: true });
+    canvas.addEventListener('mouseleave', handleMouseLeave, { passive: true });
 
     const handleCanvasResize = () => {
       if (!renderRef.current || !containerRef.current) return;
@@ -774,22 +814,20 @@ function PhysicsBubbleContainer({ containerRef, isLoading }) {
             width: `${ballRadius * 2}px`,
             height: `${ballRadius * 2}px`,
             willChange: 'transform',
-            zIndex: hoveredBubble === skill ? 9999 : 1,
+            zIndex: 1,
             userSelect: 'none',
             WebkitUserSelect: 'none'
           }}
         >
           <div 
-            className={`w-full h-full rounded-full flex items-center justify-center pointer-events-none ${
-              hoveredBubble === skill 
-                ? 'shadow-2xl shadow-blue-500/60 scale-110' 
-                : 'shadow-lg shadow-blue-500/30'
-            }`}
+            ref={el => innerBallRefsRef.current[index] = el}
+            className="w-full h-full rounded-full flex items-center justify-center pointer-events-none"
             style={{
               background: 'radial-gradient(circle at 30% 30%, rgba(96, 165, 250, 0.3), rgba(59, 130, 246, 0.1))',
-              border: hoveredBubble === skill ? '2px solid rgba(96, 165, 250, 0.8)' : '2px solid rgba(96, 165, 250, 0.4)',
-              backdropFilter: 'blur(10px)',
-              transition: 'transform 80ms ease-out, box-shadow 80ms ease-out, border-color 80ms ease-out'
+              border: '2px solid rgba(96, 165, 250, 0.4)',
+              boxShadow: '0 10px 15px -3px rgba(59,130,246,0.3)',
+              transform: 'scale(1)',
+              transition: 'transform 60ms ease-out, box-shadow 60ms ease-out, border-color 60ms ease-out'
             }}
           >
             <div
@@ -801,9 +839,9 @@ function PhysicsBubbleContainer({ containerRef, isLoading }) {
           </div>
           <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 whitespace-nowrap z-50">
             <span
-              className={`pointer-events-none text-xs font-medium text-blue-300 bg-slate-900/90 px-3 py-1 rounded-full border border-blue-400/30 backdrop-blur-sm transition-opacity duration-100 ${
-                hoveredBubble === skill ? 'opacity-100' : 'opacity-0'
-              }`}
+              ref={el => tooltipRefsRef.current[index] = el}
+              className="pointer-events-none text-xs font-medium text-blue-300 bg-slate-900/95 px-3 py-1 rounded-full border border-blue-400/30"
+              style={{ opacity: 0, transition: 'opacity 60ms ease-out' }}
             >
               {skill}
             </span>
