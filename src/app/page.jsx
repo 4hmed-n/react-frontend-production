@@ -292,7 +292,35 @@ function PhysicsBubbleContainer({ containerRef, isLoading }) {
   const [ballRadius, setBallRadius] = useState(45); // Increased for better icon fit
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
 
-  const getRadius = (width) => Math.min(width / 25, 35);
+  // Keep containerSize in sync with actual container dimensions via ResizeObserver
+  useEffect(() => {
+    if (!containerRef.current) return;
+    const ro = new ResizeObserver(([entry]) => {
+      const { width, height } = entry.contentRect;
+      if (width > 0 && height > 0) {
+        setContainerSize(prev => (prev.width === Math.round(width) && prev.height === Math.round(height)) ? prev : { width: Math.round(width), height: Math.round(height) });
+      }
+    });
+    ro.observe(containerRef.current);
+    // Seed initial size
+    const w = containerRef.current.clientWidth;
+    const h = containerRef.current.clientHeight;
+    if (w > 0 && h > 0) setContainerSize({ width: w, height: h });
+    return () => ro.disconnect();
+  }, [containerRef]);
+
+  // Compute max radius so all balls fit in the container area
+  const getRadius = (w, h) => {
+    const count = MainSkills.length; // 17 balls
+    // Estimate: area needed per ball = (2.8r)^2 to leave gaps
+    // Available area = w * h
+    // count * (2.8r)^2 <= w * h  =>  r <= sqrt(w*h / (count * 7.84))
+    const areaRadius = Math.sqrt((w * h) / (count * 8.5));
+    // Also cap so balls don't exceed ~1/8th of the smaller dimension
+    const dimRadius = Math.min(w, h) / 8;
+    // Floor at 14px so icons stay readable, cap at 40px
+    return Math.max(14, Math.min(40, Math.floor(Math.min(areaRadius, dimRadius))));
+  };
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -301,7 +329,7 @@ function PhysicsBubbleContainer({ containerRef, isLoading }) {
     if (width === 0 || height === 0) return;
     dimensionsRef.current = { width, height };
 
-    const radius = getRadius(width);
+    const radius = getRadius(width, height);
     radiusRef.current = radius;
     setBallRadius((prev) => (prev === radius ? prev : radius));
 
@@ -598,7 +626,7 @@ function PhysicsBubbleContainer({ containerRef, isLoading }) {
 
       dimensionsRef.current = { width: newWidth, height: newHeight };
 
-      const nextRadius = getRadius(newWidth);
+      const nextRadius = getRadius(newWidth, newHeight);
       if (nextRadius !== radiusRef.current) {
         const scale = nextRadius / radiusRef.current;
         balls.forEach(({ body }) => {
@@ -651,7 +679,8 @@ function PhysicsBubbleContainer({ containerRef, isLoading }) {
     engineRef.current.timing.timeScale = isLoading ? 0 : 1;
   }, [isLoading]);
 
-  const iconScale = ballRadius / 45;
+  // Scale icons to ~70% of ball diameter (icons are 48px base)
+  const iconScale = (ballRadius * 2 * 0.7) / 48;
 
   return (
     <>
@@ -980,11 +1009,11 @@ export default function Page() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:auto-rows-[600px]">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Left Side - Main Tech Stack with Matter.js Physics */}
           <div
             ref={techStackContainerRef}
-            className="order-1 rounded-3xl border border-white/10 bg-gradient-to-br from-slate-800/50 to-slate-900/80 backdrop-blur-xl p-4 sm:p-6 md:p-8 relative overflow-hidden h-[620px] sm:h-[700px] md:h-full"
+            className="order-1 rounded-3xl border border-white/10 bg-gradient-to-br from-slate-800/50 to-slate-900/80 backdrop-blur-xl p-4 sm:p-6 md:p-8 relative overflow-hidden h-[60vh] min-h-[350px] max-h-[700px]"
           >
             <PhysicsBubbleContainer containerRef={techStackContainerRef} isLoading={isLoading} />
           </div>
