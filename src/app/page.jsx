@@ -1271,9 +1271,11 @@ export default function Page() {
         <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {[
             {
-              title: 'Nebula Studio',
-              type: 'Brand Experience',
+              title: 'Myo AI',
+              type: 'Multimodal Fusion Framework',
               color: 'from-blue-600 to-cyan-400',
+              github: 'https://github.com/4hmed-n/Myo-AI',
+              description: 'A Multimodal Fusion Framework for Cardiovascular Risk Stratification. Integrates imaging, clinical, and signal data for advanced risk prediction.'
             },
             {
               title: 'Orbit Commerce',

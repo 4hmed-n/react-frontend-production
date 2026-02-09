@@ -157,9 +157,9 @@ export default function Resume() {
 
   const projects = [
     {
-      name: 'Nebula Studio',
-      type: 'Brand Experience',
-      description: 'Motion-driven landing experience with immersive UI and polished interaction design.'
+      name: 'Myo AI',
+      type: 'Multimodal Fusion Framework',
+      description: 'A Multimodal Fusion Framework for Cardiovascular Risk Stratification. Integrates imaging, clinical, and signal data for advanced risk prediction. GitHub: https://github.com/4hmed-n/Myo-AI'
     },
     {
       name: 'Orbit Commerce',
