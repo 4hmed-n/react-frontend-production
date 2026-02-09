@@ -1,4 +1,5 @@
 'use client';
+import React, { useState } from 'react';
 import { useState, useEffect, useRef } from 'react';
 import Matter from 'matter-js';
 
@@ -1296,15 +1297,40 @@ export default function Page() {
               <h3 className="mt-6 text-2xl font-bold tracking-tight">{project.title}</h3>
               <p className="mt-2 text-sm uppercase tracking-widest text-gray-400">{project.type}</p>
               {project.github && project.title === 'Myo AI' && (
-                <a
-                  href={project.github}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-block mt-4 px-5 py-2 rounded-full bg-blue-500 text-white text-xs font-semibold uppercase tracking-widest shadow hover:bg-blue-600 transition-colors"
-                >
-                  View on GitHub
-                </a>
+                <>
+                  <a
+                    href={project.github}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-block mt-4 px-5 py-2 rounded-full bg-blue-500 text-white text-xs font-semibold uppercase tracking-widest shadow hover:bg-blue-600 transition-colors"
+                  >
+                    View on GitHub
+                  </a>
+                  <CaseStudyMarkdown />
+                </>
               )}
+              // Case Study Markdown Arrow Dropdown for Myo AI
+              function CaseStudyMarkdown() {
+                const [open, setOpen] = useState(false);
+                return (
+                  <div className="mt-4">
+                    <button
+                      onClick={() => setOpen((v) => !v)}
+                      className="flex items-center gap-2 text-xs font-semibold text-blue-400 hover:text-blue-300 focus:outline-none"
+                    >
+                      <span>Case Study</span>
+                      <svg className={`w-4 h-4 transition-transform ${open ? 'rotate-90' : ''}`} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                      </svg>
+                    </button>
+                    {open && (
+                      <div className="mt-2 p-4 rounded-xl bg-slate-900/80 border border-blue-500/20 text-left text-xs text-gray-200 whitespace-pre-line shadow-lg">
+                        {`**Process:**\n- Data collection from imaging, clinical, and signal sources\n- Multimodal data fusion and preprocessing\n- Model development for risk stratification\n\n**Goals:**\n- Improve cardiovascular risk prediction accuracy\n- Integrate diverse data modalities for holistic assessment\n- Enable clinical decision support\n\n**Solution:**\n- Developed a modular pipeline for data ingestion and fusion\n- Designed deep learning models for multimodal analysis\n- Achieved state-of-the-art results on benchmark datasets`}
+                      </div>
+                    )}
+                  </div>
+                );
+              }
               <p className="mt-4 text-gray-400 text-sm leading-relaxed">
                 Motion-driven landing experiences, immersive product visuals, and refined UI systems.
               </p>
