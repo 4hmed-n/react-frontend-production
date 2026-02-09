@@ -1295,6 +1295,16 @@ export default function Page() {
               <div className={`h-48 rounded-2xl bg-gradient-to-br ${project.color} opacity-80`} />
               <h3 className="mt-6 text-2xl font-bold tracking-tight">{project.title}</h3>
               <p className="mt-2 text-sm uppercase tracking-widest text-gray-400">{project.type}</p>
+              {project.github && project.title === 'Myo AI' && (
+                <a
+                  href={project.github}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block mt-4 px-5 py-2 rounded-full bg-blue-500 text-white text-xs font-semibold uppercase tracking-widest shadow hover:bg-blue-600 transition-colors"
+                >
+                  View on GitHub
+                </a>
+              )}
               <p className="mt-4 text-gray-400 text-sm leading-relaxed">
                 Motion-driven landing experiences, immersive product visuals, and refined UI systems.
               </p>
