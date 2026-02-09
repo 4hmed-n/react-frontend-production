@@ -1510,7 +1510,7 @@ export default function Page() {
 }
 @keyframes pfp-vortex-spin {
   from { transform: rotate(0deg) scale(1); }
-  to   { transform: rotate(480deg) scale(0); }
+  to   { transform: rotate(-480deg) scale(0); }
 }
 @keyframes pfp-vortex-shrink {
   0%   { opacity: 1; }
@@ -1518,7 +1518,7 @@ export default function Page() {
   100% { opacity: 0; }
 }
 @keyframes pfp-vortex-spin-in {
-  from { transform: rotate(-480deg) scale(0); }
+  from { transform: rotate(480deg) scale(0); }
   to   { transform: rotate(0deg) scale(1); }
 }
 @keyframes pfp-vortex-grow {
