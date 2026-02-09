@@ -973,14 +973,14 @@ export default function Page() {
     setVortexPhase('suck-in');
     if (vortexTimeoutRef.current) clearTimeout(vortexTimeoutRef.current);
     if (vortexTimeout2Ref.current) clearTimeout(vortexTimeout2Ref.current);
-    // After suck-in completes (1000ms) + hold (1500ms), start suck-out
+    // After suck-in completes (1500ms) + hold (2000ms), start suck-out
     vortexTimeoutRef.current = setTimeout(() => {
       setVortexPhase('suck-out');
-    }, 2500);
-    // After suck-out completes (1000ms), return to idle
+    }, 3500);
+    // After suck-out completes (1500ms), return to idle
     vortexTimeout2Ref.current = setTimeout(() => {
       setVortexPhase('idle');
-    }, 3500);
+    }, 5000);
   };
 
   // Clear intro animation after it finishes
@@ -1490,15 +1490,15 @@ export default function Page() {
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 .pfp-vortex {
-  animation: pfp-vortex-spin 1.0s cubic-bezier(0.55, 0.06, 0.68, 0.19) forwards,
-             pfp-vortex-shrink 1.0s cubic-bezier(0.55, 0.06, 0.68, 0.19) forwards;
+  animation: pfp-vortex-spin 1.5s cubic-bezier(0.55, 0.06, 0.68, 0.19) forwards,
+             pfp-vortex-shrink 1.5s cubic-bezier(0.55, 0.06, 0.68, 0.19) forwards;
   transform-origin: center center;
   will-change: transform, opacity;
   backface-visibility: hidden;
 }
 .pfp-vortex-in {
-  animation: pfp-vortex-spin-in 1.0s cubic-bezier(0.22, 1, 0.36, 1) forwards,
-             pfp-vortex-grow 1.0s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: pfp-vortex-spin-in 1.5s cubic-bezier(0.22, 1, 0.36, 1) forwards,
+             pfp-vortex-grow 1.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
   transform-origin: center center;
   will-change: transform, opacity;
   backface-visibility: hidden;
@@ -1510,7 +1510,7 @@ export default function Page() {
 }
 @keyframes pfp-vortex-spin {
   from { transform: rotate(0deg) scale(1); }
-  to   { transform: rotate(1080deg) scale(0); }
+  to   { transform: rotate(480deg) scale(0); }
 }
 @keyframes pfp-vortex-shrink {
   0%   { opacity: 1; }
@@ -1518,7 +1518,7 @@ export default function Page() {
   100% { opacity: 0; }
 }
 @keyframes pfp-vortex-spin-in {
-  from { transform: rotate(-1080deg) scale(0); }
+  from { transform: rotate(-480deg) scale(0); }
   to   { transform: rotate(0deg) scale(1); }
 }
 @keyframes pfp-vortex-grow {
