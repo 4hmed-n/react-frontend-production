@@ -874,26 +874,42 @@ export default function Page() {
 
     const tryDismiss = () => {
       if (pfpLoaded && minTimePassed) {
+        console.log('[DEBUG] Both image loaded and min time passed. Dismissing loading screen.');
         setIsLoading(false);
+      } else {
+        console.log('[DEBUG] tryDismiss called, pfpLoaded:', pfpLoaded, 'minTimePassed:', minTimePassed);
       }
     };
 
-    pfpImg.onload = pfpImg.onerror = () => {
+    pfpImg.onload = () => {
+      console.log('[DEBUG] Profile image loaded successfully.');
+      pfpLoaded = true;
+      tryDismiss();
+    };
+    pfpImg.onerror = () => {
+      console.error('[DEBUG] Profile image failed to load!');
       pfpLoaded = true;
       tryDismiss();
     };
     pfpImg.src = '/images/profile.jpg';
 
     // If image is already cached, onload fires synchronously
-    if (pfpImg.complete) pfpLoaded = true;
+    if (pfpImg.complete) {
+      console.log('[DEBUG] Profile image was already cached.');
+      pfpLoaded = true;
+    }
 
     const minTimer = setTimeout(() => {
       minTimePassed = true;
+      console.log('[DEBUG] Minimum display time for loading screen passed.');
       tryDismiss();
     }, minDisplayTime);
 
     // Hard fallback: dismiss after 9s no matter what
-    const fallback = setTimeout(() => setIsLoading(false), 9000);
+    const fallback = setTimeout(() => {
+      console.warn('[DEBUG] Hard fallback: Dismissing loading screen after 9s.');
+      setIsLoading(false);
+    }, 9000);
 
     return () => {
       clearTimeout(minTimer);
