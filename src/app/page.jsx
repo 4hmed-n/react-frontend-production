@@ -1264,38 +1264,33 @@ export default function Page() {
           <p className="text-xs uppercase tracking-widest text-blue-400">Selected Work</p>
           <h2 className="mt-3 text-4xl md:text-5xl font-bold tracking-tighter">Projects</h2>
           <p className="mt-4 text-gray-400 max-w-2xl mx-auto">
-            A mix of product launches, interactive websites, and visual experiments designed to
-            elevate digital presence.
+            A mix of product launches, interactive websites, and visual experiments designed to elevate digital presence.
           </p>
         </div>
         <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {[
             {
-              title: 'Nebula Studio',
-              type: 'Brand Experience',
+              title: 'Myo AI',
+              type: 'Multimodal Fusion Framework',
               color: 'from-blue-600 to-cyan-400',
-            [
-              {
-                title: 'Myo AI',
-                type: 'Multimodal Fusion Framework',
-                color: 'from-blue-600 to-cyan-400',
-                github: 'https://github.com/4hmed-n/Myo-AI',
-                live: 'https://myo-ai.streamlit.app',
-                image: '/images/MYO-AI.jpg',
-                description: 'Myo AI is a multimodal fusion framework for advanced cardiovascular risk stratification. It integrates imaging, clinical, and biosignal data using deep learning to provide accurate, explainable risk predictions for heart disease. Built for clinicians and researchers, Myo AI enables seamless analysis and visualization of complex patient data.',
-              },
-              {
-                title: 'Orbit Commerce',
-                type: 'E-commerce Platform',
-                color: 'from-purple-600 to-blue-500',
-              },
-              {
-                title: 'Lumen Labs',
-                type: 'Product Showcase',
-                color: 'from-cyan-500 to-blue-600',
-                }
-              ]
-              .map((project) => (
+              github: 'https://github.com/4hmed-n/Myo-AI',
+              live: 'https://myo-ai.streamlit.app',
+              image: '/images/MYO-AI.jpg',
+              description: 'Myo AI is a multimodal fusion framework for advanced cardiovascular risk stratification. It integrates imaging, clinical, and biosignal data using deep learning to provide accurate, explainable risk predictions for heart disease. Built for clinicians and researchers, Myo AI enables seamless analysis and visualization of complex patient data.',
+            },
+            {
+              title: 'Orbit Commerce',
+              type: 'E-commerce Platform',
+              color: 'from-purple-600 to-blue-500',
+              description: 'High-conversion storefront with responsive UX and scalable architecture.'
+            },
+            {
+              title: 'Lumen Labs',
+              type: 'Product Showcase',
+              color: 'from-cyan-500 to-blue-600',
+              description: 'Product-led storytelling with dynamic visuals and modern design system.'
+            }
+          ].map((project) => (
             <div
               key={project.title}
               className="rounded-[2rem] border border-white/10 bg-white/5 p-6 backdrop-blur-xl hover:border-blue-500/30 transition-all flex flex-col"
@@ -1306,18 +1301,18 @@ export default function Page() {
               <h3 className="text-2xl font-bold tracking-tight mt-2">{project.title}</h3>
               <p className="mt-2 text-sm uppercase tracking-widest text-gray-400">{project.type}</p>
               <p className="mt-4 text-gray-400 text-sm leading-relaxed">{project.description}</p>
-              <div className="mt-6 flex gap-3">
-                {project.live && (
+              {project.title === 'Myo AI' && (
+                <div className="mt-6 flex gap-3">
                   <a href={project.live} target="_blank" rel="noopener noreferrer" className="inline-block px-5 py-2 rounded-full bg-blue-500 text-white font-semibold text-xs uppercase tracking-widest hover:bg-blue-600 transition-colors shadow">
                     Live Demo
                   </a>
-                )}
-                {project.github && (
                   <a href={project.github} target="_blank" rel="noopener noreferrer" className="inline-block px-5 py-2 rounded-full border border-blue-500 text-blue-500 font-semibold text-xs uppercase tracking-widest hover:bg-blue-500 hover:text-white transition-colors shadow">
                     View on GitHub
                   </a>
-                )}
-              </div>
+                  {/* CaseStudyMarkdown component placeholder */}
+                  {typeof CaseStudyMarkdown !== 'undefined' && <CaseStudyMarkdown />}
+                </div>
+              )}
             </div>
           ))}
         </div>
