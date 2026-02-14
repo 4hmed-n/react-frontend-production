@@ -1293,8 +1293,9 @@ export default function Page() {
                 title: 'Lumen Labs',
                 type: 'Product Showcase',
                 color: 'from-cyan-500 to-blue-600',
-              }
-          ].map((project) => (
+                }
+              ]
+              .map((project) => (
             <div
               key={project.title}
               className="rounded-[2rem] border border-white/10 bg-white/5 p-6 backdrop-blur-xl hover:border-blue-500/30 transition-all flex flex-col"
