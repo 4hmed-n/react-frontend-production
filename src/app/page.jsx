@@ -866,10 +866,9 @@ export default function Page() {
 
   useEffect(() => {
     const minDisplayTime = 6000; // minimum time to show the loading bar
-    const startTime = Date.now();
 
     // Preload the PFP image
-    const pfpImg = new Image();
+    const pfpImg = new window.Image();
     let pfpLoaded = false;
     let minTimePassed = false;
 
@@ -927,6 +926,14 @@ export default function Page() {
 
       for (const sectionId of sections) {
         const element = document.getElementById(sectionId);
+
+    // START INSERTION HERE
+    return (
+      <main className="bg-[#050510] min-h-screen text-white overflow-hidden selection:bg-cyan-500/30">
+        {isLoading ? <LoadingScreen /> : mainPortfolio}
+      </main>
+    );
+    // END INSERTION HERE
         if (element) {
           const rect = element.getBoundingClientRect();
           const elementTop = rect.top + window.scrollY;
@@ -1547,31 +1554,6 @@ export default function Page() {
 `
         }}
       />
-    </div>
-  );
-}
-
-// CaseStudyMarkdown component moved to the bottom of the file
-
-// CaseStudyMarkdown component moved to the bottom of the file
-function CaseStudyMarkdown() {
-  const [open, setOpen] = useState(false);
-  return (
-    <div className="mt-4">
-      <button
-        onClick={() => setOpen((v) => !v)}
-        className="flex items-center gap-2 text-xs font-semibold text-blue-400 hover:text-blue-300 focus:outline-none"
-      >
-        <span>Case Study</span>
-        <svg className={`w-4 h-4 transition-transform ${open ? 'rotate-90' : ''}`} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-        </svg>
-      </button>
-      {open && (
-        <div className="mt-2 p-4 rounded-xl bg-slate-900/80 border border-blue-500/20 text-left text-xs text-gray-200 whitespace-pre-line shadow-lg">
-          {`**Process:**\n- Data collection from imaging, clinical, and signal sources\n- Multimodal data fusion and preprocessing\n- Model development for risk stratification\n\n**Goals:**\n- Improve cardiovascular risk prediction accuracy\n- Integrate diverse data modalities for holistic assessment\n- Enable clinical decision support\n\n**Solution:**\n- Developed a modular pipeline for data ingestion and fusion\n- Designed deep learning models for multimodal analysis\n- Achieved state-of-the-art results on benchmark datasets`}
-        </div>
-      )}
     </div>
   );
 }
