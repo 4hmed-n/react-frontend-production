@@ -1274,19 +1274,27 @@ export default function Page() {
               title: 'Nebula Studio',
               type: 'Brand Experience',
               color: 'from-blue-600 to-cyan-400',
-            [{
-              title: 'Myo AI',
-              type: 'Multimodal Fusion Framework',
-              color: 'from-blue-600 to-cyan-400',
-              github: 'https://github.com/4hmed-n/Myo-AI',
-              live: 'https://myo-ai.streamlit.app',
-              image: '/images/MYO-AI.jpg',
-              description: 'Myo AI is a multimodal fusion framework for advanced cardiovascular risk stratification. It integrates imaging, clinical, and biosignal data using deep learning to provide accurate, explainable risk predictions for heart disease. Built for clinicians and researchers, Myo AI enables seamless analysis and visualization of complex patient data.',
-            },
-              type: 'Product Showcase',
-              color: 'from-cyan-500 to-blue-600',
-            },
-          ].map((project) => (
+            [
+              {
+                title: 'Myo AI',
+                type: 'Multimodal Fusion Framework',
+                color: 'from-blue-600 to-cyan-400',
+                github: 'https://github.com/4hmed-n/Myo-AI',
+                live: 'https://myo-ai.streamlit.app',
+                image: '/images/MYO-AI.jpg',
+                description: 'Myo AI is a multimodal fusion framework for advanced cardiovascular risk stratification. It integrates imaging, clinical, and biosignal data using deep learning to provide accurate, explainable risk predictions for heart disease. Built for clinicians and researchers, Myo AI enables seamless analysis and visualization of complex patient data.',
+              },
+              {
+                title: 'Orbit Commerce',
+                type: 'E-commerce Platform',
+                color: 'from-purple-600 to-blue-500',
+              },
+              {
+                title: 'Lumen Labs',
+                type: 'Product Showcase',
+                color: 'from-cyan-500 to-blue-600',
+              },
+            ].map((project) => (
             <div
               key={project.title}
               className="rounded-[2rem] border border-white/10 bg-white/5 p-6 backdrop-blur-xl hover:border-blue-500/30 transition-all flex flex-col"
