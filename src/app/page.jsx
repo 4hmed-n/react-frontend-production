@@ -927,13 +927,7 @@ export default function Page() {
       for (const sectionId of sections) {
         const element = document.getElementById(sectionId);
 
-    // START INSERTION HERE
-    return (
-      <main className="bg-[#050510] min-h-screen text-white overflow-hidden selection:bg-cyan-500/30">
-        {isLoading ? <LoadingScreen /> : mainPortfolio}
-      </main>
-    );
-    // END INSERTION HERE
+    // ...existing code...
         if (element) {
           const rect = element.getBoundingClientRect();
           const elementTop = rect.top + window.scrollY;
@@ -997,6 +991,12 @@ export default function Page() {
       return () => clearTimeout(t);
     }
   }, [isLoading, isPfpIntro]);
+
+  return (
+    <main className="bg-[#050510] min-h-screen text-white overflow-hidden selection:bg-cyan-500/30">
+      {isLoading ? <LoadingScreen /> : mainPortfolio}
+    </main>
+  );
 
   const mainPortfolio = (
     <div className="min-h-screen w-full">
