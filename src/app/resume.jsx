@@ -157,9 +157,9 @@ export default function Resume() {
 
   const projects = [
     {
-      name: 'Myo AI',
-      type: 'Multimodal Fusion Framework',
-      description: 'A Multimodal Fusion Framework for Cardiovascular Risk Stratification. Integrates imaging, clinical, and signal data for advanced risk prediction. GitHub: https://github.com/4hmed-n/Myo-AI'
+      name: 'Nebula Studio',
+      type: 'Brand Experience',
+      description: 'Motion-driven landing experience with immersive UI and polished interaction design.'
     },
     {
       name: 'Orbit Commerce',
@@ -396,16 +396,6 @@ export default function Resume() {
                       </div>
                     </div>
                     <p className="text-xs text-gray-700">{project.description}</p>
-                    {project.name === 'Myo AI' && (
-                      <a
-                        href="https://github.com/4hmed-n/Myo-AI"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-block mt-2 px-4 py-1 rounded-full bg-blue-500 text-white text-xs font-semibold uppercase tracking-widest shadow hover:bg-blue-600 transition-colors"
-                      >
-                        View on GitHub
-                      </a>
-                    )}
                   </div>
                 ))}
               </div>

@@ -277,7 +277,25 @@ const TechIcons = {
       <path strokeLinecap="round" strokeLinejoin="round" d="M19.4 15a7.98 7.98 0 00.1-2 7.98 7.98 0 00-.1-2l2.1-1.6-2-3.4-2.5 1a8.1 8.1 0 00-3.4-2l-.4-2.7h-4l-.4 2.7a8.1 8.1 0 00-3.4 2l-2.5-1-2 3.4 2.1 1.6a7.98 7.98 0 00-.1 2 7.98 7.98 0 00.1 2l-2.1 1.6 2 3.4 2.5-1a8.1 8.1 0 003.4 2l.4 2.7h4l.4-2.7a8.1 8.1 0 003.4-2l2.5 1 2-3.4-2.1-1.6z" />
     </svg>
   ),
-  // Removed duplicate keys for SQL, FastAPI, Firebase, Postman
+  'SQL': () => (
+    <div className="text-cyan-400 font-bold text-2xl">SQL</div>
+  ),
+  'FastAPI': () => (
+    <svg className="w-12 h-12" viewBox="0 0 48 48" fill="none">
+      <circle cx="24" cy="24" r="18" stroke="#14b8a6" strokeWidth="2" />
+      <text x="24" y="28" textAnchor="middle" fontSize="9" fill="#5eead4" fontWeight="700">API</text>
+    </svg>
+  ),
+  'Firebase': () => (
+    <svg className="w-12 h-12" viewBox="0 0 24 24" fill="#FFCA28">
+      <path d="M3.89 15.672L6.255.461A.542.542 0 017.27.288l2.543 4.771zm16.794 3.692l-2.25-14.03a.54.54 0 00-.919-.295L3.316 19.365l7.856 4.427a1.621 1.621 0 001.588 0zM14.3 7.147l-1.82-3.482a.542.542 0 00-.96 0L3.53 17.984z"/>
+    </svg>
+  ),
+  'Postman': () => (
+    <svg className="w-12 h-12" viewBox="0 0 24 24" fill="#FF6C37">
+      <path d="M13.527.099C6.955-.744.942 3.9.099 10.473c-.843 6.572 3.8 12.584 10.373 13.428 6.573.843 12.587-3.801 13.428-10.374C24.744 6.955 20.101.943 13.527.099zm2.471 7.485a.855.855 0 00-.593.25l-4.453 4.453-.307-.307-.643-.643c4.389-4.376 5.18-4.418 5.996-3.753zm-4.863 4.861l4.44-4.44a.62.62 0 11.847.903l-4.699 4.125-.588-.588zm.33.694l-1.1.238a.06.06 0 01-.067-.032.06.06 0 01.01-.073l.645-.645.512.512zm-2.803-.459l1.172-1.172.879.878-1.979.426a.074.074 0 01-.085-.039.072.072 0 01.013-.093zm-3.646 6.058a.076.076 0 01-.069-.083.077.077 0 01.022-.046h.002l.946-.946 1.222 1.222-2.123-.147zm2.425-1.256a.228.228 0 000-.337l-1.135-1.138c-.093-.094-.102-.23-.02-.338l.717-.717 1.77 1.77-.332.76zM8.5 18.777l5.258-1.128a.558.558 0 00.347-.215l3.238-3.238c.26-.26.693-.26.953 0a.674.674 0 010 .952L13.238 20.2c-.094.094-.215.156-.347.173l-5.934.923a.613.613 0 01-.693-.465.613.613 0 01.236-.679z"/>
+    </svg>
+  ),
   'n8n': () => (
     <div className="text-orange-400 font-bold text-lg">n8n</div>
   ),
@@ -848,50 +866,35 @@ export default function Page() {
 
   useEffect(() => {
     const minDisplayTime = 6000; // minimum time to show the loading bar
+    const startTime = Date.now();
 
     // Preload the PFP image
-    const pfpImg = new window.Image();
+    const pfpImg = new Image();
     let pfpLoaded = false;
     let minTimePassed = false;
 
     const tryDismiss = () => {
       if (pfpLoaded && minTimePassed) {
-        console.log('[DEBUG] Both image loaded and min time passed. Dismissing loading screen.');
         setIsLoading(false);
-      } else {
-        console.log('[DEBUG] tryDismiss called, pfpLoaded:', pfpLoaded, 'minTimePassed:', minTimePassed);
       }
     };
 
-    pfpImg.onload = () => {
-      console.log('[DEBUG] Profile image loaded successfully.');
-      pfpLoaded = true;
-      tryDismiss();
-    };
-    pfpImg.onerror = () => {
-      console.error('[DEBUG] Profile image failed to load!');
+    pfpImg.onload = pfpImg.onerror = () => {
       pfpLoaded = true;
       tryDismiss();
     };
     pfpImg.src = '/images/profile.jpg';
 
     // If image is already cached, onload fires synchronously
-    if (pfpImg.complete) {
-      console.log('[DEBUG] Profile image was already cached.');
-      pfpLoaded = true;
-    }
+    if (pfpImg.complete) pfpLoaded = true;
 
     const minTimer = setTimeout(() => {
       minTimePassed = true;
-      console.log('[DEBUG] Minimum display time for loading screen passed.');
       tryDismiss();
     }, minDisplayTime);
 
     // Hard fallback: dismiss after 9s no matter what
-    const fallback = setTimeout(() => {
-      console.warn('[DEBUG] Hard fallback: Dismissing loading screen after 9s.');
-      setIsLoading(false);
-    }, 9000);
+    const fallback = setTimeout(() => setIsLoading(false), 9000);
 
     return () => {
       clearTimeout(minTimer);
@@ -924,8 +927,6 @@ export default function Page() {
 
       for (const sectionId of sections) {
         const element = document.getElementById(sectionId);
-
-    // ...existing code...
         if (element) {
           const rect = element.getBoundingClientRect();
           const elementTop = rect.top + window.scrollY;
@@ -989,12 +990,6 @@ export default function Page() {
       return () => clearTimeout(t);
     }
   }, [isLoading, isPfpIntro]);
-
-  return (
-    <main className="bg-[#050510] min-h-screen text-white overflow-hidden selection:bg-cyan-500/30">
-      {isLoading ? <LoadingScreen /> : mainPortfolio}
-    </main>
-  );
 
   const mainPortfolio = (
     <div className="min-h-screen w-full">
@@ -1067,7 +1062,7 @@ export default function Page() {
               </div>
             </div>
           </div>
-        </div> {/* End grid */}
+        </div>
       </section>
 
       <section id="about" className="mx-auto max-w-7xl px-4 sm:px-6 md:px-20 py-16 sm:py-20">
@@ -1145,10 +1140,10 @@ export default function Page() {
               <div className="ml-8 text-gray-500"><span className="text-purple-400">return</span> <span className="text-green-400">"Turning complex problems into elegant solutions"</span>;</div>
               <div className="ml-4 text-gray-400">{'}'}</div>
               <div className="text-gray-500">{'}'}</div>
-              </div>
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
       <section id="skills" className="mx-auto max-w-7xl px-4 sm:px-6 md:px-20 py-16 sm:py-20">
         <div className="text-center mb-12">
@@ -1276,11 +1271,9 @@ export default function Page() {
         <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {[
             {
-              title: 'Myo AI',
-              type: 'Multimodal Fusion Framework',
+              title: 'Nebula Studio',
+              type: 'Brand Experience',
               color: 'from-blue-600 to-cyan-400',
-              github: 'https://github.com/4hmed-n/Myo-AI',
-              description: 'A Multimodal Fusion Framework for Cardiovascular Risk Stratification. Integrates imaging, clinical, and signal data for advanced risk prediction.'
             },
             {
               title: 'Orbit Commerce',
@@ -1300,29 +1293,6 @@ export default function Page() {
               <div className={`h-48 rounded-2xl bg-gradient-to-br ${project.color} opacity-80`} />
               <h3 className="mt-6 text-2xl font-bold tracking-tight">{project.title}</h3>
               <p className="mt-2 text-sm uppercase tracking-widest text-gray-400">{project.type}</p>
-              {project.github && project.title === 'Myo AI' && (
-                <>
-                  <div className="flex gap-[10px] mt-4">
-                    <a
-                      href={project.github}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="px-5 py-2 rounded-full border border-blue-400 text-blue-400 bg-transparent text-xs font-semibold uppercase tracking-widest shadow transition-all duration-300 hover:bg-gradient-to-r hover:from-blue-500 hover:to-cyan-400 hover:text-white hover:shadow-blue-400/40 hover:-translate-y-1 focus:outline-none"
-                    >
-                      View on GitHub
-                    </a>
-                    <a
-                      href="https://myo-ai.streamlit.app/"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="px-5 py-2 rounded-full border border-cyan-400 text-cyan-400 bg-transparent text-xs font-semibold uppercase tracking-widest shadow transition-all duration-300 hover:bg-gradient-to-r hover:from-cyan-400 hover:to-blue-500 hover:text-white hover:shadow-cyan-400/40 hover:-translate-y-1 focus:outline-none"
-                    >
-                      Live Demo
-                    </a>
-                  </div>
-                  <CaseStudyMarkdown />
-                </>
-              )}
               <p className="mt-4 text-gray-400 text-sm leading-relaxed">
                 Motion-driven landing experiences, immersive product visuals, and refined UI systems.
               </p>
@@ -1339,7 +1309,13 @@ export default function Page() {
           </div>
 
           <div className="relative grid gap-8 md:gap-12 md:grid-cols-[1fr_1.2fr]">
-              {/* ...existing code... */}
+            {/* Left Side - Get in Touch */}
+            <div className="flex flex-col justify-start">
+              <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-6">Get in Touch</h2>
+              <p className="text-gray-400 mb-8">
+                Have a project in mind or want to collaborate? I'd love to hear from you. Reach out and let's create something amazing together.
+              </p>
+              
               <div className="space-y-6">
                 <div>
                   <p className="text-xs uppercase tracking-widest text-blue-400 mb-2">Email</p>
@@ -1426,9 +1402,10 @@ export default function Page() {
                   Send
                 </button>
               </form>
-            </div> {/* End Right Side - Contact Form */}
-          </div> {/* End grid */}
-        </section> {/* End card bg */}
+            </div>
+          </div>
+        </div>
+      </section>
 
       <footer className="footer-section mt-4">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-20 py-12 border-t border-white/10">
@@ -1554,4 +1531,6 @@ export default function Page() {
       />
     </div>
   );
+
+  return isLoading ? <LoadingScreen /> : mainPortfolio;
 }
