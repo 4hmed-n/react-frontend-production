@@ -1274,28 +1274,41 @@ export default function Page() {
               title: 'Nebula Studio',
               type: 'Brand Experience',
               color: 'from-blue-600 to-cyan-400',
+            [{
+              title: 'Myo AI',
+              type: 'Multimodal Fusion Framework',
+              color: 'from-blue-600 to-cyan-400',
+              github: 'https://github.com/4hmed-n/Myo-AI',
+              live: 'https://myo-ai.streamlit.app',
+              image: '/images/MYO-AI.jpg',
+              description: 'Myo AI is a multimodal fusion framework for advanced cardiovascular risk stratification. It integrates imaging, clinical, and biosignal data using deep learning to provide accurate, explainable risk predictions for heart disease. Built for clinicians and researchers, Myo AI enables seamless analysis and visualization of complex patient data.',
             },
-            {
-              title: 'Orbit Commerce',
-              type: 'E-commerce Platform',
-              color: 'from-purple-600 to-blue-500',
-            },
-            {
-              title: 'Lumen Labs',
               type: 'Product Showcase',
               color: 'from-cyan-500 to-blue-600',
             },
           ].map((project) => (
             <div
               key={project.title}
-              className="rounded-[2rem] border border-white/10 bg-white/5 p-6 backdrop-blur-xl hover:border-blue-500/30 transition-all"
+              className="rounded-[2rem] border border-white/10 bg-white/5 p-6 backdrop-blur-xl hover:border-blue-500/30 transition-all flex flex-col"
             >
-              <div className={`h-48 rounded-2xl bg-gradient-to-br ${project.color} opacity-80`} />
-              <h3 className="mt-6 text-2xl font-bold tracking-tight">{project.title}</h3>
+              {project.image && (
+                <img src={project.image} alt={project.title + ' screenshot'} className="h-48 w-full object-cover rounded-2xl mb-4 border border-cyan-400/40 shadow" />
+              )}
+              <h3 className="text-2xl font-bold tracking-tight mt-2">{project.title}</h3>
               <p className="mt-2 text-sm uppercase tracking-widest text-gray-400">{project.type}</p>
-              <p className="mt-4 text-gray-400 text-sm leading-relaxed">
-                Motion-driven landing experiences, immersive product visuals, and refined UI systems.
-              </p>
+              <p className="mt-4 text-gray-400 text-sm leading-relaxed">{project.description}</p>
+              <div className="mt-6 flex gap-3">
+                {project.live && (
+                  <a href={project.live} target="_blank" rel="noopener noreferrer" className="inline-block px-5 py-2 rounded-full bg-blue-500 text-white font-semibold text-xs uppercase tracking-widest hover:bg-blue-600 transition-colors shadow">
+                    Live Demo
+                  </a>
+                )}
+                {project.github && (
+                  <a href={project.github} target="_blank" rel="noopener noreferrer" className="inline-block px-5 py-2 rounded-full border border-blue-500 text-blue-500 font-semibold text-xs uppercase tracking-widest hover:bg-blue-500 hover:text-white transition-colors shadow">
+                    View on GitHub
+                  </a>
+                )}
+              </div>
             </div>
           ))}
         </div>
