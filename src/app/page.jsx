@@ -1293,7 +1293,7 @@ export default function Page() {
                 title: 'Lumen Labs',
                 type: 'Product Showcase',
                 color: 'from-cyan-500 to-blue-600',
-              }
+              },
             ].map((project) => (
             <div
               key={project.title}
