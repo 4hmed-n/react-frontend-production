@@ -1,5 +1,4 @@
 'use client';
-import React, { useState } from 'react';
 import { useState, useEffect, useRef } from 'react';
 import Matter from 'matter-js';
 
@@ -1063,7 +1062,7 @@ export default function Page() {
               </div>
             </div>
           </div>
-        </div>
+        </div> {/* End grid */}
       </section>
 
       <section id="about" className="mx-auto max-w-7xl px-4 sm:px-6 md:px-20 py-16 sm:py-20">
@@ -1255,7 +1254,6 @@ export default function Page() {
               </div>
 
             </div>
-            </div>
           </div>
         </div>
       </section>
@@ -1298,39 +1296,27 @@ export default function Page() {
               <p className="mt-2 text-sm uppercase tracking-widest text-gray-400">{project.type}</p>
               {project.github && project.title === 'Myo AI' && (
                 <>
-                  <a
-                    href={project.github}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-block mt-4 px-5 py-2 rounded-full bg-blue-500 text-white text-xs font-semibold uppercase tracking-widest shadow hover:bg-blue-600 transition-colors"
-                  >
-                    View on GitHub
-                  </a>
+                  <div className="flex gap-[10px] mt-4">
+                    <a
+                      href={project.github}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-5 py-2 rounded-full border border-blue-400 text-blue-400 bg-transparent text-xs font-semibold uppercase tracking-widest shadow transition-all duration-300 hover:bg-gradient-to-r hover:from-blue-500 hover:to-cyan-400 hover:text-white hover:shadow-blue-400/40 hover:-translate-y-1 focus:outline-none"
+                    >
+                      View on GitHub
+                    </a>
+                    <a
+                      href="https://myo-ai.streamlit.app/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-5 py-2 rounded-full border border-cyan-400 text-cyan-400 bg-transparent text-xs font-semibold uppercase tracking-widest shadow transition-all duration-300 hover:bg-gradient-to-r hover:from-cyan-400 hover:to-blue-500 hover:text-white hover:shadow-cyan-400/40 hover:-translate-y-1 focus:outline-none"
+                    >
+                      Live Demo
+                    </a>
+                  </div>
                   <CaseStudyMarkdown />
                 </>
               )}
-              // Case Study Markdown Arrow Dropdown for Myo AI
-              function CaseStudyMarkdown() {
-                const [open, setOpen] = useState(false);
-                return (
-                  <div className="mt-4">
-                    <button
-                      onClick={() => setOpen((v) => !v)}
-                      className="flex items-center gap-2 text-xs font-semibold text-blue-400 hover:text-blue-300 focus:outline-none"
-                    >
-                      <span>Case Study</span>
-                      <svg className={`w-4 h-4 transition-transform ${open ? 'rotate-90' : ''}`} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                      </svg>
-                    </button>
-                    {open && (
-                      <div className="mt-2 p-4 rounded-xl bg-slate-900/80 border border-blue-500/20 text-left text-xs text-gray-200 whitespace-pre-line shadow-lg">
-                        {`**Process:**\n- Data collection from imaging, clinical, and signal sources\n- Multimodal data fusion and preprocessing\n- Model development for risk stratification\n\n**Goals:**\n- Improve cardiovascular risk prediction accuracy\n- Integrate diverse data modalities for holistic assessment\n- Enable clinical decision support\n\n**Solution:**\n- Developed a modular pipeline for data ingestion and fusion\n- Designed deep learning models for multimodal analysis\n- Achieved state-of-the-art results on benchmark datasets`}
-                      </div>
-                    )}
-                  </div>
-                );
-              }
               <p className="mt-4 text-gray-400 text-sm leading-relaxed">
                 Motion-driven landing experiences, immersive product visuals, and refined UI systems.
               </p>
@@ -1347,13 +1333,7 @@ export default function Page() {
           </div>
 
           <div className="relative grid gap-8 md:gap-12 md:grid-cols-[1fr_1.2fr]">
-            {/* Left Side - Get in Touch */}
-            <div className="flex flex-col justify-start">
-              <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-6">Get in Touch</h2>
-              <p className="text-gray-400 mb-8">
-                Have a project in mind or want to collaborate? I'd love to hear from you. Reach out and let's create something amazing together.
-              </p>
-              
+              {/* ...existing code... */}
               <div className="space-y-6">
                 <div>
                   <p className="text-xs uppercase tracking-widest text-blue-400 mb-2">Email</p>
@@ -1440,9 +1420,9 @@ export default function Page() {
                   Send
                 </button>
               </form>
-            </div>
-          </div>
-        </div>
+            </div> {/* End Right Side - Contact Form */}
+          </div> {/* End grid */}
+        </div> {/* End card bg */}
       </section>
 
       <footer className="footer-section mt-4">
@@ -1569,6 +1549,27 @@ export default function Page() {
       />
     </div>
   );
+}
 
-  return isLoading ? <LoadingScreen /> : mainPortfolio;
+// CaseStudyMarkdown component moved to the bottom of the file
+function CaseStudyMarkdown() {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="mt-4">
+      <button
+        onClick={() => setOpen((v) => !v)}
+        className="flex items-center gap-2 text-xs font-semibold text-blue-400 hover:text-blue-300 focus:outline-none"
+      >
+        <span>Case Study</span>
+        <svg className={`w-4 h-4 transition-transform ${open ? 'rotate-90' : ''}`} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
+      {open && (
+        <div className="mt-2 p-4 rounded-xl bg-slate-900/80 border border-blue-500/20 text-left text-xs text-gray-200 whitespace-pre-line shadow-lg">
+          {`**Process:**\n- Data collection from imaging, clinical, and signal sources\n- Multimodal data fusion and preprocessing\n- Model development for risk stratification\n\n**Goals:**\n- Improve cardiovascular risk prediction accuracy\n- Integrate diverse data modalities for holistic assessment\n- Enable clinical decision support\n\n**Solution:**\n- Developed a modular pipeline for data ingestion and fusion\n- Designed deep learning models for multimodal analysis\n- Achieved state-of-the-art results on benchmark datasets`}
+        </div>
+      )}
+    </div>
+  );
 }
