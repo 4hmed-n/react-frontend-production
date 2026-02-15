@@ -241,18 +241,24 @@ function Typewriter({
   useEffect(() => {
     const currentString = strings[stringIndex] || '';
     const speed = isDeleting ? deletingSpeed : typingSpeed;
-
     if (!isDeleting && displayText === currentString) {
-      // Finished typing, wait before deleting
       typingTimeoutRef.current = setTimeout(() => {
         setIsDeleting(true);
       }, delayBetweenStrings);
     } else if (isDeleting && displayText === '') {
-      // Finished deleting, move to next string
       setIsDeleting(false);
       setStringIndex((prev) => (prev + 1) % strings.length);
+    } else {
+      typingTimeoutRef.current = setTimeout(() => {
+        setDisplayText((prev) => {
+          if (!isDeleting) {
+            return currentString.slice(0, prev.length + 1);
+          } else {
+            return currentString.slice(0, prev.length - 1);
+          }
+        });
+      }, speed);
     }
-
     return () => clearTimeout(typingTimeoutRef.current);
   }, [displayText, stringIndex, isDeleting, strings, typingSpeed, deletingSpeed, delayBetweenStrings]);
 
