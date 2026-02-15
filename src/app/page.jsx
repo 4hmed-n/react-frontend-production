@@ -7,15 +7,17 @@ function MyoAICard({ project }) {
       className="relative"
       style={{
         transition: 'height 0.35s cubic-bezier(.4,2,.6,1)',
-        height: hovered ? (dropdownOpen ? 540 : 430) : 370
+        height: hovered ? (dropdownOpen ? 560 : 430) : 370,
+        overflow: 'hidden'
       }}
     >
       {/* Absolute overlay card */}
       <div
         className={`absolute inset-0 rounded-[2rem] border border-white/10 bg-[#0a0a1a] p-6 backdrop-blur-xl flex flex-col transition-all duration-300 ${hovered ? 'z-50 shadow-2xl scale-[1.04]' : ''}`}
         style={{
-          minHeight: hovered ? (dropdownOpen ? 520 : 410) : 350,
-          transition: 'min-height 0.35s cubic-bezier(.4,2,.6,1)'
+          minHeight: hovered ? (dropdownOpen ? 540 : 410) : 350,
+          transition: 'min-height 0.35s cubic-bezier(.4,2,.6,1)',
+          overflow: 'hidden'
         }}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => { setHovered(false); setDropdownOpen(false); }}
@@ -43,10 +45,10 @@ function MyoAICard({ project }) {
             type="button"
             aria-label="Toggle Project Details"
           >
-            <span className={`transition-transform duration-200 text-lg ${dropdownOpen ? 'rotate-90' : ''}`}>▼</span>
+            <span className={`transition-transform duration-200 text-lg ${dropdownOpen ? 'rotate-90' : 'rotate-0'}`}>▼</span>
           </button>
           {/* Dropdown content: always inside card boundary, smooth transition */}
-          <div className={`transition-all duration-300 overflow-hidden ${dropdownOpen ? 'max-h-[200px] opacity-100 mt-4' : 'max-h-0 opacity-0 mt-0'}`} style={{width: '100%'}}>
+          <div className={`transition-all duration-300 overflow-hidden ${dropdownOpen ? 'max-h-[220px] opacity-100 mt-4' : 'max-h-0 opacity-0 mt-0'}`} style={{width: '100%'}}>
             <div className="space-y-2">
               <div>
                 <span className="inline-block text-blue-400 font-bold text-sm mr-2">↓ Purpose</span>
