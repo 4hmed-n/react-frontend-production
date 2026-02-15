@@ -1268,7 +1268,9 @@ export default function Page() {
           </p>
         </div>
         <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {[
+          const [hoveredProject, setHoveredProject] = useState(null);
+
+          const projects = [
             {
               title: 'Myo AI',
               type: 'Multimodal Fusion Framework',
@@ -1279,11 +1281,20 @@ export default function Page() {
               description: (
                 <>
                   <span className="block mb-2">Myo AI is a multimodal fusion framework for advanced cardiovascular risk stratification. It integrates imaging, clinical, and biosignal data using deep learning to provide accurate, explainable risk predictions for heart disease. Built for clinicians and researchers, Myo AI enables seamless analysis and visualization of complex patient data.</span>
-                  <span className="block mt-2 text-left text-xs text-blue-300">
-                    <span className="font-bold">↓ Purpose:</span> Enable clinicians to predict cardiovascular risk using all available data modalities.<br/>
-                    <span className="font-bold">↓ Focus:</span> Multimodal fusion (ECG, imaging, clinical) with explainable AI.<br/>
-                    <span className="font-bold">↓ Goal:</span> Improve patient outcomes with transparent, actionable risk scores.
-                  </span>
+                  <div className="mt-4 space-y-2">
+                    <div>
+                      <span className="inline-block text-blue-400 font-bold text-sm mr-2">↓ Purpose</span>
+                      <span className="text-xs text-blue-100">Enable clinicians to predict cardiovascular risk using all available data modalities.</span>
+                    </div>
+                    <div>
+                      <span className="inline-block text-blue-400 font-bold text-sm mr-2">↓ Focus</span>
+                      <span className="text-xs text-blue-100">Multimodal fusion (ECG, imaging, clinical) with explainable AI.</span>
+                    </div>
+                    <div>
+                      <span className="inline-block text-blue-400 font-bold text-sm mr-2">↓ Goal</span>
+                      <span className="text-xs text-blue-100">Improve patient outcomes with transparent, actionable risk scores.</span>
+                    </div>
+                  </div>
                 </>
               ),
             },
@@ -1299,29 +1310,35 @@ export default function Page() {
               color: 'from-cyan-500 to-blue-600',
               description: 'Product-led storytelling with dynamic visuals and modern design system.'
             }
-          ].map((project) => (
-            <div
-              key={project.title}
-              className="rounded-[2rem] border border-white/10 bg-white/5 p-6 backdrop-blur-xl hover:border-blue-500/30 transition-all flex flex-col"
-            >
-              {project.image && (
-                <img src={project.image} alt={project.title + ' screenshot'} className="h-48 w-full object-cover rounded-2xl mb-4 border border-cyan-400/40 shadow" />
-              )}
-              <h3 className="text-2xl font-bold tracking-tight mt-2">{project.title}</h3>
-              <p className="mt-2 text-sm uppercase tracking-widest text-gray-400">{project.type}</p>
-              <div className="mt-4 text-gray-400 text-sm leading-relaxed">{project.description}</div>
-              {project.title === 'Myo AI' && (
-                <div className="mt-6 flex gap-3">
-                  <a href={project.github} target="_blank" rel="noopener noreferrer" className="inline-block px-5 py-2 rounded-full border border-blue-500 text-blue-500 font-semibold text-xs uppercase tracking-widest hover:bg-blue-500 hover:text-white transition-colors shadow">
-                    View on GitHub
-                  </a>
-                  <a href={project.live} target="_blank" rel="noopener noreferrer" className="inline-block px-5 py-2 rounded-full bg-blue-500 text-white font-semibold text-xs uppercase tracking-widest hover:bg-blue-600 transition-colors shadow">
-                    Live Demo
-                  </a>
-                </div>
-              )}
-            </div>
-          ))}
+          projects.map((project) => {
+            const isMyoAI = project.title === 'Myo AI';
+            return (
+              <div
+                key={project.title}
+                className={`rounded-[2rem] border border-white/10 bg-white/5 p-6 backdrop-blur-xl transition-all flex flex-col ${isMyoAI ? 'hover:border-blue-500/60' : 'hover:border-blue-500/30'} ${isMyoAI && hoveredProject === 'Myo AI' ? 'md:row-span-2 h-[540px] shadow-2xl scale-[1.04] z-10' : ''}`}
+                onMouseEnter={() => isMyoAI && setHoveredProject('Myo AI')}
+                onMouseLeave={() => isMyoAI && setHoveredProject(null)}
+                style={isMyoAI ? { minHeight: 320, transition: 'all 0.3s cubic-bezier(.4,2,.6,1)' } : {}}
+              >
+                {project.image && (
+                  <img src={project.image} alt={project.title + ' screenshot'} className="h-48 w-full object-cover rounded-2xl mb-4 border border-cyan-400/40 shadow" />
+                )}
+                <h3 className="text-2xl font-bold tracking-tight mt-2">{project.title}</h3>
+                <p className="mt-2 text-sm uppercase tracking-widest text-gray-400">{project.type}</p>
+                <div className="mt-4 text-gray-400 text-sm leading-relaxed">{project.description}</div>
+                {isMyoAI && (
+                  <div className="mt-6 flex gap-3">
+                    <a href={project.github} target="_blank" rel="noopener noreferrer" className="inline-block px-5 py-2 rounded-full border border-blue-500 text-blue-500 font-semibold text-xs uppercase tracking-widest hover:bg-blue-500 hover:text-white transition-colors shadow">
+                      View on GitHub
+                    </a>
+                    <a href={project.live} target="_blank" rel="noopener noreferrer" className="inline-block px-5 py-2 rounded-full bg-blue-500 text-white font-semibold text-xs uppercase tracking-widest hover:bg-blue-600 transition-colors shadow">
+                      Live Demo
+                    </a>
+                  </div>
+                )}
+              </div>
+            );
+          })
         </div>
       </section>
 
