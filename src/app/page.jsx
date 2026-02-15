@@ -16,12 +16,8 @@ function MyoAICard({ project }) {
         )}
         <h3 className="text-2xl font-bold tracking-tight mt-2">{project.title}</h3>
         <p className="mt-2 text-sm uppercase tracking-widest text-gray-400">{project.type}</p>
-        {/* Description: hidden by default, revealed on hover */}
-        <div className={`mt-4 text-gray-400 text-sm leading-relaxed transition-all duration-300 overflow-hidden ${hovered ? 'opacity-100 max-h-[200px]' : 'opacity-0 max-h-0'}`}>
-          Myo AI is a multimodal fusion framework for advanced cardiovascular risk stratification. It integrates imaging, clinical, and biosignal data using deep learning to provide accurate, explainable risk predictions for heart disease. Built for clinicians and researchers, Myo AI enables seamless analysis and visualization of complex patient data.
-        </div>
-        {/* Buttons: only visible on hover */}
-        <div className={`mt-6 flex gap-3 transition-all duration-300 ${hovered ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+        {/* Buttons: always visible */}
+        <div className="mt-6 flex gap-3">
           <a href={project.github} target="_blank" rel="noopener noreferrer" className="inline-block px-5 py-2 rounded-full border border-blue-500 text-blue-500 font-semibold text-xs uppercase tracking-widest hover:bg-blue-500 hover:text-white transition-colors shadow">
             View on GitHub
           </a>
@@ -29,16 +25,16 @@ function MyoAICard({ project }) {
             Live Demo
           </a>
         </div>
-        {/* Divider and Accordion toggle: only visible on hover */}
-        <div className={`transition-all duration-300 ${hovered ? 'opacity-100 mt-6' : 'opacity-0 max-h-0 mt-0'}`}>
+        {/* Divider and Accordion toggle: always visible */}
+        <div className="mt-4">
           <div className="border-t border-white/10 my-2" />
           <button
-            className="flex items-center gap-2 text-blue-400 hover:text-blue-300 focus:outline-none mt-2"
+            className="flex items-center text-blue-400 hover:text-blue-300 focus:outline-none mt-2"
             onClick={() => setDropdownOpen((v) => !v)}
             type="button"
+            aria-label="Toggle Project Details"
           >
-            <span className={`transition-transform duration-200 ${dropdownOpen ? 'rotate-90' : ''}`}>▼</span>
-            <span className="text-xs font-semibold">View Project Details</span>
+            <span className={`transition-transform duration-200 text-lg ${dropdownOpen ? 'rotate-90' : ''}`}>▼</span>
           </button>
           {/* Dropdown content */}
           <div className={`transition-all duration-300 overflow-hidden ${dropdownOpen ? 'max-h-[400px] opacity-100 mt-4' : 'max-h-0 opacity-0 mt-0'}`}>
@@ -57,6 +53,10 @@ function MyoAICard({ project }) {
               </div>
             </div>
           </div>
+        </div>
+        {/* Description: only visible when hovered/elongated */}
+        <div className={`mt-4 text-gray-400 text-sm leading-relaxed transition-all duration-300 overflow-hidden ${hovered ? 'opacity-100 max-h-[200px]' : 'opacity-0 max-h-0'}`}>
+          Myo AI is a multimodal fusion framework for advanced cardiovascular risk stratification. It integrates imaging, clinical, and biosignal data using deep learning to provide accurate, explainable risk predictions for heart disease. Built for clinicians and researchers, Myo AI enables seamless analysis and visualization of complex patient data.
         </div>
       </div>
     </div>
