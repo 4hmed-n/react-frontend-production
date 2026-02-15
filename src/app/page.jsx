@@ -1,3 +1,67 @@
+// --- MyoAICard Sub-Component ---
+function MyoAICard({ project }) {
+  const [hovered, setHovered] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  return (
+    <div className="relative h-[340px]">
+      {/* Absolute overlay card */}
+      <div
+        className={`absolute inset-0 rounded-[2rem] border border-white/10 bg-[#0a0a1a] p-6 backdrop-blur-xl flex flex-col transition-all duration-300 ${hovered ? 'z-50 shadow-2xl scale-[1.04]' : ''}`}
+        style={{ minHeight: 320, transition: 'all 0.3s cubic-bezier(.4,2,.6,1)' }}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => { setHovered(false); setDropdownOpen(false); }}
+      >
+        {project.image && (
+          <img src={project.image} alt={project.title + ' screenshot'} className="h-48 w-full object-cover rounded-2xl mb-4 border border-cyan-400/40 shadow" />
+        )}
+        <h3 className="text-2xl font-bold tracking-tight mt-2">{project.title}</h3>
+        <p className="mt-2 text-sm uppercase tracking-widest text-gray-400">{project.type}</p>
+        {/* Description: hidden by default, revealed on hover */}
+        <div className={`mt-4 text-gray-400 text-sm leading-relaxed transition-all duration-300 overflow-hidden ${hovered ? 'opacity-100 max-h-[200px]' : 'opacity-0 max-h-0'}`}>
+          Myo AI is a multimodal fusion framework for advanced cardiovascular risk stratification. It integrates imaging, clinical, and biosignal data using deep learning to provide accurate, explainable risk predictions for heart disease. Built for clinicians and researchers, Myo AI enables seamless analysis and visualization of complex patient data.
+        </div>
+        {/* Buttons: only visible on hover */}
+        <div className={`mt-6 flex gap-3 transition-all duration-300 ${hovered ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+          <a href={project.github} target="_blank" rel="noopener noreferrer" className="inline-block px-5 py-2 rounded-full border border-blue-500 text-blue-500 font-semibold text-xs uppercase tracking-widest hover:bg-blue-500 hover:text-white transition-colors shadow">
+            View on GitHub
+          </a>
+          <a href={project.live} target="_blank" rel="noopener noreferrer" className="inline-block px-5 py-2 rounded-full bg-blue-500 text-white font-semibold text-xs uppercase tracking-widest hover:bg-blue-600 transition-colors shadow">
+            Live Demo
+          </a>
+        </div>
+        {/* Divider and Accordion toggle: only visible on hover */}
+        <div className={`transition-all duration-300 ${hovered ? 'opacity-100 mt-6' : 'opacity-0 max-h-0 mt-0'}`}>
+          <div className="border-t border-white/10 my-2" />
+          <button
+            className="flex items-center gap-2 text-blue-400 hover:text-blue-300 focus:outline-none mt-2"
+            onClick={() => setDropdownOpen((v) => !v)}
+            type="button"
+          >
+            <span className={`transition-transform duration-200 ${dropdownOpen ? 'rotate-90' : ''}`}>▼</span>
+            <span className="text-xs font-semibold">View Project Details</span>
+          </button>
+          {/* Dropdown content */}
+          <div className={`transition-all duration-300 overflow-hidden ${dropdownOpen ? 'max-h-[400px] opacity-100 mt-4' : 'max-h-0 opacity-0 mt-0'}`}>
+            <div className="space-y-2">
+              <div>
+                <span className="inline-block text-blue-400 font-bold text-sm mr-2">↓ Purpose</span>
+                <span className="text-xs text-blue-100">Enable clinicians to predict cardiovascular risk using all available data modalities.</span>
+              </div>
+              <div>
+                <span className="inline-block text-blue-400 font-bold text-sm mr-2">↓ Focus</span>
+                <span className="text-xs text-blue-100">Multimodal fusion (ECG, imaging, clinical) with explainable AI.</span>
+              </div>
+              <div>
+                <span className="inline-block text-blue-400 font-bold text-sm mr-2">↓ Goal</span>
+                <span className="text-xs text-blue-100">Improve patient outcomes with transparent, actionable risk scores.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 'use client';
 import { useState, useEffect, useRef } from 'react';
 import Matter from 'matter-js';
@@ -1312,25 +1376,14 @@ export default function Page() {
         </div>
         <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {projects.map((project) => {
-            const isHovered = hoveredProject === project.title;
-            const isExpanded = expandedDetails[project.title];
-            // About text logic: always show only first 2 lines with ellipsis unless hovered, show full on hover
-            let aboutContent;
-            if (typeof project.description === 'string') {
-              aboutContent = (
-                <span className={`block transition-all duration-300 ${isHovered ? '' : 'line-clamp-2'}`}>{project.description}</span>
-              );
-            } else {
-              aboutContent = (
-                <div className={`transition-all duration-300 ${isHovered ? '' : 'line-clamp-2'}`}>{project.description}</div>
-              );
+            if (project.title === 'Myo AI') {
+              return <MyoAICard key={project.title} project={project} />;
             }
+            // Standard card for other projects
             return (
               <div
                 key={project.title}
-                className={`rounded-[2rem] border border-white/10 bg-white/5 p-6 backdrop-blur-xl transition-all flex flex-col hover:border-blue-500/60 ${isHovered || expandedDetails[project.title] ? 'h-auto shadow-2xl scale-[1.04] z-10' : 'h-[340px]'} ${expandedDetails[project.title] ? 'min-h-[520px]' : ''}`}
-                onMouseEnter={() => setHoveredProject(project.title)}
-                onMouseLeave={() => setHoveredProject(null)}
+                className="rounded-[2rem] border border-white/10 bg-white/5 p-6 backdrop-blur-xl flex flex-col h-[340px] transition-all hover:border-blue-500/60"
                 style={{ minHeight: 320, transition: 'all 0.3s cubic-bezier(.4,2,.6,1)' }}
               >
                 {project.image && (
@@ -1338,10 +1391,7 @@ export default function Page() {
                 )}
                 <h3 className="text-2xl font-bold tracking-tight mt-2">{project.title}</h3>
                 <p className="mt-2 text-sm uppercase tracking-widest text-gray-400">{project.type}</p>
-                <div className="mt-4 text-gray-400 text-sm leading-relaxed">
-                  {aboutContent}
-                  {!isHovered && <span className="text-blue-400 font-bold"> ...</span>}
-                </div>
+                <div className="mt-4 text-gray-400 text-sm leading-relaxed line-clamp-2">{typeof project.description === 'string' ? project.description : ''}</div>
                 <div className="mt-6 flex gap-3">
                   {project.github && (
                     <a href={project.github} target="_blank" rel="noopener noreferrer" className="inline-block px-5 py-2 rounded-full border border-blue-500 text-blue-500 font-semibold text-xs uppercase tracking-widest hover:bg-blue-500 hover:text-white transition-colors shadow">
@@ -1354,32 +1404,6 @@ export default function Page() {
                     </a>
                   )}
                 </div>
-                {/* Markdown arrow for details toggle */}
-                <button
-                  className="mt-4 flex items-center gap-2 text-blue-400 hover:text-blue-300 focus:outline-none"
-                  onClick={() => setExpandedDetails((prev) => ({ ...prev, [project.title]: !prev[project.title] }))}
-                  type="button"
-                >
-                  <span className={`transition-transform duration-200 ${expandedDetails[project.title] ? 'rotate-90' : ''}`}>▼</span>
-                  <span className="text-xs font-semibold">Show Details</span>
-                </button>
-                {/* Details section: Purpose, Focus, Goal, etc. Only show if expanded */}
-                {expandedDetails[project.title] && project.title === 'Myo AI' && (
-                  <div className="mt-4 space-y-2">
-                    <div>
-                      <span className="inline-block text-blue-400 font-bold text-sm mr-2">↓ Purpose</span>
-                      <span className="text-xs text-blue-100">Enable clinicians to predict cardiovascular risk using all available data modalities.</span>
-                    </div>
-                    <div>
-                      <span className="inline-block text-blue-400 font-bold text-sm mr-2">↓ Focus</span>
-                      <span className="text-xs text-blue-100">Multimodal fusion (ECG, imaging, clinical) with explainable AI.</span>
-                    </div>
-                    <div>
-                      <span className="inline-block text-blue-400 font-bold text-sm mr-2">↓ Goal</span>
-                      <span className="text-xs text-blue-100">Improve patient outcomes with transparent, actionable risk scores.</span>
-                    </div>
-                  </div>
-                )}
               </div>
             );
           })}
