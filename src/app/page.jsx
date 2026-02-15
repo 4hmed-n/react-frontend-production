@@ -1276,7 +1276,16 @@ export default function Page() {
               github: 'https://github.com/4hmed-n/Myo-AI',
               live: 'https://myo-ai.streamlit.app',
               image: '/images/MYO-AI.jpg',
-              description: 'Myo AI is a multimodal fusion framework for advanced cardiovascular risk stratification. It integrates imaging, clinical, and biosignal data using deep learning to provide accurate, explainable risk predictions for heart disease. Built for clinicians and researchers, Myo AI enables seamless analysis and visualization of complex patient data.',
+              description: (
+                <>
+                  <span className="block mb-2">Myo AI is a multimodal fusion framework for advanced cardiovascular risk stratification. It integrates imaging, clinical, and biosignal data using deep learning to provide accurate, explainable risk predictions for heart disease. Built for clinicians and researchers, Myo AI enables seamless analysis and visualization of complex patient data.</span>
+                  <span className="block mt-2 text-left text-xs text-blue-300">
+                    <span className="font-bold">↓ Purpose:</span> Enable clinicians to predict cardiovascular risk using all available data modalities.<br/>
+                    <span className="font-bold">↓ Focus:</span> Multimodal fusion (ECG, imaging, clinical) with explainable AI.<br/>
+                    <span className="font-bold">↓ Goal:</span> Improve patient outcomes with transparent, actionable risk scores.
+                  </span>
+                </>
+              ),
             },
             {
               title: 'Orbit Commerce',
@@ -1300,17 +1309,15 @@ export default function Page() {
               )}
               <h3 className="text-2xl font-bold tracking-tight mt-2">{project.title}</h3>
               <p className="mt-2 text-sm uppercase tracking-widest text-gray-400">{project.type}</p>
-              <p className="mt-4 text-gray-400 text-sm leading-relaxed">{project.description}</p>
+              <div className="mt-4 text-gray-400 text-sm leading-relaxed">{project.description}</div>
               {project.title === 'Myo AI' && (
                 <div className="mt-6 flex gap-3">
-                  <a href={project.live} target="_blank" rel="noopener noreferrer" className="inline-block px-5 py-2 rounded-full bg-blue-500 text-white font-semibold text-xs uppercase tracking-widest hover:bg-blue-600 transition-colors shadow">
-                    Live Demo
-                  </a>
                   <a href={project.github} target="_blank" rel="noopener noreferrer" className="inline-block px-5 py-2 rounded-full border border-blue-500 text-blue-500 font-semibold text-xs uppercase tracking-widest hover:bg-blue-500 hover:text-white transition-colors shadow">
                     View on GitHub
                   </a>
-                  {/* CaseStudyMarkdown component placeholder */}
-                  {typeof CaseStudyMarkdown !== 'undefined' && <CaseStudyMarkdown />}
+                  <a href={project.live} target="_blank" rel="noopener noreferrer" className="inline-block px-5 py-2 rounded-full bg-blue-500 text-white font-semibold text-xs uppercase tracking-widest hover:bg-blue-600 transition-colors shadow">
+                    Live Demo
+                  </a>
                 </div>
               )}
             </div>
