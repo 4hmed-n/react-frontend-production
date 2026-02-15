@@ -24,7 +24,15 @@ function MyoAICard({ project }) {
         onMouseLeave={() => { if (!dropdownOpen) setHovered(false); }}
       >
         {project.image && (
-          <img src={project.image} alt={project.title + ' screenshot'} className="h-48 w-full object-cover rounded-2xl mb-4 border border-cyan-400/40 shadow" />
+          <img 
+            src={project.image} 
+            alt={project.title + ' screenshot'} 
+            className="h-48 w-full object-cover rounded-2xl border border-cyan-400/40 shadow transition-all duration-300"
+            style={{
+              marginBottom: hovered || dropdownOpen ? '1rem' : '1rem', // keep margin consistent
+              transform: hovered || dropdownOpen ? 'scale(1.04)' : 'scale(1)', // only scale, no translateY
+            }}
+          />
         )}
         <h3 className="text-2xl font-bold tracking-tight mt-2">{project.title}</h3>
         <p className="mt-2 text-sm uppercase tracking-widest text-gray-400">{project.type}</p>
@@ -44,7 +52,7 @@ function MyoAICard({ project }) {
           </a>
         </div>
         {/* Divider and Accordion toggle: only visible on hover */}
-        <div className={`transition-all duration-300 ${hovered || dropdownOpen ? 'opacity-100 mt-4' : 'opacity-0 max-h-0 mt-0 pointer-events-none'}`}>
+        <div className={`transition-all duration-300 ${hovered || dropdownOpen ? 'opacity-100 mt-2' : 'opacity-0 max-h-0 mt-0 pointer-events-none'}`}>
           <div className="border-t border-white/10 my-2" />
           <button
             className="flex items-center text-blue-400 hover:text-blue-300 focus:outline-none mt-2"
@@ -63,7 +71,7 @@ function MyoAICard({ project }) {
             </svg>
           </button>
           {/* Dropdown content: always inside card boundary, smooth transition */}
-          <div className={`transition-all duration-300 overflow-hidden ${dropdownOpen ? 'max-h-[340px] opacity-100 mt-4' : 'max-h-0 opacity-0 mt-0'}`} style={{width: '100%'}}>
+          <div className={`transition-all duration-300 overflow-hidden ${dropdownOpen ? 'max-h-[340px] opacity-100 mt-2' : 'max-h-0 opacity-0 mt-0'}`} style={{width: '100%'}}>
             <div className="space-y-2">
               <div>
                 <span className="inline-block text-blue-400 font-bold text-sm mr-2">↓ Purpose</span>
