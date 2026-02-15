@@ -3,11 +3,11 @@ function MyoAICard({ project }) {
   const [hovered, setHovered] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   return (
-    <div className="relative h-[340px]">
+    <div className="relative h-[390px]">
       {/* Absolute overlay card */}
       <div
         className={`absolute inset-0 rounded-[2rem] border border-white/10 bg-[#0a0a1a] p-6 backdrop-blur-xl flex flex-col transition-all duration-300 ${hovered ? 'z-50 shadow-2xl scale-[1.04]' : ''}`}
-        style={{ minHeight: 320, transition: 'all 0.3s cubic-bezier(.4,2,.6,1)' }}
+        style={{ minHeight: 370, transition: 'all 0.3s cubic-bezier(.4,2,.6,1)' }}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => { setHovered(false); setDropdownOpen(false); }}
       >
