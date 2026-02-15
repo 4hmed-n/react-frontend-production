@@ -8,7 +8,8 @@ function MyoAICard({ project }) {
       style={{
         transition: 'height 0.35s cubic-bezier(.4,2,.6,1)',
         height: dropdownOpen ? 900 : (hovered ? 700 : 370),
-        overflow: 'hidden'
+        overflow: 'hidden',
+        borderRadius: '1.5rem' // 24px, matches Tailwind rounded-3xl
       }}
     >
       {/* Absolute overlay card */}
