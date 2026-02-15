@@ -250,12 +250,12 @@ function Typewriter({
       // Finished deleting, move to next string
       setIsDeleting(false);
       setStringIndex((prev) => (prev + 1) % strings.length);
-    } else {
-      // Typing or deleting
-      typingTimeoutRef.current = setTimeout(() => {
-        setDisplayText((prev) => {
-          if (isDeleting) {
-            return prev.slice(0, -1);
+        <h3 className="text-2xl font-bold tracking-tight mt-2">{project.title}</h3>
+        <p className="mt-2 text-sm uppercase tracking-widest text-gray-400">{project.type}</p>
+        {/* About: only visible on hover, between type and buttons */}
+        <div className={`mt-4 text-gray-400 text-sm leading-relaxed transition-all duration-300 overflow-hidden ${hovered ? 'opacity-100 max-h-[120px]' : 'opacity-0 max-h-0'}`}>
+          Myo AI is a multimodal fusion framework for advanced cardiovascular risk stratification. It integrates imaging, clinical, and biosignal data using deep learning to provide accurate, explainable risk predictions for heart disease. Built for clinicians and researchers, Myo AI enables seamless analysis and visualization of complex patient data.
+        </div>
           } else {
             return currentString.slice(0, prev.length + 1);
           }
@@ -958,7 +958,6 @@ export default function Page() {
       image: '/images/MYO-AI.jpg',
       description: (
         <>
-          <span className="block mb-2">Myo AI is a multimodal fusion framework for advanced cardiovascular risk stratification. It integrates imaging, clinical, and biosignal data using deep learning to provide accurate, explainable risk predictions for heart disease. Built for clinicians and researchers, Myo AI enables seamless analysis and visualization of complex patient data.</span>
           <div className="mt-4 space-y-2">
             <div>
               <span className="inline-block text-blue-400 font-bold text-sm mr-2">↓ Purpose</span>
