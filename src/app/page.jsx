@@ -7,7 +7,7 @@ function MyoAICard({ project }) {
       className="relative"
       style={{
         transition: 'height 0.35s cubic-bezier(.4,2,.6,1)',
-        height: hovered ? (dropdownOpen ? 560 : 430) : 370,
+        height: hovered ? (dropdownOpen ? 600 : 430) : 370,
         overflow: 'hidden'
       }}
     >
@@ -48,7 +48,7 @@ function MyoAICard({ project }) {
             <span className={`transition-transform duration-200 text-lg ${dropdownOpen ? 'rotate-90' : 'rotate-0'}`}>▼</span>
           </button>
           {/* Dropdown content: always inside card boundary, smooth transition */}
-          <div className={`transition-all duration-300 overflow-hidden ${dropdownOpen ? 'max-h-[220px] opacity-100 mt-4' : 'max-h-0 opacity-0 mt-0'}`} style={{width: '100%'}}>
+          <div className={`transition-all duration-300 overflow-hidden ${dropdownOpen ? 'max-h-[300px] opacity-100 mt-4' : 'max-h-0 opacity-0 mt-0'}`} style={{width: '100%'}}>
             <div className="space-y-2">
               <div>
                 <span className="inline-block text-blue-400 font-bold text-sm mr-2">↓ Purpose</span>
