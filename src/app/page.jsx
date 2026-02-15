@@ -16,17 +16,17 @@ function MyoAICard({ project }) {
         )}
         <h3 className="text-2xl font-bold tracking-tight mt-2">{project.title}</h3>
         <p className="mt-2 text-sm uppercase tracking-widest text-gray-400">{project.type}</p>
-        {/* Buttons: always visible */}
-        <div className="mt-6 flex gap-3">
-          <a href={project.github} target="_blank" rel="noopener noreferrer" className="inline-block px-5 py-2 rounded-full border border-blue-500 text-blue-500 font-semibold text-xs uppercase tracking-widest hover:bg-blue-500 hover:text-white transition-colors shadow">
+        {/* Buttons: always visible, inside card boundary */}
+        <div className="mt-6 flex gap-3 w-full">
+          <a href={project.github} target="_blank" rel="noopener noreferrer" className="flex-1 px-3 py-2 rounded-full border border-blue-500 text-blue-500 font-semibold text-xs uppercase tracking-widest hover:bg-blue-500 hover:text-white transition-colors shadow text-center">
             View on GitHub
           </a>
-          <a href={project.live} target="_blank" rel="noopener noreferrer" className="inline-block px-5 py-2 rounded-full bg-blue-500 text-white font-semibold text-xs uppercase tracking-widest hover:bg-blue-600 transition-colors shadow">
+          <a href={project.live} target="_blank" rel="noopener noreferrer" className="flex-1 px-3 py-2 rounded-full bg-blue-500 text-white font-semibold text-xs uppercase tracking-widest hover:bg-blue-600 transition-colors shadow text-center">
             Live Demo
           </a>
         </div>
-        {/* Divider and Accordion toggle: always visible */}
-        <div className="mt-4">
+        {/* Divider and Accordion toggle: only visible on hover */}
+        <div className={`transition-all duration-300 ${hovered ? 'opacity-100 mt-4' : 'opacity-0 max-h-0 mt-0 pointer-events-none'}`}>
           <div className="border-t border-white/10 my-2" />
           <button
             className="flex items-center text-blue-400 hover:text-blue-300 focus:outline-none mt-2"
