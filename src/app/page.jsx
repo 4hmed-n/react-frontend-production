@@ -28,7 +28,7 @@ function MyoAICard({ project }) {
         <h3 className="text-2xl font-bold tracking-tight mt-2">{project.title}</h3>
         <p className="mt-2 text-sm uppercase tracking-widest text-gray-400">{project.type}</p>
         {/* Description: only visible on hover, between subtitle and buttons */}
-        <div className={`mt-4 text-gray-400 text-sm leading-relaxed transition-all duration-300 overflow-hidden ${hovered ? 'opacity-100 max-h-[120px]' : 'opacity-0 max-h-0'}`}>
+        <div className={`overflow-hidden transition-all duration-500 ease-in-out ${hovered ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'}`}> 
           A Multimodal Fusion Framework for advanced cardiovascular risk stratification. It integrates imaging, clinical, and biosignal data using deep learning to provide accurate, explainable risk predictions for heart disease. Built for clinicians and researchers, Myo AI enables seamless analysis and visualization of complex patient data.
         </div>
         {/* Buttons: always visible, inside card boundary */}
