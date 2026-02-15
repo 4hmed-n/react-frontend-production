@@ -184,7 +184,6 @@ export default function Resume() {
       institution: 'KFUEIT',
       description: 'Specialized in Machine Learning, Data Analysis, and Statistical Modeling with Focus on Real-World Applications'
     }
-    }
   ];
 
   const certificates = [
