@@ -7,7 +7,7 @@ function MyoAICard({ project }) {
       className="relative"
       style={{
         transition: 'height 0.35s cubic-bezier(.4,2,.6,1)',
-        height: dropdownOpen ? 640 : (hovered ? 700 : 370),
+        height: dropdownOpen ? 900 : (hovered ? 700 : 370),
         overflow: 'hidden'
       }}
     >
@@ -28,8 +28,10 @@ function MyoAICard({ project }) {
         <h3 className="text-2xl font-bold tracking-tight mt-2">{project.title}</h3>
         <p className="mt-2 text-sm uppercase tracking-widest text-gray-400">{project.type}</p>
         {/* Description: only visible on hover, between subtitle and buttons */}
-        <div className={`overflow-hidden transition-all duration-500 ease-in-out ${hovered ? 'max-h-[200px] opacity-100' : 'max-h-0 opacity-0'}`}> 
-          A Multimodal Fusion Framework for advanced cardiovascular risk stratification. It integrates imaging, clinical, and biosignal data using deep learning to provide accurate, explainable risk predictions for heart disease. Built for clinicians and researchers, Myo AI enables seamless analysis and visualization of complex patient data.
+        <div className={`overflow-hidden transition-all duration-500 ease-in-out ${hovered || dropdownOpen ? 'max-h-[200px] opacity-100' : 'max-h-0 opacity-0'}`}> 
+          <div className="text-gray-400 text-sm leading-relaxed">
+            A Multimodal Fusion Framework for advanced cardiovascular risk stratification. It integrates imaging, clinical, and biosignal data using deep learning to provide accurate, explainable risk predictions for heart disease. Built for clinicians and researchers, Myo AI enables seamless analysis and visualization of complex patient data.
+          </div>
         </div>
         {/* Buttons: always visible, inside card boundary */}
         <div className="mt-6 flex gap-3 w-full">
@@ -41,7 +43,7 @@ function MyoAICard({ project }) {
           </a>
         </div>
         {/* Divider and Accordion toggle: only visible on hover */}
-        <div className={`transition-all duration-300 ${hovered ? 'opacity-100 mt-4' : 'opacity-0 max-h-0 mt-0 pointer-events-none'}`}>
+        <div className={`transition-all duration-300 ${hovered || dropdownOpen ? 'opacity-100 mt-4' : 'opacity-0 max-h-0 mt-0 pointer-events-none'}`}>
           <div className="border-t border-white/10 my-2" />
           <button
             className="flex items-center text-blue-400 hover:text-blue-300 focus:outline-none mt-2"
