@@ -863,6 +863,48 @@ export default function Page() {
   const techStackContainerRef = useRef(null);
   const vortexTimeoutRef = useRef(null);
   const vortexTimeout2Ref = useRef(null);
+  const [hoveredProject, setHoveredProject] = useState(null);
+  const projects = [
+    {
+      title: 'Myo AI',
+      type: 'Multimodal Fusion Framework',
+      color: 'from-blue-600 to-cyan-400',
+      github: 'https://github.com/4hmed-n/Myo-AI',
+      live: 'https://myo-ai.streamlit.app',
+      image: '/images/MYO-AI.jpg',
+      description: (
+        <>
+          <span className="block mb-2">Myo AI is a multimodal fusion framework for advanced cardiovascular risk stratification. It integrates imaging, clinical, and biosignal data using deep learning to provide accurate, explainable risk predictions for heart disease. Built for clinicians and researchers, Myo AI enables seamless analysis and visualization of complex patient data.</span>
+          <div className="mt-4 space-y-2">
+            <div>
+              <span className="inline-block text-blue-400 font-bold text-sm mr-2">↓ Purpose</span>
+              <span className="text-xs text-blue-100">Enable clinicians to predict cardiovascular risk using all available data modalities.</span>
+            </div>
+            <div>
+              <span className="inline-block text-blue-400 font-bold text-sm mr-2">↓ Focus</span>
+              <span className="text-xs text-blue-100">Multimodal fusion (ECG, imaging, clinical) with explainable AI.</span>
+            </div>
+            <div>
+              <span className="inline-block text-blue-400 font-bold text-sm mr-2">↓ Goal</span>
+              <span className="text-xs text-blue-100">Improve patient outcomes with transparent, actionable risk scores.</span>
+            </div>
+          </div>
+        </>
+      ),
+    },
+    {
+      title: 'Orbit Commerce',
+      type: 'E-commerce Platform',
+      color: 'from-purple-600 to-blue-500',
+      description: 'High-conversion storefront with responsive UX and scalable architecture.'
+    },
+    {
+      title: 'Lumen Labs',
+      type: 'Product Showcase',
+      color: 'from-cyan-500 to-blue-600',
+      description: 'Product-led storytelling with dynamic visuals and modern design system.'
+    }
+  ];
 
   useEffect(() => {
     const minDisplayTime = 6000; // minimum time to show the loading bar
@@ -1268,49 +1310,7 @@ export default function Page() {
           </p>
         </div>
         <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          const [hoveredProject, setHoveredProject] = useState(null);
-
-          const projects = [
-            {
-              title: 'Myo AI',
-              type: 'Multimodal Fusion Framework',
-              color: 'from-blue-600 to-cyan-400',
-              github: 'https://github.com/4hmed-n/Myo-AI',
-              live: 'https://myo-ai.streamlit.app',
-              image: '/images/MYO-AI.jpg',
-              description: (
-                <>
-                  <span className="block mb-2">Myo AI is a multimodal fusion framework for advanced cardiovascular risk stratification. It integrates imaging, clinical, and biosignal data using deep learning to provide accurate, explainable risk predictions for heart disease. Built for clinicians and researchers, Myo AI enables seamless analysis and visualization of complex patient data.</span>
-                  <div className="mt-4 space-y-2">
-                    <div>
-                      <span className="inline-block text-blue-400 font-bold text-sm mr-2">↓ Purpose</span>
-                      <span className="text-xs text-blue-100">Enable clinicians to predict cardiovascular risk using all available data modalities.</span>
-                    </div>
-                    <div>
-                      <span className="inline-block text-blue-400 font-bold text-sm mr-2">↓ Focus</span>
-                      <span className="text-xs text-blue-100">Multimodal fusion (ECG, imaging, clinical) with explainable AI.</span>
-                    </div>
-                    <div>
-                      <span className="inline-block text-blue-400 font-bold text-sm mr-2">↓ Goal</span>
-                      <span className="text-xs text-blue-100">Improve patient outcomes with transparent, actionable risk scores.</span>
-                    </div>
-                  </div>
-                </>
-              ),
-            },
-            {
-              title: 'Orbit Commerce',
-              type: 'E-commerce Platform',
-              color: 'from-purple-600 to-blue-500',
-              description: 'High-conversion storefront with responsive UX and scalable architecture.'
-            },
-            {
-              title: 'Lumen Labs',
-              type: 'Product Showcase',
-              color: 'from-cyan-500 to-blue-600',
-              description: 'Product-led storytelling with dynamic visuals and modern design system.'
-            }
-          projects.map((project) => {
+          {projects.map((project) => {
             const isMyoAI = project.title === 'Myo AI';
             return (
               <div
@@ -1338,7 +1338,7 @@ export default function Page() {
                 )}
               </div>
             );
-          })
+          })}
         </div>
       </section>
 
