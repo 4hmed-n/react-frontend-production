@@ -45,7 +45,15 @@ function MyoAICard({ project }) {
             type="button"
             aria-label="Toggle Project Details"
           >
-            <span className={`transition-transform duration-200 text-lg ${dropdownOpen ? 'rotate-90' : 'rotate-0'}`}>▼</span>
+            <svg
+              className={`transition-transform duration-300 w-6 h-6 ${dropdownOpen ? 'rotate-90' : 'rotate-0'}`}
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
           </button>
           {/* Dropdown content: always inside card boundary, smooth transition */}
           <div className={`transition-all duration-300 overflow-hidden ${dropdownOpen ? 'max-h-[340px] opacity-100 mt-4' : 'max-h-0 opacity-0 mt-0'}`} style={{width: '100%'}}>
