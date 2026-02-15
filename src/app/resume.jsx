@@ -170,14 +170,20 @@ export default function Resume() {
       name: 'Lumen Labs',
       type: 'Product Showcase',
       description: 'Product-led storytelling with dynamic visuals and modern design system.'
+    },
     {
       name: 'Myo AI',
       type: 'Multimodal Fusion Framework',
       description: 'Myo AI is a multimodal fusion framework for advanced cardiovascular risk stratification. It integrates imaging, clinical, and biosignal data using deep learning to provide accurate, explainable risk predictions for heart disease. Built for clinicians and researchers, Myo AI enables seamless analysis and visualization of complex patient data. [Live Demo](https://myo-ai.streamlit.app) | [GitHub](https://github.com/4hmed-n/Myo-AI)'
-    },
+    }
+  ];
+
+  const education = [
+    {
       degree: 'BS in Data Science',
       institution: 'KFUEIT',
       description: 'Specialized in Machine Learning, Data Analysis, and Statistical Modeling with Focus on Real-World Applications'
+    }
     }
   ];
 
