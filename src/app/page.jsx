@@ -7,7 +7,7 @@ function MyoAICard({ project }) {
       className="relative"
       style={{
         transition: 'height 0.35s cubic-bezier(.4,2,.6,1)',
-        height: dropdownOpen ? 640 : (hovered ? 520 : 370),
+        height: dropdownOpen ? 640 : (hovered ? 600 : 370),
         overflow: 'hidden'
       }}
     >
@@ -15,7 +15,7 @@ function MyoAICard({ project }) {
       <div
         className={`absolute inset-0 rounded-[2rem] border border-white/10 bg-[#0a0a1a] p-6 backdrop-blur-xl flex flex-col transition-all duration-300 ${hovered || dropdownOpen ? 'z-50 shadow-2xl scale-[1.04]' : ''}`}
         style={{
-          minHeight: dropdownOpen ? 620 : (hovered ? 410 : 350),
+          minHeight: dropdownOpen ? 620 : (hovered ? 580 : 350),
           transition: 'min-height 0.35s cubic-bezier(.4,2,.6,1)',
           overflow: 'hidden'
         }}
