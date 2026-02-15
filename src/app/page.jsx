@@ -1314,7 +1314,7 @@ export default function Page() {
           {projects.map((project) => {
             const isHovered = hoveredProject === project.title;
             const isExpanded = expandedDetails[project.title];
-            // About text logic: show only first 2 lines with ellipsis if not hovered, else full
+            // About text logic: always show only first 2 lines with ellipsis unless hovered, show full on hover
             let aboutContent;
             if (typeof project.description === 'string') {
               aboutContent = (
@@ -1328,7 +1328,7 @@ export default function Page() {
             return (
               <div
                 key={project.title}
-                className={`rounded-[2rem] border border-white/10 bg-white/5 p-6 backdrop-blur-xl transition-all flex flex-col hover:border-blue-500/60 ${isHovered ? 'h-auto shadow-2xl scale-[1.04] z-10' : 'h-[340px]'} ${isExpanded ? 'min-h-[520px]' : ''}`}
+                className={`rounded-[2rem] border border-white/10 bg-white/5 p-6 backdrop-blur-xl transition-all flex flex-col hover:border-blue-500/60 ${isHovered || expandedDetails[project.title] ? 'h-auto shadow-2xl scale-[1.04] z-10' : 'h-[340px]'} ${expandedDetails[project.title] ? 'min-h-[520px]' : ''}`}
                 onMouseEnter={() => setHoveredProject(project.title)}
                 onMouseLeave={() => setHoveredProject(null)}
                 style={{ minHeight: 320, transition: 'all 0.3s cubic-bezier(.4,2,.6,1)' }}
@@ -1360,11 +1360,11 @@ export default function Page() {
                   onClick={() => setExpandedDetails((prev) => ({ ...prev, [project.title]: !prev[project.title] }))}
                   type="button"
                 >
-                  <span className={`transition-transform duration-200 ${isExpanded ? 'rotate-90' : ''}`}>▼</span>
+                  <span className={`transition-transform duration-200 ${expandedDetails[project.title] ? 'rotate-90' : ''}`}>▼</span>
                   <span className="text-xs font-semibold">Show Details</span>
                 </button>
                 {/* Details section: Purpose, Focus, Goal, etc. Only show if expanded */}
-                {isExpanded && project.title === 'Myo AI' && (
+                {expandedDetails[project.title] && project.title === 'Myo AI' && (
                   <div className="mt-4 space-y-2">
                     <div>
                       <span className="inline-block text-blue-400 font-bold text-sm mr-2">↓ Purpose</span>
