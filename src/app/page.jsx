@@ -94,136 +94,9 @@ function MyoAICard({ project }) {
   );
 }
 'use client';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import Matter from 'matter-js';
-
-const LOADING_QUOTES = [
-  "The unexamined life is not worth living. -- Socrates",
-  "I think, therefore I am. -- Rene Descartes",
-  "He who has a why to live can bear almost any how. -- Friedrich Nietzsche",
-  "Happiness depends upon ourselves. -- Aristotle",
-  "The only true wisdom is in knowing you know nothing. -- Socrates",
-  "We are what we repeatedly do. Excellence, then, is not an act, but a habit. -- Aristotle",
-  "The mind is everything. What you think you become. -- Buddha",
-  "Knowing yourself is the beginning of all wisdom. -- Aristotle",
-  "No man ever steps in the same river twice. -- Heraclitus",
-  "Man is condemned to be free. -- Jean-Paul Sartre",
-  "Life must be understood backward. But it must be lived forward. -- Soren Kierkegaard",
-  "There is only one good, knowledge, and one evil, ignorance. -- Socrates",
-  "The journey of a thousand miles begins with one step. -- Lao Tzu",
-  "The greatest wealth is to live content with little. -- Plato",
-  "It is not death that a man should fear, but he should fear never beginning to live. -- Marcus Aurelius",
-  "The more you know, the more you realize you don't know. -- Aristotle",
-  "The life of man is solitary, poor, nasty, brutish, and short. -- Thomas Hobbes",
-  "Man is born free, and everywhere he is in chains. -- Jean-Jacques Rousseau",
-  "You have power over your mind, not outside events. -- Marcus Aurelius",
-  "He who knows others is wise; he who knows himself is enlightened. -- Lao Tzu",
-  "To be is to be perceived. -- George Berkeley",
-  "Those who know do not speak. Those who speak do not know. -- Lao Tzu",
-  "I can control my passions and emotions if I can understand their nature. -- Spinoza",
-  "That which does not kill us makes us stronger. -- Friedrich Nietzsche",
-];
-
-// Fisher-Yates shuffle that cycles through all quotes before repeating
-function createQuoteCycler() {
-  let remaining = [];
-  return function next() {
-    if (remaining.length === 0) {
-      remaining = [...LOADING_QUOTES];
-      for (let i = remaining.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [remaining[i], remaining[j]] = [remaining[j], remaining[i]];
-      }
-    }
-    return remaining.pop();
-  };
-}
-
-const nextQuote = createQuoteCycler();
-
-function LoadingScreen() {
-  const [progress, setProgress] = useState(0);
-  const [quote] = useState(() => nextQuote());
-  const [quoteVisible, setQuoteVisible] = useState(false);
-
-  useEffect(() => {
-    const start = Date.now();
-    const duration = 6000;
-    const tick = () => {
-      const elapsed = Date.now() - start;
-      const pct = Math.min(100, (elapsed / duration) * 100);
-      let eased;
-      if (pct < 50) {
-        eased = 2 * Math.pow(pct / 100, 2) * 100;
-      } else {
-        eased = 100 - 2 * Math.pow(1 - pct / 100, 2) * 100;
-      }
-      setProgress(eased);
-      if (pct < 100) requestAnimationFrame(tick);
-    };
-    requestAnimationFrame(tick);
-
-    // Fade in quote after a short delay
-    const showTimer = setTimeout(() => setQuoteVisible(true), 400);
-
-    return () => {
-      clearTimeout(showTimer);
-    };
-  }, []);
-
-  const segments = 30;
-  const filledSegments = Math.floor((progress / 100) * segments);
-
-  return (
-    <>
-      <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center select-none" style={{ background: '#050510' }}>
-        {/* Ambient glow */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full" style={{ background: 'radial-gradient(circle, rgba(56,189,248,0.06), transparent 70%)' }} />
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[800px] h-[200px] rounded-full" style={{ background: 'radial-gradient(ellipse, rgba(139,92,246,0.04), transparent 70%)' }} />
-
-        {/* Name */}
-        <div className="mb-12">
-          <span className="text-sm sm:text-base uppercase tracking-widest text-white font-mono">Forgetting Previous Iterations</span>
-        </div>
-
-        {/* Segmented loading bar */}
-        <div className="relative w-60 sm:w-80">
-          <div className="flex gap-[2px]">
-            {Array.from({ length: segments }).map((_, i) => (
-              <div
-                key={i}
-                className="flex-1 h-[3px] rounded-[1px] transition-all"
-                style={{
-                  background: i < filledSegments
-                    ? `linear-gradient(90deg, rgba(56,189,248,${0.3 + (i / segments) * 0.5}), rgba(139,92,246,${0.2 + (i / segments) * 0.4}))`
-                    : 'rgba(255,255,255,0.04)',
-                  boxShadow: i < filledSegments ? '0 0 6px rgba(56,189,248,0.15)' : 'none',
-                  transitionDuration: '150ms',
-                }}
-              />
-            ))}
-          </div>
-
-          {/* Percentage */}
-          <div className="flex justify-between mt-4">
-            <span className="text-[10px] uppercase tracking-[0.2em] text-white font-mono">loading</span>
-            <span className="text-[10px] uppercase tracking-[0.2em] text-white font-mono">{Math.round(progress)}%</span>
-          </div>
-        </div>
-
-        {/* Quote */}
-        <div className="mt-14 max-w-xs sm:max-w-sm text-center">
-          <p
-            className="text-[11px] sm:text-xs text-white font-light italic leading-relaxed transition-all duration-700"
-            style={{ opacity: quoteVisible ? 1 : 0, transform: quoteVisible ? 'translateY(0)' : 'translateY(8px)' }}
-          >
-            "{quote}"
-          </p>
-        </div>
-      </div>
-    </>
-  );
-}
+import LoadingScreen from './InfinityLoader';
 
 // TYPEWRITER COMPONENT
 function Typewriter({ 
@@ -501,7 +374,8 @@ function PhysicsBubbleContainer({ containerRef, isLoading }) {
     const engine = Engine.create();
     engine.world.gravity.y = 0;
     engine.world.gravity.x = 0;
-    engine.timing.timeScale = isLoading ? 0 : 1;
+    // Start paused; timeScale is controlled separately via the isLoading useEffect
+    engine.timing.timeScale = 0;
 
     // Rock solid ball physics - high precision
     engine.positionIterations = 12;
@@ -808,9 +682,8 @@ function PhysicsBubbleContainer({ containerRef, isLoading }) {
       isRunningRef.current = false;
     };
 
-    if (!isLoading) {
-      startEngine();
-    }
+    // Always start engine (timeScale=0 keeps physics frozen during loading)
+    startEngine();
 
     // Track mouse position in ref — hover detection happens in rAF loop above
     const handleMouseMove = (e) => {
@@ -883,12 +756,16 @@ function PhysicsBubbleContainer({ containerRef, isLoading }) {
         render.canvas.parentNode.removeChild(render.canvas);
       }
     };
-  }, [containerRef, containerSize.width, containerSize.height, isLoading]);
+  }, [containerRef, containerSize.width, containerSize.height]);
 
   useEffect(() => {
     if (!engineRef.current) return;
-    engineRef.current.timing.timeScale = isLoading ? 0 : 1;
+    if (!isLoading) {
+      // Un-pause the engine smoothly after loader dismisses
+      engineRef.current.timing.timeScale = 1;
+    }
   }, [isLoading]);
+
 
   // Scale icons proportionally to ball size (base: 48px icon at 45px radius)
   const iconScale = ballRadius / 45;
@@ -944,15 +821,14 @@ function PhysicsBubbleContainer({ containerRef, isLoading }) {
 
 export default function Page() {
   const [isLoading, setIsLoading] = useState(true);
-  const [pfpHovered, setPfpHovered] = useState(false);
-  const [vortexPhase, setVortexPhase] = useState('idle'); // 'idle' | 'suck-in' | 'suck-out'
-  const [isPfpIntro, setIsPfpIntro] = useState(true);
+  const [loaderFadeDone, setLoaderFadeDone] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [currentSection, setCurrentSection] = useState('home');
   const currentSectionRef = useRef('home');
   const techStackContainerRef = useRef(null);
-  const vortexTimeoutRef = useRef(null);
-  const vortexTimeout2Ref = useRef(null);
+  const glitchWrapperRef = useRef(null);
+  const glitchCycleRef = useRef(null);
+  const isHoveringRef = useRef(false);
   const [hoveredProject, setHoveredProject] = useState(null);
   const [expandedDetails, setExpandedDetails] = useState({});
   const projects = [
@@ -996,11 +872,10 @@ export default function Page() {
     }
   ];
 
+  // ── Loader timing: 2s minimum, then fade out ──────────────────────────────
   useEffect(() => {
-    const minDisplayTime = 6000; // minimum time to show the loading bar
-    const startTime = Date.now();
+    const minDisplayTime = 2000; // 2 seconds minimum per spec
 
-    // Preload the PFP image
     const pfpImg = new Image();
     let pfpLoaded = false;
     let minTimePassed = false;
@@ -1016,8 +891,6 @@ export default function Page() {
       tryDismiss();
     };
     pfpImg.src = '/images/profile.jpg';
-
-    // If image is already cached, onload fires synchronously
     if (pfpImg.complete) pfpLoaded = true;
 
     const minTimer = setTimeout(() => {
@@ -1025,8 +898,8 @@ export default function Page() {
       tryDismiss();
     }, minDisplayTime);
 
-    // Hard fallback: dismiss after 9s no matter what
-    const fallback = setTimeout(() => setIsLoading(false), 9000);
+    // Hard fallback: dismiss after 6s no matter what
+    const fallback = setTimeout(() => setIsLoading(false), 6000);
 
     return () => {
       clearTimeout(minTimer);
@@ -1034,17 +907,20 @@ export default function Page() {
     };
   }, []);
 
+  // ── Loader fade complete callback ─────────────────────────────────────────
+  const onLoaderFadeComplete = useCallback(() => {
+    setLoaderFadeDone(true);
+    document.body.style.overflow = '';
+    // Notify layout that loader is done
+    window.dispatchEvent(new Event('loader-complete'));
+  }, []);
+
   useEffect(() => {
     if (isLoading) {
       document.body.style.overflow = 'hidden';
-      document.body.classList.add('app-loading');
-    } else {
-      document.body.style.overflow = '';
-      document.body.classList.remove('app-loading');
     }
     return () => {
       document.body.style.overflow = '';
-      document.body.classList.remove('app-loading');
     };
   }, [isLoading]);
 
@@ -1100,97 +976,363 @@ export default function Page() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const triggerVortex = () => {
-    if (vortexPhase !== 'idle') return; // prevent re-trigger mid-animation
-    setVortexPhase('suck-in');
-    if (vortexTimeoutRef.current) clearTimeout(vortexTimeoutRef.current);
-    if (vortexTimeout2Ref.current) clearTimeout(vortexTimeout2Ref.current);
-    // After suck-in completes (1500ms) + hold (2000ms), start suck-out
-    vortexTimeoutRef.current = setTimeout(() => {
-      setVortexPhase('suck-out');
-    }, 3500);
-    // After suck-out completes (1500ms), return to idle
-    vortexTimeout2Ref.current = setTimeout(() => {
-      setVortexPhase('idle');
-    }, 5000);
-  };
-
-  // Clear intro animation after it finishes
+  // ── SECTION 4: SVG Glitch frame — continuous burst cycle ───────────────────
   useEffect(() => {
-    if (!isLoading && isPfpIntro) {
-      const t = setTimeout(() => setIsPfpIntro(false), 1050);
-      return () => clearTimeout(t);
+    if (isLoading) return;
+    const wrapper = glitchWrapperRef.current;
+    if (!wrapper) return;
+
+    const svgEl = wrapper.querySelector('.glitch-frame-svg');
+    if (!svgEl) return;
+
+    const cyanCircle = svgEl.querySelector('.frame-cyan');
+    const magentaCircle = svgEl.querySelector('.frame-magenta');
+    const scatterGroup = svgEl.querySelector('.pixel-scatter');
+    if (!cyanCircle || !magentaCircle || !scatterGroup) return;
+
+    const circumference = 2 * Math.PI * 138; // r=138
+
+    // ── Apply idle state ──────────────────────────────────────────────────
+    function applyIdleState() {
+      cyanCircle.setAttribute('transform', 'translate(0,0)');
+      magentaCircle.setAttribute('transform', 'translate(0,0)');
+      cyanCircle.style.opacity = '0.4';
+      magentaCircle.style.opacity = '0.4';
+      cyanCircle.setAttribute('stroke-dasharray', `${circumference}`);
+      cyanCircle.setAttribute('stroke-dashoffset', '0');
+      magentaCircle.setAttribute('stroke-dasharray', `${circumference}`);
+      magentaCircle.setAttribute('stroke-dashoffset', '0');
+      // Remove ghost circle if any
+      const ghost = svgEl.querySelector('.ghost-circle');
+      if (ghost) ghost.remove();
     }
-  }, [isLoading, isPfpIntro]);
+
+    // ── Generate random broken dasharray ───────────────────────────────────
+    function randomDashArray() {
+      const parts = [];
+      let remaining = circumference;
+      while (remaining > 10) {
+        const seg = 10 + Math.random() * 80;
+        const gap = 5 + Math.random() * 30;
+        parts.push(Math.min(seg, remaining));
+        remaining -= seg;
+        if (remaining > 0) {
+          parts.push(Math.min(gap, remaining));
+          remaining -= gap;
+        }
+      }
+      if (remaining > 0) parts.push(remaining);
+      return parts.join(' ');
+    }
+
+    // ── Spawn pixel scatter blips ─────────────────────────────────────────
+    function spawnPixelBlips(count) {
+      // Clear old blips
+      while (scatterGroup.firstChild) scatterGroup.removeChild(scatterGroup.firstChild);
+      const colors = ['#00FFFF', '#FF00FF', '#FFFFFF'];
+      for (let i = 0; i < count; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        // Outer scatter 130-165, inner scatter 110-135
+        const isOuter = Math.random() > 0.4;
+        const radius = isOuter ? (130 + Math.random() * 35) : (110 + Math.random() * 25);
+        const x = 150 + Math.cos(angle) * radius;
+        const y = 150 + Math.sin(angle) * radius;
+        const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        rect.setAttribute('x', x.toString());
+        rect.setAttribute('y', y.toString());
+        rect.setAttribute('width', (2 + Math.random() * 4).toString());
+        rect.setAttribute('height', (1 + Math.random() * 2).toString());
+        rect.setAttribute('fill', colors[Math.floor(Math.random() * colors.length)]);
+        rect.setAttribute('opacity', (0.6 + Math.random() * 0.4).toString());
+        scatterGroup.appendChild(rect);
+      }
+    }
+
+    // ── Apply glitch burst ────────────────────────────────────────────────
+    function applyGlitchBurst(mode) {
+      const isIntense = mode === 'intense';
+      const maxDx = isIntense ? 16 : 8;
+      const blipCount = isIntense ? (10 + Math.floor(Math.random() * 10)) : (4 + Math.floor(Math.random() * 8));
+
+      // 1. Translate cyan left/right randomly
+      const cyanDx = -maxDx + Math.random() * maxDx * 2;
+      cyanCircle.setAttribute('transform', `translate(${cyanDx},0)`);
+
+      // 2. Translate magenta opposite
+      const magDx = -cyanDx * (0.5 + Math.random() * 0.5);
+      magentaCircle.setAttribute('transform', `translate(${magDx},0)`);
+
+      // 3. Broken dasharray
+      cyanCircle.setAttribute('stroke-dasharray', randomDashArray());
+      cyanCircle.setAttribute('stroke-dashoffset', (Math.random() * 100).toString());
+      magentaCircle.setAttribute('stroke-dasharray', randomDashArray());
+      magentaCircle.setAttribute('stroke-dashoffset', (Math.random() * 100).toString());
+
+      // 4. Pixel scatter
+      spawnPixelBlips(blipCount);
+
+      // 5. Opacity burst
+      cyanCircle.style.opacity = '1.0';
+      magentaCircle.style.opacity = '1.0';
+
+      // 6. Random ghost circle (30% chance)
+      const existingGhost = svgEl.querySelector('.ghost-circle');
+      if (existingGhost) existingGhost.remove();
+      if (Math.random() < 0.3) {
+        const ghost = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        ghost.setAttribute('class', 'ghost-circle');
+        ghost.setAttribute('cx', '150');
+        ghost.setAttribute('cy', '150');
+        ghost.setAttribute('r', '140');
+        ghost.setAttribute('fill', 'none');
+        ghost.setAttribute('stroke', '#FFFFFF');
+        ghost.setAttribute('stroke-width', '1.5');
+        ghost.setAttribute('opacity', '0.15');
+        ghost.setAttribute('transform', `scale(${0.98 + Math.random() * 0.04})`);
+        ghost.style.transformOrigin = '150px 150px';
+        svgEl.appendChild(ghost);
+      }
+    }
+
+    // ── Glitch burst cycle ────────────────────────────────────────────────
+    let cycleActive = true;
+    function runGlitchCycle() {
+      if (!cycleActive) return;
+      const isHovering = isHoveringRef.current;
+      const calmDuration = isHovering ? (300 + Math.random() * 300) : (1500 + Math.random() * 1000);
+      const burstDuration = 100 + Math.random() * 200;
+
+      // CALM phase
+      applyIdleState();
+      // During calm, show 0-2 sparse blips
+      spawnPixelBlips(Math.floor(Math.random() * 3));
+
+      glitchCycleRef.current = setTimeout(() => {
+        if (!cycleActive) return;
+        // BURST phase
+        applyGlitchBurst(isHovering ? 'intense' : 'subtle');
+
+        glitchCycleRef.current = setTimeout(() => {
+          runGlitchCycle();
+        }, burstDuration);
+      }, calmDuration);
+    }
+
+    runGlitchCycle();
+
+    // ── Hover handlers ───────────────────────────────────────────────────
+    const handleMouseEnter = () => {
+      isHoveringRef.current = true;
+      wrapper.classList.add('is-glitching');
+    };
+    const handleMouseLeave = () => {
+      isHoveringRef.current = false;
+      wrapper.classList.remove('is-glitching');
+    };
+
+    // ── Mobile tap ───────────────────────────────────────────────────────
+    const handleTouchStart = (e) => {
+      e.preventDefault();
+      isHoveringRef.current = true;
+      wrapper.classList.add('is-glitching');
+      setTimeout(() => {
+        isHoveringRef.current = false;
+        wrapper.classList.remove('is-glitching');
+      }, 1500);
+    };
+
+    wrapper.addEventListener('mouseenter', handleMouseEnter);
+    wrapper.addEventListener('mouseleave', handleMouseLeave);
+    wrapper.addEventListener('touchstart', handleTouchStart, { passive: false });
+
+    return () => {
+      cycleActive = false;
+      clearTimeout(glitchCycleRef.current);
+      wrapper.removeEventListener('mouseenter', handleMouseEnter);
+      wrapper.removeEventListener('mouseleave', handleMouseLeave);
+      wrapper.removeEventListener('touchstart', handleTouchStart);
+    };
+  }, [isLoading]);
+
+  // ── CHANGE 6: Scroll reveal (IntersectionObserver) ─────────────────────────
+  useEffect(() => {
+    if (isLoading) return;
+
+    const EXCLUDED = ['#custom-cursor', 'nav', '.navbar-pill', 'canvas'];
+    const isExcluded = (el) => EXCLUDED.some(sel => el.closest(sel));
+
+    // Target all heading/paragraph/card elements in sections
+    const selectors = [
+      '#home h1, #home h2, #home h3, #home h4, #home p',
+      '#about h1, #about h2, #about h3, #about h4, #about p',
+      '#skills h1, #skills h2, #skills h3, #skills h4, #skills p',
+      '#projects h1, #projects h2, #projects h3, #projects h4, #projects p',
+      '#contact h1, #contact h2, #contact h3, #contact h4, #contact p',
+      '#projects .rounded-\\[2rem\\]',
+      'footer h3, footer h4, footer p, footer a',
+      '#home a, #about a, #skills a, #contact a',
+    ];
+
+    const allElements = [];
+    selectors.forEach(sel => {
+      try {
+        document.querySelectorAll(sel).forEach(el => {
+          if (!isExcluded(el) && !allElements.includes(el)) allElements.push(el);
+        });
+      } catch (_) {}
+    });
+
+    // Apply initial state
+    allElements.forEach(el => {
+      el.classList.add('reveal-init');
+    });
+
+    // Stagger cards within the projects grid
+    const cardEls = document.querySelectorAll('#projects .rounded-\\[2rem\\]');
+    cardEls.forEach((el, i) => {
+      el.style.transitionDelay = `${Math.min(i * 0.1, 0.5)}s`;
+    });
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('reveal-visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
+
+    allElements.forEach(el => observer.observe(el));
+
+    return () => observer.disconnect();
+  }, [isLoading]);
+
+  // ── CHANGE 7: 3D tilt on project cards ────────────────────────────────────
+  useEffect(() => {
+    if (isLoading) return;
+
+    const applyTilt = () => {
+      const cards = document.querySelectorAll('#projects .rounded-\\[2rem\\]');
+      cards.forEach(card => {
+        if (card.dataset.tiltInit) return;
+        card.dataset.tiltInit = '1';
+        card.style.position = 'relative';
+        card.style.overflow = 'hidden';
+
+        // Inject shine div
+        const shine = document.createElement('div');
+        shine.className = 'card-shine';
+        card.appendChild(shine);
+
+        // Parent perspective
+        if (card.parentElement) card.parentElement.style.perspective = '1000px';
+
+        card.addEventListener('mouseenter', () => {
+          card.style.transition = 'transform 0.1s ease';
+          card.style.willChange = 'transform';
+        });
+
+        card.addEventListener('mousemove', (e) => {
+          const rect = card.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          const centerX = rect.width / 2;
+          const centerY = rect.height / 2;
+          const rotateX = ((y - centerY) / centerY) * -12;
+          const rotateY = ((x - centerX) / centerX) * 12;
+          card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02,1.02,1.02)`;
+          shine.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(255,255,255,0.08) 0%, transparent 70%)`;
+        });
+
+        card.addEventListener('mouseleave', () => {
+          card.style.transition = 'transform 0.5s ease';
+          card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1,1,1)';
+          shine.style.background = 'none';
+        });
+      });
+    };
+
+    // Small delay to ensure cards are rendered
+    const t = setTimeout(applyTilt, 300);
+    return () => clearTimeout(t);
+  }, [isLoading]);
 
   const mainPortfolio = (
     <div className="min-h-screen w-full">
-      <section id="home" className="mx-auto max-w-7xl px-4 sm:px-6 md:px-20 pt-24 sm:pt-28 md:pt-32 pb-16 sm:pb-20 min-h-screen flex items-center">
-        <div className="grid gap-10 md:grid-cols-2 items-center w-full">
-          <div>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
-              Hi, I'm{' '}
-              <span className="text-blue-400">Muhammad Ahmed</span>
-            </h1>
-            <p className="mt-4 text-xl sm:text-2xl md:text-3xl font-light text-gray-300 font-display">
-              <Typewriter 
-                strings={[
-                  'Full-Stack AI Engineer',
-                  'Machine Learning Engineer',
-                  'Data Scientist',
-                  'Backend Engineer',
-                  'Frontend Engineer',
-                  'MLOps Engineer',
-                  'Database Administrator',
-                  'DevOps Engineer',
-                  'AI Solutions Architect',
-                  'Software Engineer',
-                  'Big Data Engineer',
-                  'Computer Vision Engineer',
-                  'NLP Specialist',
-                  'Systems Architect'
-                ]}
-                typingSpeed={30}
-                deletingSpeed={50}
-                delayBetweenStrings={2000}
-                cursorColor="#38bdf8"
-              />
-            </p>
-            <p className="mt-6 text-lg text-gray-400 max-w-xl leading-relaxed">
-              Bridging the gap between intelligent systems and elegant user experiences. I architect scalable full-stack solutions powered by machine learning, transforming complex data into intuitive, production-ready applications that drive real-world impact.
-            </p>
-            <div className="mt-8">
-              <a
-                href="#projects"
-                className="inline-block rounded-full bg-blue-500 text-white px-8 py-4 text-sm font-medium uppercase tracking-widest hover:bg-blue-600 transition-colors"
-              >
-                View Projects
-              </a>
-            </div>
-          </div>
-          <div className="flex items-center justify-center">
-            <div className="relative">
-              <div className={`absolute inset-0 bg-gradient-to-br from-blue-500/20 to-purple-500/20 blur-3xl transition-all duration-300 ${pfpHovered ? 'blur-2xl scale-110' : ''}`} />
-              <div 
-                onMouseEnter={() => setPfpHovered(true)}
-                onMouseLeave={() => setPfpHovered(false)}
-                onMouseDown={triggerVortex}
-                className={`relative w-52 h-52 md:w-64 md:h-64 rounded-full overflow-hidden border border-white/10 bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-xl flex items-center justify-center pfp-hoverable ${pfpHovered ? 'border-blue-400/50 shadow-lg shadow-blue-500/20' : ''} ${!isLoading && vortexPhase === 'idle' && !isPfpIntro ? 'pfp-float' : ''} ${vortexPhase === 'suck-in' ? 'pfp-vortex' : ''} ${vortexPhase === 'suck-out' ? 'pfp-vortex-in' : ''} ${isPfpIntro && !isLoading ? 'pfp-vortex-in' : ''}`}
-              >
-                <div className={`absolute inset-0 rounded-full whirlpool-effect transition-opacity duration-500 ${pfpHovered ? 'opacity-100' : 'opacity-70'}`} />
-                <img 
-                  src="/images/profile.jpg" 
-                  alt="Muhammad Ahmed" 
-                  className="w-full h-full object-cover rounded-full"
-                  width="256"
-                  height="256"
-                  loading="eager"
-                  decoding="async"
-                  fetchpriority="high"
-                  onError={(e) => {
-                    e.target.style.display = 'none';
-                  }}
+      {/* SECTION 2: hero section wrapped in wider glassmorphism card */}
+      <section id="home" className="mx-auto px-4 sm:px-6 md:px-12 pt-24 sm:pt-28 md:pt-32 pb-16 sm:pb-20 min-h-screen flex items-center">
+        <div className="hero-glass-card">
+          <div className="grid gap-10 md:grid-cols-2 items-center w-full">
+            <div>
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
+                Hi, I'm{' '}
+                <span className="text-blue-400">Muhammad Ahmed</span>
+              </h1>
+              <p className="mt-4 text-xl sm:text-2xl md:text-3xl font-light text-gray-300 font-display">
+                <Typewriter 
+                  strings={[
+                    'Full-Stack AI Engineer',
+                    'Machine Learning Engineer',
+                    'Data Scientist',
+                    'Backend Engineer',
+                    'Frontend Engineer',
+                    'MLOps Engineer',
+                    'Database Administrator',
+                    'DevOps Engineer',
+                    'AI Solutions Architect',
+                    'Software Engineer',
+                    'Big Data Engineer',
+                    'Computer Vision Engineer',
+                    'NLP Specialist',
+                    'Systems Architect'
+                  ]}
+                  typingSpeed={30}
+                  deletingSpeed={50}
+                  delayBetweenStrings={2000}
+                  cursorColor="#38bdf8"
                 />
+              </p>
+              <p className="mt-6 text-lg text-gray-400 max-w-xl leading-relaxed">
+                Bridging the gap between intelligent systems and elegant user experiences. I architect scalable full-stack solutions powered by machine learning, transforming complex data into intuitive, production-ready applications that drive real-world impact.
+              </p>
+              <div className="mt-8">
+                <a
+                  href="#projects"
+                  className="inline-block rounded-full bg-blue-500 text-white px-8 py-4 text-sm font-medium uppercase tracking-widest hover:bg-blue-600 transition-colors"
+                >
+                  View Projects
+                </a>
+              </div>
+            </div>
+            {/* SECTION 4: Profile picture with SVG glitch frame */}
+            <div className="flex items-center justify-center">
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-purple-500/20 blur-3xl" />
+                <div className="glitch-frame-wrapper glitch-pic-container" ref={glitchWrapperRef}>
+                  <img 
+                    src="/images/profile.jpg" 
+                    alt="Muhammad Ahmed" 
+                    className="profile-pic"
+                    width="256"
+                    height="256"
+                    loading="eager"
+                    decoding="async"
+                    fetchpriority="high"
+                    onError={(e) => { e.target.style.display = 'none'; }}
+                  />
+                  {/* Red channel shift overlay for hover */}
+                  <div className="glitch-red-overlay" />
+                  {/* SVG glitch frame overlay */}
+                  <svg className="glitch-frame-svg" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+                    <circle className="frame-cyan" cx="150" cy="150" r="138" 
+                      fill="none" stroke="#00FFFF" strokeWidth="3" 
+                      strokeDasharray="867" strokeDashoffset="0" opacity="0.4" />
+                    <circle className="frame-magenta" cx="150" cy="150" r="138" 
+                      fill="none" stroke="#FF00FF" strokeWidth="3" 
+                      strokeDasharray="867" strokeDashoffset="0" opacity="0.4" />
+                    <g className="pixel-scatter"></g>
+                  </svg>
+                </div>
               </div>
             </div>
           </div>
@@ -1611,60 +1753,27 @@ export default function Page() {
           </svg>
         </button>
       )}
-      <style
-        dangerouslySetInnerHTML={{
-          __html: `
-.pfp-float {
-  animation: pfp-float 6s ease-in-out infinite;
-  will-change: transform;
-  transform: translate3d(0, 0, 0);
-  backface-visibility: hidden;
-}
-.pfp-hoverable {
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
-}
-.pfp-vortex {
-  animation: pfp-vortex-spin 1.5s cubic-bezier(0.55, 0.06, 0.68, 0.19) forwards,
-             pfp-vortex-shrink 1.5s cubic-bezier(0.55, 0.06, 0.68, 0.19) forwards;
-  transform-origin: center center;
-  will-change: transform, opacity;
-  backface-visibility: hidden;
-}
-.pfp-vortex-in {
-  animation: pfp-vortex-spin-in 1.5s cubic-bezier(0.22, 1, 0.36, 1) forwards,
-             pfp-vortex-grow 1.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-  transform-origin: center center;
-  will-change: transform, opacity;
-  backface-visibility: hidden;
-}
-@keyframes pfp-float {
-  0% { transform: translate3d(0, 0, 0); }
-  50% { transform: translate3d(0, -10px, 0); }
-  100% { transform: translate3d(0, 0, 0); }
-}
-@keyframes pfp-vortex-spin {
-  from { transform: rotate(0deg) scale(1); }
-  to   { transform: rotate(-480deg) scale(0); }
-}
-@keyframes pfp-vortex-shrink {
-  0%   { opacity: 1; }
-  60%  { opacity: 0.8; }
-  100% { opacity: 0; }
-}
-@keyframes pfp-vortex-spin-in {
-  from { transform: rotate(-480deg) scale(0); }
-  to   { transform: rotate(0deg) scale(1); }
-}
-@keyframes pfp-vortex-grow {
-  0%   { opacity: 0; }
-  25%  { opacity: 0.6; }
-  100% { opacity: 1; }
-}
-`
-        }}
-      />
+      {/* Vortex/Kamui animations removed — replaced by glitch frame (Change 4) */}
     </div>
   );
 
-  return isLoading ? <LoadingScreen /> : mainPortfolio;
+  // Render loader as overlay on top of content (content starts hidden)
+  return (
+    <>
+      {/* Loader overlay — always on top, fades out when isLoading becomes false */}
+      {!loaderFadeDone && (
+        <LoadingScreen
+          onFadeComplete={onLoaderFadeComplete}
+          {...(!isLoading ? { triggerFade: true } : {})}
+        />
+      )}
+      {/* Main content — starts hidden, revealed after loader fade */}
+      <div
+        className={loaderFadeDone ? 'site-content-visible' : 'site-content-hidden'}
+        style={{ minHeight: '100vh' }}
+      >
+        {mainPortfolio}
+      </div>
+    </>
+  );
 }

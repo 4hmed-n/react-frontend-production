@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import './globals.css';
 import ParticleBackground from './ParticleBackground';
@@ -52,9 +52,14 @@ function SidebarIcon({ href, icon, label, showTooltip = true, isClickable = true
 
 export default function Layout({ children }) {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [navVisible, setNavVisible] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMobileSocialOpen, setIsMobileSocialOpen] = useState(false);
+  const [loaderActive, setLoaderActive] = useState(true);
   const location = useLocation();
+  const cursorRef = useRef(null);
+  const cursorPosRef = useRef({ x: -100, y: -100 });
+  const rafRef = useRef(null);
   const isResumePage = location.pathname === '/resume';
 
   const handleDownloadPDF = async () => {
@@ -127,12 +132,102 @@ export default function Layout({ children }) {
     noTranslate.setAttribute('content', 'notranslate');
   }, []);
 
+  // ── SECTION 1: Navbar scroll-triggered slide-down ────────────────────────
   useEffect(() => {
+    const SCROLL_THRESHOLD = 80;
+
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
+
+      // Only update navbar visibility if loader is not active
+      if (!loaderActive) {
+        setNavVisible(window.scrollY > SCROLL_THRESHOLD);
+      }
     };
-    window.addEventListener('scroll', handleScroll);
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    // Call once on mount in case page is refreshed mid-scroll
+    handleScroll();
+
     return () => window.removeEventListener('scroll', handleScroll);
+  }, [loaderActive]);
+
+  // When loader finishes, enable navbar scroll checking
+  useEffect(() => {
+    if (!loaderActive) {
+      // Immediately check scroll position for navbar
+      const SCROLL_THRESHOLD = 80;
+      setNavVisible(window.scrollY > SCROLL_THRESHOLD);
+    }
+  }, [loaderActive]);
+
+  // Listen for custom event from page.jsx when loader finishes
+  useEffect(() => {
+    const handleLoaderDone = () => {
+      setLoaderActive(false);
+    };
+    window.addEventListener('loader-complete', handleLoaderDone);
+    return () => window.removeEventListener('loader-complete', handleLoaderDone);
+  }, []);
+
+  // ── Custom cursor ─────────────────────────────────────────────────────────
+  useEffect(() => {
+    // Create cursor element
+    const cursor = document.createElement('div');
+    cursor.id = 'custom-cursor';
+    cursor.style.cssText = `
+      position: fixed;
+      pointer-events: none;
+      z-index: 99999;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.9);
+      box-shadow: 0 0 10px rgba(255,255,255,0.8), 0 0 20px rgba(150,200,255,0.4);
+      transition: width 0.25s ease, height 0.25s ease, background 0.25s ease, border 0.25s ease, box-shadow 0.25s ease;
+      transform: translate(-50%, -50%);
+      top: 0;
+      left: 0;
+    `;
+    document.body.appendChild(cursor);
+    cursorRef.current = cursor;
+
+    const updateCursor = () => {
+      const { x, y } = cursorPosRef.current;
+      cursor.style.left = x + 'px';
+      cursor.style.top  = y + 'px';
+      rafRef.current = requestAnimationFrame(updateCursor);
+    };
+    rafRef.current = requestAnimationFrame(updateCursor);
+
+    const onMouseMove = (e) => {
+      cursorPosRef.current = { x: e.clientX, y: e.clientY };
+      // Detect hover over interactive element
+      const el = e.target;
+      const cs = window.getComputedStyle(el);
+      const isInteractive = cs.cursor === 'pointer' ||
+        el.matches('a, button, [role="button"], .btn, input, textarea, select, label[for]');
+      if (isInteractive) {
+        cursor.style.width  = '40px';
+        cursor.style.height = '40px';
+        cursor.style.background = 'transparent';
+        cursor.style.border = '1.5px solid rgba(255,255,255,0.7)';
+        cursor.style.boxShadow = '0 0 15px rgba(150,200,255,0.3)';
+      } else {
+        cursor.style.width  = '10px';
+        cursor.style.height = '10px';
+        cursor.style.background = 'rgba(255,255,255,0.9)';
+        cursor.style.border = 'none';
+        cursor.style.boxShadow = '0 0 10px rgba(255,255,255,0.8), 0 0 20px rgba(150,200,255,0.4)';
+      }
+    };
+
+    document.addEventListener('mousemove', onMouseMove);
+    return () => {
+      document.removeEventListener('mousemove', onMouseMove);
+      cancelAnimationFrame(rafRef.current);
+      if (cursor.parentNode) cursor.parentNode.removeChild(cursor);
+    };
   }, []);
 
   const scrollToTop = () => {
@@ -144,10 +239,9 @@ export default function Layout({ children }) {
     <div className="relative min-h-screen w-full bg-[#050510] text-white">
       <ParticleBackground />
       <div className="pointer-events-none fixed inset-0 bg-radial-gradient-fade" style={{ zIndex: 2 }} />
-      <style dangerouslySetInnerHTML={{ __html: `body.app-loading { --ui-opacity: 0; }` }} />
       {/* Left side social icons (desktop) - hidden during loading */}
       {!isResumePage && (
-        <div className="hidden md:flex fixed left-6 top-1/2 -translate-y-1/2 z-50 flex-col gap-6 transition-opacity duration-500" style={{ opacity: 'var(--ui-opacity, 1)' }}>
+        <div className="hidden md:flex fixed left-6 top-1/2 -translate-y-1/2 z-50 flex-col gap-6 transition-opacity duration-500" style={{ opacity: loaderActive ? 0 : 1 }}>
           <SidebarIcon
             href="https://github.com/4hmed-n"
             label="GitHub"
@@ -187,7 +281,9 @@ export default function Layout({ children }) {
         </div>
       )}
 
-      <nav className="sticky top-4 left-0 right-0 mx-auto px-3 sm:px-4 z-50 transition-all duration-500" style={{ zIndex: 100, opacity: 'var(--ui-opacity, 1)' }}>
+      <nav
+        className={`px-3 sm:px-4 navbar-pill${navVisible && !loaderActive ? ' is-visible' : ''}`}
+      >
         {isResumePage ? (
           <div data-header-shell className={`mx-auto w-full max-w-[920px] ${isScrolled 
               ? 'bg-slate-900/50 backdrop-blur-xl border border-white/15 shadow-2xl shadow-black/40' 
